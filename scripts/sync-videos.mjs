@@ -66,8 +66,59 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TILE_WIDTH = 720;
 const HQ_MAX_WIDTH = 1080;
 const TILE_CRF = 30;
-const HQ_CRF = 22;
+
+/* HQ_CRF WAS 22 AND THAT IS WHAT FILLED THE STORE. 22 at 1080 wide is a
+   near-master encode, which was a defensible default back when the library was
+   68 short reels. It is not one now: the library is 39 clips averaging 97
+   seconds, 25 of them over a minute, and the hq cuts alone came to 1.41 GB of a
+   1.68 GB store — 84% of everything, against tile cuts totalling 306 MB.
+
+   Measured on v3583 (94s), re-encoded from the master rather than estimated:
+   CRF 22 -> 43.5 MB, CRF 26 -> 26.5 MB, CRF 28 -> 21.3 MB. 26 is the pick at
+   -39%, projecting the 1.41 GB of hq down to roughly 860 MB.
+
+   IT IS A LIGHTBOX CUT, NOT A DELIVERABLE. Nobody downloads these; they play
+   once in an overlay on top of a dimmed page. 26 is visually near-transparent
+   from 22 at this width, and the clips it has to hold up on are AI-generated
+   faces and product gradients, which is why this stopped at 26 rather than 28 —
+   banding on skin is the first thing to go and the most obvious when it does.
+
+   RAISING IT DOES NOT SHRINK ANYTHING ON ITS OWN. The outputs are keyed on
+   mtime by isCurrent(), so an existing hq cut counts as current no matter what
+   CRF produced it. Delete or move public/videos/reels/*.hq.mp4 and re-run, which
+   rebuilds only the hq variant and leaves tiles and posters alone. */
+const HQ_CRF = 26;
 const POSTER_QUALITY = 80;
+
+/* HOW MUCH OF EACH CLIP IS KEPT, AND IT IS THE LARGEST DIAL IN THIS FILE.
+   Bytes are bitrate times duration, and duration is the half that ran away: the
+   library is 39 clips averaging 97 seconds, 25 of them over a minute, the
+   longest 4m58s. That is 63 minutes of video behind a wall of tiles, and both
+   variants were being encoded end to end.
+
+   Measured at the settings above: hq costs 251 KB per second of video, tile 89
+   KB/s. So the whole library is priced per second, and the only lever that
+   moves it by a factor rather than a percentage is this one:
+
+     uncapped   39 reels 1181 MB    68 reels 2059 MB
+     60s cap    39 reels  779 MB    68 reels 1358 MB
+     30s cap    39 reels  389 MB    68 reels  679 MB
+
+   30s is what makes room for the 29 parked reels to come back — see
+   docs/blob-store.md — and 68 of them still land under 700 MB.
+
+   NOTHING EVER PLAYED PAST THIS ANYWAY. The tile cut is a silent, 158px,
+   autoplaying background element that loops; the hq cut opens in a lightbox
+   over a dimmed page. Encoding five minutes of either was paying full price for
+   video no visitor reaches.
+
+   THE MASTERS ARE UNTOUCHED. .source-videos/ still holds the full-length files,
+   so raising or dropping this is a re-run, not a re-shoot.
+
+   IT IS AN OUTPUT OPTION, placed after -i on both encoders. Before -i it would
+   be an input limit, which reads the same here but does not survive someone
+   later adding an -ss seek above it. */
+const CLIP_SECONDS = 30;
 
 /* THREADS PER ffmpeg, AND IT IS A MEMORY DIAL RATHER THAN A SPEED ONE.
    Left alone, x264 picks about 1.5 threads per core and each one holds its own
@@ -90,6 +141,7 @@ const tileArgs = (src, out) => [
   "-vf", `scale=${TILE_WIDTH}:-2`,
   "-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p",
   "-crf", String(TILE_CRF), "-preset", "slow", "-g", "60",
+  "-t", String(CLIP_SECONDS),
   "-an",
   "-movflags", "+faststart",
   out,
@@ -107,6 +159,7 @@ const hqArgs = (src, out) => [
   "-vf", `scale='min(${HQ_MAX_WIDTH},iw)':-2`,
   "-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p",
   "-crf", String(HQ_CRF), "-preset", "slow",
+  "-t", String(CLIP_SECONDS),
   "-c:a", "aac", "-b:a", "128k",
   "-movflags", "+faststart",
   out,
