@@ -1,0 +1,53 @@
+{
+  "url": "http://localhost:3100",
+  "at": "2026-09-05T08:12:46.899Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "reducedMotion": false,
+  "results": [
+    {
+      "label": "at rest",
+      "verdict": "good",
+      "fps": 71.9,
+      "p50": 13.9,
+      "p95": 14,
+      "worstFrame": 14.1,
+      "droppedPct": 0,
+      "hitches": 0,
+      "jitter": 0.1,
+      "longTasks": 0,
+      "blockingMs": 0,
+      "cls": 0
+    },
+    {
+      "label": "scroll down",
+      "verdict": "bad",
+      "fps": 142.9,
+      "p50": 7,
+      "p95": 13.9,
+      "worstFrame": 62.5,
+      "droppedPct": 2.8,
+      "hitches": 1,
+      "jitter": 4.9,
+      "longTasks": 0,
+      "blockingMs": 0,
+      "cls": 0
+    },
+    {
+      "label": "scroll up",
+      "verdict": "bad",
+      "fps": 144.9,
+      "p50": 6.9,
+      "p95": 7.1,
+      "worstFrame": 124.8,
+      "droppedPct": 2.5,
+      "hitches": 4,
+      "jitter": 10.7,
+      "longTasks": 0,
+      "blockingMs": 0,
+      "cls": 0
+    }
+  ]
+}

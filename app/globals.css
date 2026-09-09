@@ -1,0 +1,1084 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   LIKELYFAD v2 — flame → pink → violet on warm paper.
+
+   This file is deliberately the ONLY stylesheet in the project. Everything a
+   utility can express is written as a utility on the element. What is left
+   here is what a utility cannot be:
+
+     1. theme tokens — which is what makes `bg-paper`, `text-pink-deep`,
+        `font-display` and the `lap:` / `tab:` / `phone:` breakpoints EXIST as
+        utilities in the first place;
+     2. the two marquee keyframes both reel walls run on;
+     3. four shared gradients and three shadows, as variables, so
+        `bg-[image:var(--grad)]` reads one definition instead of thirty copies
+        of a colour triple;
+     4. `.aura`, the hero wash, and `::selection` — two rules, because there is
+        no utility for either.
+
+   Spacing, sizes and breakpoints are ported 1:1 from v1's 1,402-line
+   stylesheet; the numbers are the same, the place they live is not.
+   ========================================================================== */
+
+@theme {
+  --font-display: var(--font-montserrat), system-ui, sans-serif;
+  --font-sans: var(--font-roboto), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* v1's three real breakpoints, named for the smallest thing that gets them.
+     They are min-widths, so `lap:` reads "961px and up" and a bare utility is
+     what everything below it gets.
+       lap   — hero splits beside the wall, wall goes vertical, pricing card
+               becomes two columns, page cap opens to 1800px
+       tab   — nav links return, FAQ splits into head + list
+       phone — why-us grid goes 2-up, footer CTA goes side by side */
+  --breakpoint-lap: 961px;
+  --breakpoint-tab: 761px;
+  --breakpoint-phone: 561px;
+
+  --color-paper: #fbf9f6;
+  --color-paper-2: #fff7f3;
+  --color-ink: #16141a;
+  --color-ink-soft: #56505c;
+  --color-ink-faint: #6e6876;
+  --color-line: rgba(22, 20, 26, 0.1);
+  --color-rose: #ff6a3d;      /* flame — gradient stop 1 */
+  --color-pink: #f0407f;      /* gradient stop 2, and the hover/focus pink */
+  --color-violet: #8a4fe0;    /* gradient stop 3 */
+  --color-pink-deep: #d81e63; /* the AA-safe pink ink for kickers on paper */
+  --color-noir: #141217;
+  /* The muted ink for dark bands. --ink-soft is tuned for paper and goes
+     invisible on near-black; --pink-deep lands around 3.6:1 there, under the
+     bar for type this small, so kickers on dark use this instead. */
+  --color-ink-dim: #a39fa8;
+  --color-poster: #efe7e1;    /* warm neutral behind a clip that has not loaded */
+
+  /* Marquee lanes. Every track renders its clips TWICE and slides by exactly
+     half its own length, so the frame the animation ends on is pixel-identical
+     to the one it started on — the loop is seamless with no JS driving it. */
+  --animate-lane-y: lane-y 90s linear infinite;
+  --animate-lane-x: lane-x 90s linear infinite;
+
+  @keyframes lane-y {
+    to {
+      transform: translateY(-50%);
+    }
+  }
+  @keyframes lane-x {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* The V6 reel wall's ambient lane, and the reason it cannot reuse lane-y.
+
+     lane-y slides by a hardcoded -50%, which is one set only when a track holds
+     exactly two of them. The V6 wall's moving lanes hold THREE — they stack a
+     marquee offset and a parallax offset, each of which can reach a full set, so
+     two sets can leave the box empty at the worst phase — and half of three sets
+     is 1.5, which lands the loop point in the middle of a clip.
+
+     Sliding by 100%/--sets is one set for ANY count, so the same keyframe serves
+     the two-set static lane and the three-set moving ones. Each lane declares
+     its own --sets inline; the fallback matches the moving lanes. */
+  --animate-wall6-lane: wall6-lane 180s linear infinite;
+
+  @keyframes wall6-lane {
+    to {
+      transform: translate3d(0, calc(-100% / var(--sets, 3)), 0);
+    }
+  }
+
+  /* The same lane on the other axis, for the wall's phone layout: below `tab`
+     it is three HORIZONTAL rows rather than four vertical columns, so the track
+     runs left instead of up. Identical arithmetic, identical --sets contract —
+     only the axis differs, which is why it is a second keyframe rather than a
+     second component. */
+  --animate-wall6-lane-x: wall6-lane-x 180s linear infinite;
+
+  @keyframes wall6-lane-x {
+    to {
+      transform: translate3d(calc(-100% / var(--sets, 3)), 0, 0);
+    }
+  }
+}
+
+/* ============================================================================
+   THE REEL WALL'S TWO CUSTOM PROPERTIES, REGISTERED.
+
+   Both are read from inside a `transform`, and that is the whole reason to
+   register them. An unregistered custom property is a plain TOKEN to the
+   cascade: the browser cannot know `--shift` is a length, so every time the
+   wall's script writes a new one the declaration has to be re-substituted and
+   the transform re-parsed from text before it can be used. Registered with a
+   syntax, the value is parsed once into a typed length and subsequent writes
+   are a number swap. On a wall writing three of these per animation frame,
+   inside a rotated plane, that is the difference between the compositor being
+   handed a value and the style system rebuilding a string.
+
+   IT ALSO MAKES THEM FAIL SOFTLY. Unregistered, one bad write — a bare number
+   where a length was meant, a stray undefined — makes the whole transform
+   invalid at computed-value time and the lane jumps to its untransformed
+   position. Registered, an invalid value is simply ignored and the property
+   keeps its last good one, so the worst case is a lane that stops rather than
+   a lane that leaps.
+
+   inherits: false ON BOTH, deliberately. Nothing below either element reads
+   them — the drift layer reads its own --shift, the track reads its own
+   --sets — and a non-inheriting property does not have to be resolved down
+   through every descendant, which on a lane holding a dozen clips is the
+   difference worth having. It also means a nested wall could never
+   accidentally pick up its parent's offset.
+   ========================================================================== */
+
+/* Written by ReelWallV6's rAF loop on each drift layer: the parallax offset,
+   already wrapped into one set's length. 0px at rest, which is also what the
+   server renders, so the first paint is the untranslated composition and
+   nothing jumps on hydration. */
+@property --shift {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* How many copies of its clip list a lane holds. Set inline per lane and read
+   by the two keyframes above, which slide the track by exactly 100%/--sets —
+   one set for any count, which is what lets the same keyframe serve the
+   two-set static lane and the three-set moving ones. The initial value matches
+   the moving lanes, so a lane that somehow lost the inline value still loops
+   at a whole set rather than mid-clip. */
+@property --sets {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 3;
+}
+
+:root {
+  /* TWO CUTS OF ONE RAMP, ON PURPOSE. --grad is the bright brand ramp: correct
+     on dark surfaces and on filled shapes (buttons, ticks, rules) where it is
+     the background, not the text. Run as TEXT on warm paper its flame stop
+     drops to roughly 2.4:1, so anything on paper reads --grad-ink, a darkened
+     cut of the same ramp that clears AA at body size. */
+  --grad: linear-gradient(100deg, #ff6a3d 0%, #f0407f 52%, #8a4fe0 100%);
+  --grad-ink: linear-gradient(100deg, #e4521f 0%, #d81e63 52%, #7a3fd0 100%);
+
+  /* A straight `paper → transparent` ramp fades its alpha linearly, and the eye
+     reads the point where it lands as a soft-but-visible band. These stops
+     trace a smoothstep instead: they hug full paper at the start, drop through
+     the middle, then tail off flat into nothing, so the meeting point with the
+     page is genuinely invisible. Shared by both edge fades on the reel wall.
+     The channels must track --color-paper (#fbf9f6) — a mismatch shows up as a
+     grey seam. */
+  --fade-stops:
+    rgba(251, 249, 246, 1) 0%, rgba(251, 249, 246, 0.99) 10%,
+    rgba(251, 249, 246, 0.955) 20%, rgba(251, 249, 246, 0.89) 30%,
+    rgba(251, 249, 246, 0.79) 40%, rgba(251, 249, 246, 0.655) 50%,
+    rgba(251, 249, 246, 0.5) 60%, rgba(251, 249, 246, 0.345) 70%,
+    rgba(251, 249, 246, 0.205) 79%, rgba(251, 249, 246, 0.095) 87%,
+    rgba(251, 249, 246, 0.03) 94%, rgba(251, 249, 246, 0) 100%;
+
+  --shadow-sm: 0 1px 2px rgba(22, 20, 26, 0.04), 0 6px 18px rgba(22, 20, 26, 0.05);
+  --shadow: 0 22px 60px -22px rgba(22, 20, 26, 0.24);
+  --shadow-pink: 0 20px 46px -16px rgba(240, 64, 127, 0.45);
+}
+
+/* The hero wash. Three offset radial ramps, each falling off to alpha 0 of its
+   OWN colour — never to `transparent`, which is rgba(0, 0, 0, 0) and would grey
+   the tail into a visible ring. The stops trace a smoothstep rather than a
+   straight line, so the edge where it meets the paper is genuinely invisible
+   and no blur filter is needed to hide a seam. That matters: a blur this wide
+   would re-rasterise every frame the marquee beside it moves. */
+.aura {
+  background:
+    radial-gradient(48% 52% at 30% 36%,
+      rgba(240, 64, 127, 0.2) 0%, rgba(240, 64, 127, 0.194) 15%,
+      rgba(240, 64, 127, 0.174) 30%, rgba(240, 64, 127, 0.14) 45%,
+      rgba(240, 64, 127, 0.096) 60%, rgba(240, 64, 127, 0.06) 72%,
+      rgba(240, 64, 127, 0.028) 84%, rgba(240, 64, 127, 0.01) 93%,
+      rgba(240, 64, 127, 0) 100%),
+    radial-gradient(46% 48% at 8% 66%,
+      rgba(255, 106, 61, 0.16) 0%, rgba(255, 106, 61, 0.155) 15%,
+      rgba(255, 106, 61, 0.139) 30%, rgba(255, 106, 61, 0.112) 45%,
+      rgba(255, 106, 61, 0.077) 60%, rgba(255, 106, 61, 0.048) 72%,
+      rgba(255, 106, 61, 0.022) 84%, rgba(255, 106, 61, 0.008) 93%,
+      rgba(255, 106, 61, 0) 100%),
+    radial-gradient(42% 44% at 46% 64%,
+      rgba(138, 79, 224, 0.11) 0%, rgba(138, 79, 224, 0.107) 15%,
+      rgba(138, 79, 224, 0.096) 30%, rgba(138, 79, 224, 0.077) 45%,
+      rgba(138, 79, 224, 0.053) 60%, rgba(138, 79, 224, 0.033) 72%,
+      rgba(138, 79, 224, 0.015) 84%, rgba(138, 79, 224, 0.006) 93%,
+      rgba(138, 79, 224, 0) 100%);
+}
+
+/* THE REEL WALL'S VERTICAL BLEND — the top and bottom edges only, and only
+   once the wall is in its column layout.
+
+   WHY THIS IS IN THE STYLESHEET AND NOT ON THE ELEMENT. It needs two things a
+   utility cannot give it at once: a comma-separated gradient (Tailwind scans
+   source TEXT and an arbitrary value carrying commas does not survive the
+   scan) and a breakpoint (an inline style cannot hold a media query). That is
+   exactly the "what is left here is what a utility cannot be" case this file's
+   header describes, so it lives with .aura rather than in the component.
+
+   TOP AND BOTTOM ONLY, WHICH IS THE WHOLE POINT. An earlier version of this
+   masked all four edges and the left/right pair was the half that read wrong —
+   the tilted plane is meant to run OUT of its frame sideways, and softening
+   that edge made the wall look like it was dissolving rather than continuing.
+   Vertically the opposite is true: the lanes are travelling on that axis, so a
+   clip entering or leaving at a hard cut is the one place the loop announces
+   itself. This fades where the motion is and leaves the crop alone where it is
+   not. A single gradient, so there is no mask-composite here and none is
+   needed — that only existed to intersect two axes.
+
+   A MASK, NOT AN OVERLAY, AND THE DIFFERENCE IS NOT COSMETIC. A gradient div
+   painted over the wall ADDS paper-coloured pixels, and paper at 50% over a
+   dark video frame composites to grey — a band of grey along an edge reads as a
+   shadow, which is why two earlier overlay attempts were deleted. A mask
+   SUBTRACTS alpha from the wall's own pixels, so the clips dissolve to nothing
+   and the page shows through unmixed. Measured on the rendered page, the masked
+   edge lands on rgb(251,249,246), which is --color-paper exactly, with no grey
+   introduced anywhere in the ramp.
+
+   761px IS --breakpoint-tab, RESTATED. A media query cannot read a custom
+   property, so the number is spelled out here and is one measurement in two
+   places — change --breakpoint-tab and change this. It is deliberately the
+   breakpoint where the wall turns from horizontal rows into vertical columns:
+   below it the lanes travel sideways, and a top/bottom fade would be eating the
+   HEIGHT of a row it is not moving through. On a phone the wall keeps four
+   clean edges, which is what it is supposed to have there.
+
+   --wall-blend IS THE SIZE DIAL, the reference's "Fade Size". A percentage
+   resolves against the wall's own height, so the ramp stays proportionate as
+   the wall grows; the floor and ceiling stop it vanishing on a short window or
+   swallowing a whole clip on a tall one. At the wall's 888px ceiling it comes
+   out at ~89px, which is roughly a quarter of one tile.
+
+   FOR "FADE INTENSITY", change the `#0000` end stops to something like
+   rgb(0 0 0 / 0.25) — that leaves a quarter of the wall standing at the extreme
+   edge instead of clearing it. Do both ends or they stop matching.
+
+   IF preserve-3d IS EVER ADDED TO THE WALL'S STAGE, THIS SILENTLY BREAKS IT.
+   A mask forces its subtree to be rendered into one group before compositing,
+   which flattens 3D — so a per-column depth ramp would not error, it would just
+   stop existing. See the note at the head of ReelWallV6.tsx, which records the
+   same trap for `overflow`. */
+.reel-wall-blend {
+  --wall-blend: clamp(40px, 10%, 120px);
+}
+
+@media (min-width: 761px) {
+  .reel-wall-blend {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #0000 0,
+      #000 var(--wall-blend),
+      #000 calc(100% - var(--wall-blend)),
+      #0000 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #0000 0,
+      #000 var(--wall-blend),
+      #000 calc(100% - var(--wall-blend)),
+      #0000 100%
+    );
+  }
+}
+
+::selection {
+  background: var(--color-pink);
+  color: #fff;
+}
+
+/* Every focusable thing on the page, including the bare links in the nav and
+   the footer. A per-component utility would leave whatever it was not put on
+   with the UA default, which is exactly the case that matters. */
+:focus-visible {
+  outline: 2px solid var(--color-pink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+   /v2, /v3 AND /v4 — THREE DESIGN DIRECTIONS ON THE SAME CONTENT.
+
+   Everything below is scoped to those two routes and ADDS to this file rather
+   than editing it: the homepage's tokens above are untouched, and no name here
+   collides with one the homepage already uses.
+
+     /v2  THE SCREENING ROOM — warm near-black, a full-bleed wall of work in
+          the hero, one accent on the CTA. The dark ground is not a style
+          choice: the tiles are bright, high-contrast vertical video, and on
+          the homepage's cream they compete with the page.
+
+     /v3  MODELLED ON BUTTER — near-white, with every piece of media inside a
+          deep near-black rounded panel floating over it. The opposite bet,
+          and the panel is what keeps bright video legible on a light ground.
+
+     /v4  MODELLED ON PERSONAAL — an off-white open shop with a flat type
+          scale and no headline at all. Hierarchy comes from position and
+          whitespace, and the work is a draggable canvas rather than a wall.
+
+   They share their typefaces and their accent, and nothing else. Each one
+   paints the canvas from its own wrapper attribute, so none can reach the
+   others or the homepage.
+   ========================================================================== */
+
+@theme {
+  /* Archivo carries a real width axis, so ONE download serves both routes:
+     /v2 pushes it to 118 for expanded, poster-like display proportions, /v3
+     leaves it at its natural width and sets it tight. See DISPLAY in each
+     route's theme.ts. Requesting the axis is also what makes the file variable
+     on weight. */
+  --font-wide: var(--font-archivo), "Arial Black", system-ui, sans-serif;
+  --font-body: var(--font-geist), system-ui, sans-serif;
+
+  /* The magenta, carried across from the homepage's ramp as ONE FLAT COLOUR.
+     Both routes drop the pink-to-purple gradient entirely — it is the most
+     recognisable AI-generated design tell in circulation, which is a strange
+     thing to wear on a site whose whole pitch is that its output does not read
+     as AI. Brand recognition survives; the tell does not. Each route then
+     spends this in one place: /v2 on the CTA, /v3 on the word reveal, /v4 on
+     the persistent CTA and the dot beside the open status. */
+  --color-cue: #e0245e;
+}
+
+/* ---------------------------------------------------------------------------
+   /v2 — THE SCREENING ROOM.
+
+   Names come from the room the page is pretending to be:
+     stage — the floor everything stands on
+     riser — the one raised surface (pricing)
+     lit   — type that reads
+     dim   — type that supports
+     rule  — the hairline that does the work borders would otherwise do
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-stage: #131211;
+  --color-riser: #1c1a19;
+  --color-lit: #edeae4;
+  --color-dim: #8f8a83;
+  --color-rule: rgba(237, 234, 228, 0.14);
+}
+
+/* The canvas, not just the wrapper. A wrapper alone leaves the homepage's
+   paper showing in the overscroll gutter and behind a page shorter than the
+   window; html has no background of its own, so body's propagates to the
+   canvas. The :has() keeps it off every other route. */
+body:has([data-v2]) {
+  background: var(--color-stage);
+}
+
+/* The global focus ring is the homepage's magenta. On this page the accent is
+   spent entirely on the CTA, so the ring is the light ink instead — which is
+   also the higher-contrast choice against near-black. */
+[data-v2] :focus-visible {
+  outline: 2px solid var(--color-lit);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+[data-v2] ::selection {
+  background: var(--color-cue);
+  color: #fff;
+}
+
+/* ----------------------------------------------------------------------------
+   /v2's INSPECTION LIGHT — the one bold thing on that page.
+
+   The hero wall is darkened so the headline reads over it. This is that
+   darkening, and the point is that it LIFTS: inside the radius the overlay
+   falls to alpha 0.05 and the footage under the pointer comes back to full
+   brightness. It is a loupe, not a spotlight. On a page arguing that you
+   cannot tell the work is AI, the single interaction hands the visitor a
+   magnifier.
+
+   WHY A CSS CLASS AND NOT A UTILITY. A nine-stop gradient reading three custom
+   properties is past what an arbitrary value can carry legibly, and it is the
+   same reason .aura sits in this file rather than on the homepage's hero.
+
+   WHY @property. A custom property is a plain string to the cascade and does
+   not interpolate, so a transition on --v2-lens-r is inert until the property
+   is registered with a type. Registered, the radius animates, which is what
+   makes the light open when the pointer arrives and close when it leaves
+   rather than popping and then freezing at the last position.
+
+   AT REST THE RADIUS IS 0. A zero-radius radial gradient paints its final stop
+   everywhere, so with no pointer on the wall this is a flat 0.66 scrim and the
+   hero is exactly as legible as it would be without any of this. That is also
+   the reduced-motion state and the touch state: the component never attaches a
+   listener, the radius never leaves 0, and nothing moves. 0.66 and not the 0.8
+   this started at, because the whole argument for going dark is that the work
+   should be the only bright thing on the page, and at 0.8 the wall at rest was
+   a texture rather than the work.
+
+   The stops trace a smoothstep rather than a straight ramp for the same reason
+   the homepage's fades do — a linear alpha ramp lands as a visible ring, and
+   the whole effect depends on the edge being impossible to find. Channels are
+   #131211, and must track --color-stage or the tail shows as a grey disc. */
+@property --v2-lens-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.v2-lens {
+  --v2-lens-x: 50%;
+  --v2-lens-y: 50%;
+  background: radial-gradient(
+    circle var(--v2-lens-r) at var(--v2-lens-x) var(--v2-lens-y),
+    rgba(19, 18, 17, 0.05) 0%,
+    rgba(19, 18, 17, 0.062) 18%,
+    rgba(19, 18, 17, 0.1) 33%,
+    rgba(19, 18, 17, 0.175) 46%,
+    rgba(19, 18, 17, 0.29) 58%,
+    rgba(19, 18, 17, 0.42) 69%,
+    rgba(19, 18, 17, 0.53) 79%,
+    rgba(19, 18, 17, 0.615) 89%,
+    rgba(19, 18, 17, 0.66) 100%
+  );
+  transition: --v2-lens-r 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   /v3 — MODELLED ON BUTTER.
+
+   Names come from the material rather than the role, so they stay true if the
+   role moves:
+     page     — the light ground
+     raised   — nav pills and light surfaces sitting on it
+     panel    — the dark panels, and the primary CTA, which is the same colour
+     panel-2  — a surface inside a panel, the only place it is used
+     graphite — type that reads
+     stone    — type that supports on the page, and every mono eyebrow
+     mist     — the same role inside a panel, where stone is too dark to read
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-page: #f7f7f5;
+  --color-raised: #edede8;
+  --color-panel: #121212;
+  --color-panel-2: #1e1e1e;
+  --color-graphite: #1a1a1a;
+  --color-stone: #6e6e6b;
+  /* Secondary type INSIDE a dark panel. `stone` is tuned against the near-white
+     page, where it clears AA at 4.8:1; on the near-black panels it drops to
+     3.7:1, which is under the bar for body copy. Same role, other ground —
+     this lands at 8:1 on panel and 7:1 on panel-2. */
+  --color-mist: #a9a9a5;
+}
+
+body:has([data-v3]) {
+  background: var(--color-page);
+}
+
+/* Same argument as /v2's ring, inverted: the accent is spent entirely on the
+   word reveal, so the ring is the ink — also the higher-contrast choice
+   against a near-white ground. */
+[data-v3] :focus-visible {
+  outline: 2px solid var(--color-graphite);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+[data-v3] ::selection {
+  background: var(--color-cue);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+   /v4 — THE OPEN SHOP.
+
+   The third direction, and the one that refuses the move the other two make:
+   there is no headline. /v2 opens at 72px over a wall of video, /v3 opens at
+   72px over a dark panel, and every competing AI-ad-studio site opens at 72px
+   too. This page sets almost everything at 13 to 15px and builds its hierarchy
+   out of position, grouping and whitespace instead.
+
+   THAT ONLY WORKS IF THE SPACING IS EXACT. With no size contrast doing the
+   work, spacing carries the entire hierarchy, and the rule in lib/v4/theme.ts
+   is what keeps it honest: the gap between two elements always exceeds the
+   padding inside either of them. Get it wrong here and the page does not read
+   as minimal, it reads as a stylesheet that failed to load.
+
+   Names come from the shop this page is pretending to be:
+     sheet  — the paper everything is printed on
+     carbon — the ink
+     ash    — labels, status, anything that supports
+     seam   — the hairline between two things
+   The accent is the shared --color-cue, spent on exactly two things: the
+   persistent CTA and the dot next to the open status.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-sheet: #f2f1ee;
+  --color-carbon: #0e0e0e;
+  --color-ash: #9a9892;
+  --color-seam: rgba(14, 14, 14, 0.12);
+}
+
+body:has([data-v4]) {
+  background: var(--color-sheet);
+}
+
+/* The ink, not the accent. The accent on this page is spent entirely on the
+   CTA and the open dot, and a focus ring is not one of those two. */
+[data-v4] :focus-visible {
+  outline: 2px solid var(--color-carbon);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+[data-v4] ::selection {
+  background: var(--color-cue);
+  color: #fff;
+}
+
+/* The playground grabs. cursor is the only affordance a free canvas has, and
+   without it the clips read as decoration that happens to be scattered.
+   Scoped to the on state so the static fallback does not promise a drag that
+   is not wired up. */
+[data-v4] [data-drag="on"] {
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-v4] [data-drag="on"]:active {
+  cursor: grabbing;
+}
+
+/* ---------------------------------------------------------------------------
+   /v5 — THE DOSSIER. Modelled on fuel.framer.website.
+
+   The fourth direction, and the one that follows its reference most closely,
+   because Fuel is already built for a studio selling production work on a
+   productized basis — its hero literally says pick a plan, submit a job
+   request, work starts within 24 hours. That is our pitch with a different
+   number, so this page borrows the structure rather than adapting it.
+
+   THE RHYTHM IS THE WHOLE IDEA: full-bleed dark video bands alternating with
+   clean white content sections. A page this image-heavy goes to slideshow the
+   moment that alternation stops, which is why there are exactly two dark bands
+   — the hero and the close — and everything between them is white.
+
+   Names come from the printed document this page is pretending to be:
+     press  — the ink, and the two full-bleed dark bands
+     stock  — the heavier paper the logo boxes are cut from
+     pencil — the annotation in the margin, ON DARK GROUNDS ONLY
+     lead   — the same role on white, darkened until it is readable
+     crease — the hairline, which is every division on the page
+
+   TWO GREYS FOR ONE ROLE, AND THE REASON IS MEASURED. The brief names #8A8A85
+   for secondary text and section-header furniture. Against #0C0C0C it lands at
+   4.95:1 and is exactly right. Against white it lands at 3.47:1, which is
+   under AA for anything at body size, and this page runs that role at 12px in
+   six header rows. So `pencil` keeps the specified value and is used only on
+   the dark bands; `lead` is a darkened cut of the same grey at 5.2:1 on white
+   and carries the role everywhere else. This is the same split the homepage
+   makes with --color-ink-dim and /v3 makes with --color-mist.
+
+   The accent is the shared --color-cue, spent on exactly two things: the CTA
+   button and the diamond in the section header rows.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-press: #0c0c0c;
+  --color-stock: #f4f4f2;
+  --color-pencil: #8a8a85;
+  --color-lead: #6e6e69;
+  --color-crease: rgba(12, 12, 12, 0.14);
+  --color-crease-lit: rgba(255, 255, 255, 0.18);
+}
+
+/* White, not the homepage's warm paper. Without this the overscroll gutter and
+   the area behind a short page keep showing #fbf9f6, and the seam is visible on
+   every scroll past the end. */
+body:has([data-v5]) {
+  background: #ffffff;
+}
+
+/* THE FOCUS RING HAS TO SURVIVE BOTH GROUNDS. This is the only one of the four
+   routes that is half white and half near-black, so a single ring colour is
+   invisible on one half of the page — the homepage's magenta is also the
+   accent here, and the accent is spoken for. The ink is the default, and the
+   two full-bleed bands carry data-dark to flip it to white. */
+[data-v5] :focus-visible {
+  outline: 2px solid var(--color-press);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+[data-v5] [data-dark] :focus-visible {
+  outline-color: #ffffff;
+}
+
+[data-v5] ::selection {
+  background: var(--color-cue);
+  color: #fff;
+}
+
+/* THE HERO WORDMARK, and the one place on this site a gradient is allowed.
+
+   Everything else here drops the pink-to-purple ramp entirely: it is the most
+   recognisable AI-generated design tell in circulation, which is a strange
+   thing to wear on a site whose whole pitch is that its output does not read as
+   AI. This is not that. It is a MASK — a white gradient falling from 0.95 to
+   0.72 alpha, clipped to the letterforms, so the ad playing behind the hero
+   reads THROUGH the word LIKELYFAD. On a page arguing you cannot tell the work
+   is AI, you read the brand name through the work.
+
+   WHY A CLASS AND NOT A UTILITY. background-clip: text needs the -webkit
+   prefix to work in Safari, and a prefixed declaration cannot be expressed as
+   an arbitrary Tailwind value. It also needs the @supports fallback below,
+   which cannot be either.
+
+   THE ALPHA FLOOR IS CALCULATED, NOT PICKED. The hero scrim is #0C0C0C at 60%,
+   so the brightest frame the video can ever show resolves to about #6D6D6D
+   behind the type. At 0.72 alpha the darkest part of the letterform lands
+   around 3.57:1 against that worst case, which clears AA for large text with
+   margin to spare. The contrast floor therefore holds on every frame of every
+   clip rather than on the ones we happened to look at. */
+.v5-wordmark {
+  background-image: linear-gradient(
+    170deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.86) 45%,
+    rgba(255, 255, 255, 0.72) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Where the clip is not supported the type is simply solid white, which still
+   clears the contrast floor against the same scrim. Without this the wordmark
+   would render transparent-on-video and vanish entirely. */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .v5-wordmark {
+    background-image: none;
+    color: #ffffff;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   /v6 — THE NIGHT SCREENING. Modelled on dreammotion.framer.website.
+
+   THE FIFTH DIRECTION, AND THE ONE THAT MOST HAD TO THROW AWAY ITS REFERENCE'S
+   PURPOSE. Dream Motion sells a tool people operate themselves: its nav ends
+   in Sign Up, its bento grid lists capabilities you would use, and its cycling
+   pill is shaped like a prompt box because its users type prompts. We do the
+   work instead. So this page takes the VISUAL LANGUAGE — the deep navy-black,
+   the serif display, the bento cards, the motion — and refuses the funnel.
+   Every "here is a feature you can use" beat became "here is something that
+   arrives finished".
+
+   THE DARK GROUND IS EARNED, NOT DECORATIVE. Near-black with one bright accent
+   is itself a stock AI-generated default, and saying so is the only way to
+   keep the rest of the page from coasting on it. It is justified here for one
+   concrete reason: the tiles are bright, high-contrast vertical video, and
+   they are the only thing on the page that should be bright. On the homepage's
+   cream they fight the page; here they are the light source.
+
+   WHAT STOPS IT BEING A STOCK DARK SAAS PAGE is the serif and the cycling
+   vertical, and those are the two things carrying the whole identity — see
+   SERIF in lib/v6/theme.ts for why Cormorant and not the obvious Instrument.
+
+   Names come from the room the page is pretending to be, a cinema after dark:
+     night — the page
+     slab  — the raised card surface
+     edge  — the hairline that stops two cards bleeding into one another
+     beam  — type that reads
+     haze  — type that supports
+   The accent is the shared --color-cue, spent on exactly two things: the CTA
+   and the cycling word.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-night: #080b14;
+  --color-slab: #101623;
+  --color-edge: #1b2130;
+  --color-beam: #e9eaee;
+  --color-haze: #868da0;
+
+  /* The display face.
+
+     THIS IS THE FALLBACK VALUE, AND IT DELIBERATELY DOES NOT NAME CORMORANT.
+     `@theme` emits its variables at :root, and next/font defines
+     --font-cormorant on the ROUTE LAYOUT'S wrapper div, which is far below
+     :root. A custom property whose value substitutes an undefined var() is
+     invalid at computed-value time, so writing `var(--font-cormorant), ...`
+     here would make --font-film compute to NOTHING at :root, inherit as
+     nothing, and leave every `font-film` element falling back to whatever the
+     root layout set — a sans, on the one page whose entire identity is a
+     serif. The real family is layered on under [data-v6] below, where
+     --font-cormorant is actually in scope.
+
+     Keeping a real serif stack here rather than leaving it empty means the
+     failure mode of that layering ever breaking is Georgia, not Roboto. */
+  --font-film: Georgia, "Times New Roman", serif;
+}
+
+/* The canvas, not just the wrapper. A wrapper alone leaves the homepage's warm
+   paper showing in the overscroll gutter and behind a page shorter than the
+   window; html has no background of its own, so body's propagates to the
+   canvas. The :has() keeps it off every other route. */
+body:has([data-v6]) {
+  background: var(--color-night);
+}
+
+/* ----------------------------------------------------------------------------
+   THE FONT FAMILIES, RESOLVED WHERE next/font'S VARIABLES ACTUALLY EXIST.
+
+   next/font declares --font-cormorant and --font-geist on the div that
+   /app/v6/layout.tsx renders, which is the PARENT of the [data-v6] wrapper. So
+   both are in scope here and neither is in scope at :root — which is exactly
+   why the @theme values above cannot reference them and these can.
+
+   Redeclaring --font-body here rather than fixing it in the @theme block is
+   deliberate: that token is shared with /v2, /v3, /v4 and /v5, and changing it
+   globally would change what those four routes render. Scoped to [data-v6],
+   this affects one page.
+
+   NOTE FOR WHOEVER READS THIS NEXT — the same latent bug applies to
+   --font-body and --font-wide as declared in the @theme block above, so /v2,
+   /v3, /v4 and /v5 are currently falling back to the root layout's Roboto
+   rather than rendering Archivo and Geist. Fixing that means touching those
+   routes, which this change deliberately does not do. */
+[data-v6] {
+  --font-film: var(--font-cormorant), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-geist), system-ui, sans-serif;
+}
+
+/* The global focus ring is the homepage's magenta, which is also this page's
+   accent — and the accent here is spent entirely on the CTA and the cycling
+   word. A magenta ring would make it a third thing and dilute all of them, and
+   at 4.28:1 against this page it is the weakest available choice anyway. The
+   beam is both brighter and unspoken for. */
+[data-v6] :focus-visible {
+  outline: 2px solid var(--color-beam);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+[data-v6] ::selection {
+  background: var(--color-cue);
+  color: #fff;
+}
+
+/* ----------------------------------------------------------------------------
+   THE HERO'S WORD-BY-WORD BLUR REVEAL.
+
+   Each word resolves from blurred and slightly low to sharp and in place. Used
+   ONCE, in the hero, and nowhere else on the page — a reveal that happens
+   twice is a transition, and a transition that happens six times is a tic.
+
+   THE DELAY IS SET PER WORD AS AN INLINE CUSTOM PROPERTY, because it is data
+   (this word's index) rather than style, and because Tailwind cannot emit a
+   class per word for a headline it has never seen.
+
+   REDUCED MOTION NEVER REACHES THIS RULE. Hero.tsx renders plain, unanimated
+   spans when the preference is set, rather than relying on the global
+   reduced-motion block to neutralise it. That block zeroes DURATION but not
+   DELAY, so a delayed animation with backwards fill would leave each word
+   parked in its blurred start state for the length of its own delay — the
+   preference would make the headline WORSE. Skipping the reveal entirely is
+   the only correct reading of "appears sharp with no blur reveal".
+
+   filter and opacity only, plus a transform. All three are compositor
+   properties, so a nine-word headline animating at once never touches layout. */
+@keyframes v6-word-in {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(0.18em);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.v6-word {
+  display: inline-block;
+  /* backwards, so the word holds its blurred start state during its delay
+     rather than flashing sharp for a frame before the animation claims it. */
+  animation: v6-word-in 620ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: var(--v6-delay, 0ms);
+}
+
+/* ----------------------------------------------------------------------------
+   THE HERO SCRIM.
+
+   TWO LAYERS, AND THE SECOND ONE IS THE REASON THIS IS A CLASS RATHER THAN A
+   UTILITY. A flat wash alone would hold the contrast floor, but this headline
+   is CENTRED, and a flat wash darkens the corners exactly as much as the
+   middle — so the busiest part of the frame sits directly under the type. The
+   radial layer weights the darkening toward the centre, which is where the
+   text is and where a 9:16 clip cropped to landscape keeps its subject.
+
+   THE FLOOR IS CALCULATED, NOT PICKED. The flat layer is #080B14 at 66%, so
+   the brightest frame the clip can ever show resolves to about #5C5C5C behind
+   the type. Against that, #E9EAEE lands near 5.5:1 and white near 6.6:1 — AA
+   with room, on EVERY frame rather than on the ones that happened to be up
+   when it was checked. The radial layer only ever adds darkness on top.
+
+   The stops trace a smoothstep rather than a straight ramp, for the same
+   reason the homepage's fades do: a linear alpha ramp lands as a visible ring,
+   and the whole effect depends on the edge being impossible to find. */
+.v6-scrim {
+  background:
+    radial-gradient(
+      68% 58% at 50% 46%,
+      rgba(8, 11, 20, 0.52) 0%,
+      rgba(8, 11, 20, 0.5) 18%,
+      rgba(8, 11, 20, 0.44) 34%,
+      rgba(8, 11, 20, 0.34) 48%,
+      rgba(8, 11, 20, 0.22) 62%,
+      rgba(8, 11, 20, 0.12) 75%,
+      rgba(8, 11, 20, 0.05) 87%,
+      rgba(8, 11, 20, 0) 100%
+    ),
+    rgba(8, 11, 20, 0.66);
+}
+
+/* The bottom of both full-bleed bands, fading into the page so the seam
+   between a video band and the flat ground underneath it is never a hard line.
+   Channels must track --color-night or the tail shows as a lighter strip. */
+.v6-foot-fade {
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 11, 20, 0) 0%,
+    rgba(8, 11, 20, 0.1) 28%,
+    rgba(8, 11, 20, 0.3) 48%,
+    rgba(8, 11, 20, 0.58) 66%,
+    rgba(8, 11, 20, 0.82) 82%,
+    rgba(8, 11, 20, 0.95) 92%,
+    rgba(8, 11, 20, 1) 100%
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   /v7 — THE CREATIVE WALL. Modelled on creatiie.framer.website.
+
+   THE SIXTH DIRECTION, AND THE ONE WHOSE REFERENCE NEEDED ITS VOICE CHANGED
+   RATHER THAN ITS LOOK. Creatie is built around one freelancer: it opens with
+   a name and a role, it says "available for work", and its headlines are first
+   person singular. A brand deciding whether to trust us with campaign spend
+   needs the opposite signal, so every line on this page is first person plural
+   or no person at all.
+
+   WHAT THE STICKERS, PINS AND TILTED CARDS BECOME. On a designer portfolio
+   that vocabulary reads as a scrapbook. For an ad studio the same vocabulary
+   reads as A CREATIVE WALL — the pinned board of concepts, references and cuts
+   every ad shop actually works from. That is the whole reason this direction
+   is defensible rather than borrowed, and it is why the graph rule below runs
+   the FULL PAGE rather than decorating one band: the page is not a document
+   with a textured section in it, it is one board with things pinned to it.
+
+   CREAM WITH A WARM ACCENT IS ITSELF A STOCK AI-GENERATED DEFAULT, and saying
+   so is the only thing that stops the page coasting on it. What earns it here
+   is the pinned vocabulary — stickers, pins, folded corners, the graph rule.
+   If that vocabulary is ever stripped out, this page has nothing left and
+   collapses into a template. It is load-bearing, not ornament.
+
+   NO GRADIENT ANYWHERE. The magenta is flat. The pink-to-purple ramp is the
+   most recognisable AI-generated design tell in circulation, which is a
+   strange thing to wear on a site whose entire pitch is that its output does
+   not read as AI.
+
+   Names come from the wall this page is pretending to be:
+     board  — the cream the whole page is pinned to
+     graph  — the faint rule printed on it
+     mark   — the ink
+     note   — what is written in the margin, and every piece of secondary text
+     doodle — the hand-drawn marks and the non-text furniture
+     card   — the white things pinned to the board
+     hair   — the hairline around one of them
+     fold   — the dark dog-ear on a pinned card
+   The accent is the shared --color-cue, spent on exactly three things: the
+   pushpins, the status dot, and the primary CTA.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-board: #f5f2ea;
+  --color-graph: #e4e0d4;
+  --color-mark: #141310;
+  --color-card: #ffffff;
+  --color-fold: #0f1a14;
+  --color-hair: rgba(20, 19, 16, 0.1);
+
+  /* TWO GREYS FOR ONE ROLE, AND THE REASON IS MEASURED — the same split the
+     homepage makes with --color-ink-dim, /v3 with --color-mist and /v5 with
+     pencil/lead.
+
+     The brief names #7A776E for secondary text. Against the #F5F2EA board it
+     lands at 4.00:1, which is under AA for anything at body size, and this
+     page runs that role at 14px in eight sections and at 12px in every mono
+     label. So the specified value keeps the job it can actually do — the
+     hand-drawn marginal marks and the non-text furniture, none of which is
+     read — and `note` is a darkened cut of the same grey at 4.96:1 on the
+     board and 5.55:1 on a white card, carrying every piece of secondary TEXT
+     on the page. */
+  --color-note: #6b6862;
+  --color-doodle: #7a776e;
+
+  /* The display face. THIS IS THE FALLBACK AND IT DELIBERATELY DOES NOT NAME
+     ARCHIVO — see the long note under /v6 for the full argument. @theme emits
+     at :root, next/font defines --font-archivo-v7 on the route layout's
+     wrapper far below it, and a custom property whose value substitutes an
+     undefined var() is invalid at computed-value time. Writing the var here
+     would make --font-poster compute to nothing at :root and leave every
+     headline falling back to the root layout's Roboto, on the one page whose
+     entire identity is heavy condensed uppercase. The real family is layered
+     on under [data-v7] below, where the variable is actually in scope.
+
+     Keeping a genuinely narrow stack here means the failure mode of that
+     layering ever breaking is Arial Narrow, not a body sans. */
+  --font-poster: "Arial Narrow", "Helvetica Neue Condensed", Impact, system-ui, sans-serif;
+}
+
+/* The canvas, not just the wrapper. A wrapper alone leaves the homepage's warm
+   paper showing in the overscroll gutter and behind a page shorter than the
+   window; html has no background of its own, so body's propagates to the
+   canvas. The :has() keeps it off every other route. */
+body:has([data-v7]) {
+  background: var(--color-board);
+}
+
+/* Resolved where next/font's variables actually exist — on the div rendered by
+   app/v7/layout.tsx, which is the PARENT of the [data-v7] wrapper. Neither is
+   in scope at :root, which is exactly why the @theme values above cannot
+   reference them and these can.
+
+   --font-body is redeclared here rather than fixed in the @theme block because
+   that token is shared with /v2 through /v6 and changing it globally would
+   change what five other routes render. Scoped to [data-v7], this is one page. */
+[data-v7] {
+  --font-poster: var(--font-archivo-v7), "Arial Narrow", "Helvetica Neue Condensed", Impact,
+    system-ui, sans-serif;
+  --font-body: var(--font-geist-v7), system-ui, sans-serif;
+}
+
+/* The ink, not the accent. The accent on this page is spent on the pushpins,
+   the status dot and the CTA, and a focus ring is none of those three — a
+   magenta ring would make it a fourth thing and dilute all of them. The ink is
+   also the higher-contrast choice against cream, at 16.6:1. The one place this
+   page goes dark carries data-dark to flip the ring to white. */
+[data-v7] :focus-visible {
+  outline: 2px solid var(--color-mark);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+[data-v7] [data-dark] :focus-visible {
+  outline-color: #ffffff;
+}
+
+[data-v7] ::selection {
+  background: var(--color-cue);
+  color: #fff;
+}
+
+/* ----------------------------------------------------------------------------
+   THE GRAPH RULE — the board itself.
+
+   ONE PAIR OF REPEATING GRADIENTS ON THE PAGE WRAPPER, not a background image
+   and not a per-section decoration. Painted once, scrolled with the page, and
+   free.
+
+   IT IS MEANT TO BE ALMOST INVISIBLE. #E4E0D4 against #F5F2EA is 1.06:1, which
+   is under the point at which the eye resolves it as lines at all — it reads
+   as the tooth of the paper until you look for it. That is the correct
+   strength: a grid you can actually see is graph paper, and graph paper under
+   body copy is a legibility problem the page gains nothing from.
+
+   32px, which is on the spacing scale, so the rule lines up with the rhythm
+   everything else is set on rather than cutting across it. */
+.v7-graph {
+  background-image:
+    repeating-linear-gradient(to right, var(--color-graph) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(to bottom, var(--color-graph) 0 1px, transparent 1px 32px);
+}
+
+/* ----------------------------------------------------------------------------
+   THE HERO SCRIM.
+
+   TWO LAYERS, AND THE SECOND IS THE REASON THIS IS A CLASS RATHER THAN A
+   UTILITY. A flat wash alone holds the contrast floor, but this headline is
+   CENTRED and enormous, and a flat wash darkens the corners exactly as much as
+   the middle — leaving the busiest part of the frame directly under the type.
+   The radial layer weights the darkening toward the centre, which is where the
+   text is and where a 9:16 clip cropped to landscape keeps its subject.
+
+   THE FLOOR IS CALCULATED, NOT PICKED, so it holds on EVERY frame of the clip
+   rather than on the ones that happened to be up when it was checked. The flat
+   layer is #141310 at 62%, so the brightest frame the video can physically
+   show — pure white — resolves to about #6D6D6C behind the type. White on that
+   lands at 5.17:1, which clears AA for text at any size. The radial layer only
+   ever adds darkness on top of that worst case.
+
+   The channels are the page's own ink rather than black: a neutral-black scrim
+   over a cream page reads cold at the seam where the two meet, and #141310 is
+   the warm dark this palette already contains.
+
+   The stops trace a smoothstep rather than a straight ramp, for the same
+   reason the homepage's fades do — a linear alpha ramp lands as a visible
+   ring, and the effect depends on the edge being impossible to find. */
+.v7-scrim {
+  background:
+    radial-gradient(
+      72% 60% at 50% 44%,
+      rgba(20, 19, 16, 0.46) 0%,
+      rgba(20, 19, 16, 0.44) 18%,
+      rgba(20, 19, 16, 0.39) 34%,
+      rgba(20, 19, 16, 0.3) 48%,
+      rgba(20, 19, 16, 0.2) 62%,
+      rgba(20, 19, 16, 0.11) 75%,
+      rgba(20, 19, 16, 0.04) 87%,
+      rgba(20, 19, 16, 0) 100%
+    ),
+    rgba(20, 19, 16, 0.62);
+}
+
+/* The seam out of the hero and into the board underneath it, so a full-bleed
+   video band never meets the cream on a hard horizontal line. Channels must
+   track --color-board or the tail shows as a grey strip. */
+.v7-foot-fade {
+  background: linear-gradient(
+    to bottom,
+    rgba(245, 242, 234, 0) 0%,
+    rgba(245, 242, 234, 0.08) 30%,
+    rgba(245, 242, 234, 0.26) 50%,
+    rgba(245, 242, 234, 0.54) 68%,
+    rgba(245, 242, 234, 0.8) 83%,
+    rgba(245, 242, 234, 0.94) 93%,
+    rgba(245, 242, 234, 1) 100%
+  );
+}
+
+/* ----------------------------------------------------------------------------
+   THE FOLDED CORNER — the dog-ear on a pinned card.
+
+   A GRADIENT, NOT A clip-path. The obvious build is to notch the corner out of
+   the card with clip-path and sit a rotated triangle in the hole, and it looks
+   right until the card has a border — clip-path cuts the border off along the
+   notch and the card reads as damaged rather than folded. This paints ON TOP
+   of an intact card instead: one hard-stop diagonal for the fold, and a 1px
+   lighter line along the crease so the fold has an edge rather than reading as
+   a triangle somebody dropped on the corner.
+
+   Sized by the element it is put on, so one class serves the 24px fold on a
+   stat card and the 16px fold on a service card. */
+.v7-fold {
+  background-image:
+    linear-gradient(to bottom right, transparent calc(50% - 1px), rgba(255, 255, 255, 0.3) 50%),
+    linear-gradient(to bottom right, transparent 50%, var(--color-fold) 50%);
+}
