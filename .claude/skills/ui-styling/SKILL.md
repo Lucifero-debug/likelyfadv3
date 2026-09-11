@@ -139,7 +139,7 @@ Covers:
 
 ## Accessibility Patterns
 
-**ARIA patterns, keyboard navigation, screen reader support, and accessible component usage.**
+**ARIA pattern, keyboard navigation, screen reader support, and accessible component usage.**
 
 See: `references/shadcn-accessibility.md`
 
