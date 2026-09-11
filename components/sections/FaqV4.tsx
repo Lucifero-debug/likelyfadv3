@@ -5,7 +5,7 @@ import { content } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealText } from "@/components/ui/RevealText";
-import { ANCHOR, TEXT_SMALL } from "@/lib/ui";
+import { ANCHOR, SECTION, SIZE_H2, TEXT_SMALL, WRAP } from "@/lib/ui";
 
 const { faq } = content;
 
@@ -98,9 +98,17 @@ const { faq } = content;
    The clamps run DOWNWARD only. Each lands on its desktop number by ~1280 and
    holds it above; the ramp exists for everything narrower. */
 
-/* 48px at the top, 32px on a 390 phone — the pair WhyUsV4 and TestimonialsV4
-   use, which is what makes the three headings one heading. */
-const HEADING = "text-[clamp(2rem,1.35rem+2.7vw,3rem)]";
+/* THE TWO EDITORIAL MEASURES, AS RAMPS THAT ARE INERT TO 1920. Same pair and
+   same reasoning as PricingV4 — the vw terms resolve to the flat 672 and 761 at
+   exactly 1920, so every designed width is untouched and the ramp only opens
+   above it. Read the longer note there. */
+const HEAD_MEASURE = "max-w-[clamp(672px,35vw,840px)]";
+const LIST_MEASURE = "max-w-[clamp(761px,39.64vw,950px)]";
+
+/* THE SECTION HEADING STEP, SHARED WITH THE WHOLE PAGE — see the note on the
+   same constant in PricingV4. This was a private clamp topping out at 48 while
+   Why us and Testimonials ran to 64 and Work to 66. */
+const HEADING = SIZE_H2;
 
 /* 20px questions, down to 18. */
 const QUESTION_SIZE = "text-[clamp(1.125rem,1.05rem+0.31vw,1.25rem)]";
@@ -178,12 +186,17 @@ export function FaqV4() {
   return (
     <section
       id="faq"
-      className={`${ANCHOR} mx-auto flex w-full max-w-[1280px] flex-col items-center px-[clamp(24px,4.4vw,56px)] py-[clamp(32px,4vw,48px)]`}
+      /* WRAP AND SECTION, THE PAGE'S OWN BOX — not the reference's 1280 cap
+         and its own gutter clamp. See the longer note on the same change in
+         PricingV4: leaving the horizontal half on the reference's numbers is
+         what left this band frozen at 1280 while every other section on the
+         page kept opening past it. */
+      className={`${ANCHOR} ${WRAP} ${SECTION} flex flex-col items-center`}
       aria-label="Frequently asked questions"
     >
       {/* HEADER — a 672 measure, centred, and NARROWER than the list below it.
           See note 2 before widening it to match. */}
-      <div className="flex w-full max-w-[672px] flex-col items-center">
+      <div className={`flex w-full ${HEAD_MEASURE} flex-col items-center`}>
         {/* Bare centred mono, no bar — see note 3. */}
         <Reveal>
           <span className="block text-center font-mono text-xs uppercase leading-5 tracking-[0.1em] text-ink-faint">
@@ -210,7 +223,7 @@ export function FaqV4() {
       </div>
 
       {/* 40 under the header, and a 761 measure — wider than the 672 above. */}
-      <div className="w-full max-w-[761px] pt-10">
+      <div className={`w-full ${LIST_MEASURE} pt-10`}>
         {faq.items.map((item, i) => {
           const isOpen = open.includes(i);
           return (

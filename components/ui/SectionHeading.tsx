@@ -15,11 +15,15 @@ import { TEXT_H2, TEXT_SMALL } from "@/lib/ui";
    words inside it are the boxes that lay the line out. That is v1's structure,
    not an accident of it — see RevealText on why plain text sets differently.
 
-   LEADING IS ONE SETTING ON ALL FIVE, and that is the whole rule. It is one
-   SETTING and not one NUMBER, because --title spans 30px to 74px and leading
-   tracks size inversely: 1.2 below the split, 1.1 from `lap:` up, where the
-   clamp is past 48px and 1.2 starts reading as a gap between the lines rather
-   than as the setting of a heading.
+   LEADING IS ONE SETTING ON ALL FIVE, and that is the whole rule. It is now
+   one NUMBER as well — 1.1, flat. It used to step 1.2 → 1.1 at `lap:`, which
+   was correct while --title stepped at the same place: leading tracks size
+   inversely, and 961 was where the heading suddenly got bigger. --title is a
+   single continuous ramp now (32px → 64px, no branch — see TEXT_H2), so that
+   step has nothing under it and is just a jump in the line box at the one
+   boundary the fluid pass exists to remove. 1.1 is what the four headings that
+   set their own size already carry, so flat here means one setting on the page
+   rather than one setting per component.
    Why us used to run 0.92 and Pricing 0.9, on the grounds that a heading this
    large can take a tighter setting than the type around it; true, but three
    values across five headings that are otherwise identical read as three
@@ -88,7 +92,7 @@ export function SectionHeading({
   titleSize?: string;
   /** Measure in title-em. Widen it for a heading that breaks itself with a \n. */
   measure?: string;
-  /** Overrides the 1.2 / lap:1.1 every section heading sets. Nothing passes
+  /** Overrides the flat 1.1 every section heading sets. Nothing passes
       this today — the five headings are deliberately one setting. */
   leading?: string;
   className?: string;
@@ -141,9 +145,17 @@ export function SectionHeading({
         tone={tone}
         text={heading}
         style={leading ? { lineHeight: leading } : undefined}
+        /* ONE LEADING, NOT TWO. The 1.2 / lap:1.1 pair was the right shape when
+           --title jumped at the same breakpoint — a bigger heading wants tighter
+           leading, and 961 was where the heading got bigger. --title is a single
+           continuous ramp now (see TEXT_H2), so a leading that steps at 961 is a
+           4px jump in the line box with nothing under it, on the one boundary
+           this pass exists to smooth out. 1.1 is the value the other four
+           section headings on the page already set flat, so this is the same
+           setting everywhere rather than a fifth one. */
         className={`mt-3 ${
           heading.includes("\n") ? "text-pretty" : "text-balance"
-        } font-display text-(length:--title) font-bold leading-[1.2] lap:leading-[1.1] tracking-[-0.022em]`}
+        } font-display text-(length:--title) font-bold leading-[1.1] tracking-[-0.022em]`}
       />
     </div>
   );

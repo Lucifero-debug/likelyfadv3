@@ -96,11 +96,26 @@ export function FooterV3() {
   return (
     /* Dark ground, so everything inside takes the BRIGHT cut of the ramp — the
        paper-safe one goes muddy against near-black. Same reasoning as V1. */
-    <footer className="bg-noir p-[clamp(24px,3.4vw,48px)] text-white/60" aria-label="Footer">
+    /* THE PAGE'S GUTTER, NOT THE REFERENCE'S. This was `clamp(24px,3.4vw,48px)`
+       with a second `px-6` on the row inside it, which put the footer's content
+       48+24 = 72px in from the edge at 1920 while every band above it started
+       at 64. One clamp, the same one WRAP carries, and the inner px is gone —
+       so the footer's first pixel is on the same x as the hero's headline. */
+    <footer className="bg-noir p-[clamp(24px,5vw,64px)] text-white/60" aria-label="Footer">
       {/* `items-center`, not `items-start`: the two sides are different heights
           and the reference centres them against each other. Below `lap:` they
           stack and the alignment stops mattering. */}
-      <div className="mx-auto flex w-full max-w-[1128px] flex-col gap-10 px-6 lap:flex-row lap:items-center lap:justify-between">
+      {/* 1128 AS A RAMP THAT IS INERT TO 1920. 58.75vw is exactly 1128 there,
+          so every width this footer was drawn against resolves to the number it
+          was drawn with and the ramp only opens above it — the same shape WRAP's
+          own ceiling uses, and the reason the band no longer reads as frozen
+          on a large display.
+
+          IT DELIBERATELY DOES NOT RUN TO WRAP'S 1920. The two children are a
+          288 brand block and a 480 link group held apart by `justify-between`;
+          at 1920 that is a thousand pixels of noir between them, which is a
+          worse answer than a cap. 1320 is as far as it goes. */}
+      <div className="mx-auto flex w-full max-w-[clamp(1128px,58.75vw,1320px)] flex-col gap-10 lap:flex-row lap:items-center lap:justify-between">
         <div className="flex max-w-[288px] flex-col items-start gap-8">
           <div className="flex flex-col items-start gap-4">
             {/* THE BRAND ROW — a 24 mark, 8, then the wordmark. The mark carries

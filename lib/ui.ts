@@ -168,15 +168,50 @@ export const TEXT_TITLE = "text-[clamp(1.4rem,1.15rem+0.65vw,1.8rem)]";
 /* Display type that is NOT a section heading — Why us's claim, the footer's
    closing line. Held at a constant 0.76 of H2 so a statement inside a section
    can never outrank the section's own heading; the Why-us claim used to run
-   59px against a 54px heading at 1440 and won. */
-export const TEXT_STATEMENT =
-  "text-[clamp(1.84rem,1rem+3.01vw,3.18rem)] lap:text-[clamp(1.27rem,0.16rem+2.65vw,3.15rem)]";
+   59px against a 54px heading at 1440 and won.
+
+   ONE RAMP, NO `lap:` BRANCH, for the same reason H2 has none — see there. */
+export const TEXT_STATEMENT = "text-[clamp(1.52rem,0.567rem+2.06vw,3.04rem)]";
 
 /* Section headings. A custom property rather than a font-size because
-   SectionHeading derives its measure from it — see the note there. */
-export const TEXT_H2 =
-  "[--title:clamp(2.42rem,1.32rem+3.96vw,4.18rem)] " +
-  "lap:[--title:clamp(1.67rem,0.21rem+3.49vw,4.14rem)]";
+   SectionHeading derives its measure from it — see the note there. SIZE_H2
+   below is the same ramp as a plain font-size, for the sections that set one
+   directly.
+
+   THIS STEP IS CONTINUOUS, AND THAT IS THE WHOLE POINT OF ITS SHAPE. It used
+   to carry a `lap:` branch mirroring H1's, on the reasoning that H2 is 0.88 of
+   H1 and therefore has to make every move H1 makes. H1's breakpoint is real —
+   at `lap:` the hero headline moves out of a full-width block and into a 40fr
+   column roughly 350px wide, so it has to halve — but a SECTION heading is
+   centred at full page measure on BOTH sides of 961px and has no such reason.
+   Inheriting the branch anyway made every section heading on the page jump 60%
+   (36.9px → 59.1px) when the window crossed 961, upward as the window got
+   NARROWER, which is precisely what "the sizes do not change accordingly"
+   looks like from the outside.
+
+   WHAT THE RAMP HAS TO CLEAR. H1 dips to 42px at 961 — the bottom of its own
+   `lap:` branch — and that single value is the binding constraint on this whole
+   step: a section heading must stay under the page's own H1 at EVERY width, so
+   this ramp has to pass through 961 at less than 42. It lands at 38 there, and
+   holds the ordering from 360 to 3840:
+
+       vw     390   761   960   961   1280  1440  1920  2560
+       H1      44    58    67    42     55    61    75    75
+       H2      32    33    38    38     47    51    64    64
+
+   THE 64 CEILING IS THE AUTHORED DESKTOP VALUE, kept. What moved is WHERE it
+   lands: 1920 rather than 1440. The old step hit 64 at 1440 against an H1 of
+   61 and outranked it — 64 at 1440 and correct ordering are not both available
+   while the hero headline sits in that column, so the ceiling travels instead
+   of the ordering breaking. */
+export const TEXT_H2 = "[--title:clamp(2rem,0.746rem+2.711vw,4rem)]";
+
+/* The same ramp as a font-size, for Why us, Testimonials, Pricing and the FAQ —
+   the four sections that set their heading directly rather than through
+   SectionHeading. Spelled out rather than derived from TEXT_H2 because Tailwind
+   scans source TEXT; see the note at the foot of this file. If one moves, both
+   move. */
+export const SIZE_H2 = "text-[clamp(2rem,0.746rem+2.711vw,4rem)]";
 
 /* The hero headline, and the top of the page. Everything above is derived from
    it: H2 is 0.88 of this, STATEMENT is 0.76 of H2. Move it and the ladder moves.
@@ -213,7 +248,15 @@ export const TEXT_H1 =
    They live here rather than in the two files because the two files share them
    — four clamps copied into both would drift the first time one is nudged. */
 
-/* Section headings in Why us and Pricing. 32px → 64px. */
+/* Section headings in Why us and Pricing. 32px → 64px.
+
+   NOTHING ON THE LIVE PAGE USES IT ANY MORE — the four sections that did now
+   take SIZE_H2, which is the same 32 → 64 span re-timed to clear H1 at every
+   width. It stays exported because the parked Pricing and PricingV2 still
+   import it, and it is the one step of this family that CANNOT be used beside
+   the current hero: it reaches 64 at 1440, where H1 is 61, so anything set on
+   it outranks the page's own headline across the whole laptop range. Reach for
+   SIZE_H2 instead. */
 export const SIZE_64 = "text-[clamp(2rem,1.26rem+3.05vw,4rem)]";
 
 /* Section subtext, and Why us's card headings. 20px → 32px. */
@@ -227,8 +270,25 @@ export const SIZE_16 = "text-[clamp(0.875rem,0.83rem+0.19vw,1rem)]";
 
 /* The nav is fixed, so an anchor jump would land a section's top edge under
    it. This also covers the browser's OWN anchor navigation — a pasted #faq
-   link, or a hash restored on reload. */
-export const ANCHOR = "scroll-mt-[88px]";
+   link, or a hash restored on reload.
+
+   IT IS A RAMP BECAUSE THE BAR IS ONE. A flat 88 was keyed to a bar whose
+   height was 90.6px at every viewport from 761 to 3840 — it was already 2.6px
+   short at the only width it was measured at, and once the bar started scaling
+   (see Nav.tsx) a flat number is short at one end of the range and 30px of dead
+   air at the other. This clamp is the bar's own height ramp with ~3px of
+   headroom on top, so the offset tracks the thing it is clearing across the
+   whole range — measured, it sits 2.7 to 7.6px clear from 360px of viewport to
+   3840 and never goes under.
+
+   THE CEILING IS KEYED TO WHERE THE BAR STOPS GROWING, not to a round number.
+   Nav's three ramps top out between ~2900 and ~3460, at a bar of ~121px; 128
+   here clears that and is reached at ~3610, so the last stretch where the bar
+   is still growing is covered by the ramp rather than by the cap. A ceiling of
+   108 — the bar's height at 2500 — looked generous and was 13px SHORT at 3840,
+   which is an anchor jump that lands the heading under the bar and nothing in
+   this file would have said so. If Nav's ramps move, re-measure this. */
+export const ANCHOR = "scroll-mt-[clamp(76px,54px+2.05vw,128px)]";
 
 /* NOTE ON REPEATING THE CLAMP. Two places outside this file spell SECTION's
    clamp out verbatim rather than importing it — the reel wall's bottom padding

@@ -1,0 +1,58 @@
+
+  IDS    39 source file(s) -> 39 id(s)
+         manifest currently has 39
+         round-trip: 39/39 matched
+
+  BUILD  39 reel(s) -> public/videos/reels  (4 parallel)
+
+  [  1/39] ai-ugc-gym-perfume-ad                      tile+hq
+  [  2/39] ai-podcast                                 tile+hq
+  [  3/39] 0616                                       tile+hq
+  [  4/39] boyfriend-angle-ai                         tile+hq
+  [  5/39] doctor-and-specialist-podcast-viral-ai-ugc tile+hq
+  [  6/39] expert-doctor-review-ai-ugc                tile+hq
+  [  7/39] doctor-in-office-ai-ugc-health-product     tile+hq
+  [  8/39] health-product-ai-ugc-1                    tile+hq
+  [  9/39] hoodie-ad-podcast-style                    tile+hq
+  [ 10/39] live-stage-doctor-ai-ugc-health-product    tile+hq
+  [ 11/39] perfume-blind-test-1                       tile+hq
+  [ 12/39] v2702                                      tile+hq
+  [ 13/39] v3057                                      tile+hq
+  [ 14/39] v2870                                      tile+hq
+  [ 15/39] v2934                                      tile+hq
+  [ 16/39] v3317                                      tile+hq
+  [ 17/39] v3183                                      tile+hq
+  [ 18/39] v3189                                      tile+hq
+  [ 19/39] v3293                                      tile+hq
+  [ 20/39] v3445                                      tile+hq
+  [ 21/39] v3512                                      tile+hq
+  [ 22/39] v3532                                      tile+hq
+  [ 23/39] v3558                                      tile+hq
+  [ 24/39] v3579                                      tile+hq
+  [ 25/39] v3636                                      tile+hq
+  [ 26/39] v3583                                      tile+hq
+  [ 27/39] v3666                                      tile+hq
+  [ 28/39] v3683                                      tile+hq
+  [ 29/39] v3752                                      tile+hq
+  [ 30/39] v3885                                      tile+hq
+  [ 31/39] v4134                                      tile+hq
+  [ 32/39] v4147                                      tile+hq
+  [ 33/39] v4140                                      tile+hq
+  [ 34/39] v4149                                      tile+hq
+  [ 35/39] v4493                                      tile+hq
+  [ 36/39] v4824                                      tile+hq
+  [ 37/39] v4508                                      tile+hq
+  [ 38/39] v4872                                      tile+hq
+  [ 39/39] v5304                                      tile+hq
+
+  DONE   39 built, 0 already current
+         lib/reels.generated.ts untouched (--no-emit)
+
+  UPLOAD PAYLOAD  117 objects, 350.1 MB
+         tiles    39  90.5 MB
+         hq       39  257.7 MB
+         posters  39  2.0 MB
+
+  Nothing was uploaded — that is a separate, deliberate step:
+    node scripts/upload-blob.mjs --dry-run   (then without it)
+

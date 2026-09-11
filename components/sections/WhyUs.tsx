@@ -9,8 +9,8 @@ import {
   SECTION,
   SIZE_16,
   SIZE_24,
-  SIZE_32,
-  SIZE_64,
+  SIZE_H2,
+  TEXT_LEAD,
   TEXT_STATEMENT,
   WRAP,
 } from "@/lib/ui";
@@ -64,7 +64,7 @@ const PILLAR =
   "transition-[transform,box-shadow,border-color] duration-[280ms] ease-[cubic-bezier(0.22,0.7,0.2,1)] " +
   "hover:-translate-y-1.5 hover:border-transparent hover:shadow-[var(--shadow)]";
 
-/* 20px card titles, down to 18 — V4's step, not the section's SIZE_32. The
+/* 20px card titles, down to 18 — V4's step, not the section's lead step. The
    contrast against the 64px heading is carried by WEIGHT here (extrabold
    against the page's usual bold) rather than by size, which is what lets a
    title this small still hold its own in the band. */
@@ -203,13 +203,22 @@ export function WhyUs() {
           <RevealText
             as="h2"
             text={why.heading}
-            className={`mx-auto max-w-[13em] text-center text-balance font-display ${SIZE_64} font-bold leading-[1.1] tracking-[-0.022em]`}
+            className={`mx-auto max-w-[13em] text-center text-balance font-display ${SIZE_H2} font-bold leading-[1.1] tracking-[-0.022em]`}
           />
 
           {/* mt-3 on top of the column's own 12 is the 24 the lead is owed: one
-              step above the gap over it, one step below the gap under it. */}
+              step above the gap over it, one step below the gap under it.
+
+              TEXT_LEAD, NOT THE AUTHORED 32px STEP, AND IT HAD TO MOVE WITH THE
+              HEADING. The heading above is on SIZE_H2 now, which tops out at 64
+              at 1920 rather than at 1440 — a 32px lead under it ran 1.6x at the
+              laptop widths, and lib/ui.ts's own rule is that a heading runs two
+              to three times the text it introduces. TEXT_LEAD puts it back in
+              band (2.0x on a phone, 2.5x at 1440, 3.2x at 1920) and is the step
+              every other deck on this page already uses, so the section's lead
+              is now the same size as the hero's rather than 60% larger. */}
           <Reveal delay={100} className="mt-3">
-            <p className={`mx-auto max-w-[54ch] text-center text-pretty font-sans ${SIZE_32} leading-[1.45] text-ink-soft`}>
+            <p className={`mx-auto max-w-[54ch] text-center text-pretty font-sans ${TEXT_LEAD} leading-[1.45] text-ink-soft`}>
               {why.lead}
             </p>
           </Reveal>

@@ -11,7 +11,7 @@ import {
   SECTION,
   SIZE_16,
   SIZE_24,
-  SIZE_64,
+  SIZE_H2,
   TEXT_META,
   TEXT_SMALL,
   WRAP,
@@ -49,12 +49,21 @@ const { testimonials } = content;
         already showing.
 
      4. IT PLAYS WITHOUT BEING ASKED, BY WHICHEVER MEANS THE DEVICE HAS. On a
-        pointer device that is hover. On a touch device there is no hover, and
+        pointer device that is hover, one card at a time, because a pointer can
+        only be on one card at a time. On a touch device there is no hover, and
         the usual answer — put the button back for phones — gives the smallest
-        screen the clumsiest version. So on a touch device the card plays when
-        it REACHES THE MIDDLE OF THE VIEWPORT, one at a time, the way a feed
-        behaves: scrolling IS the gesture. Both routes end in the same place,
-        a silent clip with a cue offering sound, and neither needs a control.
+        screen the clumsiest version. So on a touch device EVERY card that has
+        reached the middle of the viewport plays, together: scrolling IS the
+        gesture, and what it asks for is the section, not one card out of it.
+        Both routes end in the same place, a silent clip with a cue offering
+        sound, and neither needs a control.
+
+        IT USED TO PICK ONE CARD ON TOUCH AS WELL — the lowest index touching
+        the band — which made a phone the one device where two cards sat side by
+        side in the row and only the left one moved. That reads as the right one
+        having failed to load rather than as a choice. THE HOVER ROUTE IS
+        UNTOUCHED: a pointer device still previews exactly the card under the
+        pointer, and nothing below `(hover: none)` is live on it.
 
      5. THE CARDS SIT IN A ROW THAT SCROLLS, NOT A GRID THAT WRAPS. The
         reference wraps, and wrapping is what a grid of PHOTOGRAPHS wants: eight
@@ -78,17 +87,33 @@ const { testimonials } = content;
    NO BRAND LOGOS, which the reference puts on every card. There are none, for
    the same reason there are no names.
 
-   MEDIA ELEMENTS ARE CREATED, NEVER PARKED. A card at rest is a poster and
-   nothing else: the preview clip mounts when the card is pointed at or scrolled
-   into the middle band, and dies the moment it is not; the full player mounts on
-   click and dies when another card takes over. The in-view route deliberately
-   picks ONE card rather than every card in frame, which is what keeps this true
-   on a phone where all three can be near the viewport at once. So the section
-   holds at most ONE <video> at any moment. That is not fussiness — the
-   page already mounts 128 of them between the hero wall and the work wall,
-   which is past the number of media players a browser keeps alive at once, and
-   three permanent ones here would come out of that budget to show a frame the
-   poster already shows.
+   MEDIA ELEMENTS ARE CREATED, NEVER PARKED, AND THAT IS THE HALF THAT DID NOT
+   CHANGE when the touch route went from one card to all of them. A card at rest
+   is a poster and nothing else: the preview clip mounts when the card is
+   pointed at or scrolled into the middle band, and dies the moment it is not;
+   the full player mounts on click and dies when another card takes over.
+
+   WHAT THE CEILING IS NOW, AND WHY EIGHT TESTIMONIALS DO NOT MEAN EIGHT
+   PLAYERS. On a pointer device it is still ONE, because hover is exclusive. On
+   touch it is however many cards are inside the middle band at once — and the
+   band is only half of what bounds that. The other half is the row: this is a
+   horizontal scroller, and the observer is rooted at the VIEWPORT, so a card
+   that has been scrolled off the side of the row is not intersecting anything
+   and never qualifies. The count is therefore whatever the row happens to be
+   showing, not the length of the list.
+
+   MEASURED, on the dev build with the section centred:
+
+     iPhone 13 (390x664)   3 of 8 — two whole cards plus the peek of the third
+     iPad-width touch      5 of 8 — four whole cards plus the peek
+
+   THE BUDGET THIS SPENDS FROM IS REAL, and this is the number to re-measure if
+   the row's card count ever changes: the page already mounts 128 media elements
+   between the hero wall and the work wall, which is past the number a browser
+   keeps alive at once. Three on a phone is affordable against that and is what
+   a phone-sized row can ask for. A row showing eight at once would not be — at
+   that point the band has to narrow, or this route has to go back to picking a
+   subset of what it can see.
 
    ONE OPEN AT A TIME, enforced by the section rather than by each card: opening
    the second stops the first, because two ads talking over each other is the
@@ -386,11 +411,13 @@ function wantsHoverPreview(pointerType: string): boolean {
 
    A card counts as "being looked at" when it crosses the middle 40% of the
    viewport — 30% shaved off the top and bottom of the root box. That is the
-   number to change if it feels early or late, and the two ends do different
-   things: widen it and two cards qualify at once on a phone (only the first
-   still plays, but the switch happens sooner than the eye expects), narrow it
-   and a card has to be almost perfectly centred, which on a slow scroll means
-   the section spends most of its time showing stills.
+   number to change if it feels early or late. EVERY card that qualifies plays,
+   so the two ends of this number now do the same thing at different moments
+   rather than different things: widen it and the row starts moving further from
+   centre, narrow it and the section has to be almost perfectly placed before
+   anything moves, which on a slow scroll means it spends most of its time
+   showing stills. 40% is where a phone's two visible cards come in together as
+   the section settles, which is the point of it.
 
    ONLY ON A DEVICE WITH NO HOVER. On a laptop with a touchscreen both routes
    would be live, and a card would start playing as it scrolled past whether or
@@ -639,6 +666,7 @@ function Card({
   item,
   reel,
   open,
+  anyOpen,
   onOpen,
   inView,
   frameRef,
@@ -646,18 +674,24 @@ function Card({
   item: (typeof testimonials.items)[number];
   reel: Reel | undefined;
   open: boolean;
+  /** True while ANY card in the section is open, this one included. Only the
+      in-view route reads it; see the note on `preview`. */
+  anyOpen: boolean;
   onOpen: () => void;
-  /** True when this is the card the section has chosen as centred — touch
-      devices only, and never more than one card at a time. */
+  /** True when this card is inside the section's middle band — touch devices
+      only. SEVERAL CARDS CARRY IT AT ONCE, which is the point: on a phone the
+      two cards visible in the row play together. */
   inView: boolean;
   /** Registers this card's frame with the section's observer. */
   frameRef: (node: HTMLDivElement | null) => void;
 }) {
   /* THE TWO ROUTES MEET HERE. `hovering` is this card's own business; `inView`
-     is the section's, because choosing one card out of three is a decision no
-     single card can make. Either one plays the clip and neither knows about the
-     other, which is what keeps the two behaviours from having to agree on
-     anything beyond "is it running".
+     is the section's, because "am I inside the viewport's middle band" needs an
+     observer and the section owns the only one. Either one plays the clip and
+     neither knows about the other, which is what keeps the two behaviours from
+     having to agree on anything beyond "is it running" — and it is why making
+     the touch route play EVERY card in the band did not touch the hover route
+     at all. Hover is still exclusive, because a pointer is.
 
      `ready` IS SEPARATE BECAUSE THE FADE HAS TO BE STATE. The obvious shortcut
      is to drop the opacity class off the element in the `playing` handler and
@@ -674,7 +708,22 @@ function Card({
      `transform` on this element, so nothing reconciles it away. */
   const bar = useRef<HTMLSpanElement>(null);
 
-  const preview = !open && (hovering || inView);
+  /* THE OPEN PLAYER SILENCES THE OTHER CARDS' PICTURE, NOT JUST THEIR SOUND —
+     but only on the touch route, which is the only one that can have several
+     previews running in the first place.
+
+     Opening a card is the one moment in this section where the visitor has said
+     which ad they want, and it is the one moment audio is involved. Three
+     muted clips looping beside the one they asked to hear is the same failure
+     the section's "one open at a time" rule exists to prevent, arriving through
+     the picture instead of through the speaker. So `anyOpen` drops the in-view
+     route for the length of a playback session.
+
+     `hovering` IS DELIBERATELY NOT GATED ON IT. On a pointer device a preview
+     beside an open player is a pointer sitting on another card — a deliberate
+     act, aimed at one card, and the behaviour that was there before any of
+     this. Nothing about the hover route changes. */
+  const preview = !open && (hovering || (inView && !anyOpen));
 
   return (
     <figure className={CARD}>
@@ -866,10 +915,19 @@ export function Testimonials() {
      one may play at a time — see the note at the top. */
   const [open, setOpen] = useState<number | null>(null);
 
-  /* The card a touch device is currently looking at, or null. Also held here,
-     and for a stronger reason than `open`: "which of the three is centred" is
-     not a question any one card can answer about itself. */
-  const [centred, setCentred] = useState<number | null>(null);
+  /* WHICH CARDS A TOUCH DEVICE IS LOOKING AT, AS A BITMASK — bit i is card i.
+     Held here rather than in Card for a stronger reason than `open`: "am I
+     inside the viewport's middle band" needs an observer, and the whole point
+     of this section is that there is one observer rather than one per card.
+
+     A MASK RATHER THAN A Set, BECAUSE IT IS A PRIMITIVE. React bails out of a
+     re-render when state is set to a value `Object.is`-equal to the one it
+     holds; a fresh Set every time the observer fires is never equal to the last
+     one, so a callback that changed nothing would still re-render all three
+     cards. This file already keeps the preview's progress bar off React for
+     exactly that reason, and it would be odd to spend the savings back here.
+     Three testimonials is three bits; the technique holds to 31. */
+  const [inBand, setInBand] = useState(0);
   const frames = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -882,22 +940,23 @@ export function Testimonials() {
     const els = frames.current.filter((el): el is HTMLDivElement => el !== null);
     if (!els.length) return;
 
-    /* Insertion order is card order, so the LOWEST index in here is the highest
-       card on the page — which is the one to play when a slow scroll leaves two
-       of them touching the band at once. Picking the most-intersecting instead
-       would swap between them mid-scroll, and every swap is a media element
-       torn down and rebuilt. */
-    const inBand = new Set<number>();
+    /* THE MASK IS CARRIED ACROSS CALLBACKS, NOT REBUILT FROM ONE. An
+       IntersectionObserver callback carries only the targets whose state
+       CHANGED, so a card that entered the band two callbacks ago is absent from
+       this one and rebuilding from `entries` alone would silently stop it. The
+       Set this replaces existed for the same reason; a mask is that Set in the
+       one form React can compare for free. */
+    let mask = 0;
 
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           const i = els.indexOf(entry.target as HTMLDivElement);
           if (i < 0) continue;
-          if (entry.isIntersecting) inBand.add(i);
-          else inBand.delete(i);
+          if (entry.isIntersecting) mask |= 1 << i;
+          else mask &= ~(1 << i);
         }
-        setCentred(inBand.size ? Math.min(...inBand) : null);
+        setInBand(mask);
       },
       { rootMargin: IN_VIEW_BAND }
     );
@@ -987,7 +1046,7 @@ export function Testimonials() {
           <RevealText
             as="h2"
             text={testimonials.heading}
-            className={`mt-3 text-balance font-display ${SIZE_64} font-bold leading-[1.1] tracking-[-0.022em]`}
+            className={`mt-3 text-balance font-display ${SIZE_H2} font-bold leading-[1.1] tracking-[-0.022em]`}
           />
         </div>
 
@@ -1023,8 +1082,9 @@ export function Testimonials() {
                   item={t}
                   reel={reelById(t.reel)}
                   open={open === i}
+                  anyOpen={open !== null}
                   onOpen={() => setOpen(i)}
-                  inView={centred === i}
+                  inView={(inBand & (1 << i)) !== 0}
                   frameRef={(node) => {
                     frames.current[i] = node;
                   }}

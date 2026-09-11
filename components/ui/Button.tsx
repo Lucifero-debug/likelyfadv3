@@ -19,7 +19,7 @@ type Size = "default" | "compact";
    sit in on the element. The outlined variants were rendering with an invisible
    border because of it. One border-color utility per button, no exceptions. */
 const BASE =
-  "relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full " +
+  "relative inline-flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-full " +
   "border font-sans font-bold tracking-[-0.01em] active:opacity-[0.88] " +
   "transition-[color,background-color,border-color,box-shadow] duration-[280ms] " +
   "ease-[cubic-bezier(0.22,0.7,0.2,1)]";
@@ -29,19 +29,47 @@ const BASE =
    Tailwind emits them in scale order, so the larger would win whatever order
    the caller wrote them in.
 
-   `compact` is the nav CTA on a phone — next to a 40px wordmark a full-size
-   button is the loudest thing on the bar. It reverts at the tablet breakpoint,
-   the same one where the nav links come back, so the bar changes shape exactly
-   once. Both steps clear the 44px minimum: 0.875rem of Roboto on a 1.6
-   line-height is 22.4px, so py-3 puts the compact button at ~46px.
+   `compact` is the nav CTA on a phone — next to the wordmark a full-size button
+   is the loudest thing on the bar. It reverts at the tablet breakpoint, the
+   same one where the nav links come back, so the bar changes shape exactly
+   once.
 
-   `min-h-[44px]` STATES that floor instead of leaving it to arithmetic. The
-   height above is DERIVED from the body leading, so an edit to that leading
-   resizes this button with nothing in this file touched: taking the page to
-   1.2 once put the compact CTA at 43px, under the floor, silently. */
+   ALL THREE RAMPS ARE INERT AT 1920, where they resolve to the 24 / 16 / 0.96rem
+   this table used to state flat. That is deliberate: a button is the one
+   component that appears in five places at three sizes, so the safe shape for a
+   change like this is one that moves nothing at the width the page was drawn
+   at and only runs outward from it. Below 1920 they ease down to 18 / 12 /
+   0.9rem at `lap:` and hold; above it they open to 32 / 22 / 1.05rem.
+
+   WHY THEY RAMP AT ALL. Fixed px beside a vw-driven page is not "stable", it is
+   a size that grows on screen every time someone zooms in — browser zoom scales
+   CSS px and shrinks the CSS viewport, so at 175% a `py-4` CTA was rendering
+   half again as large as drawn while the headline beside it had ramped down.
+   The nav bar and this button were the two loudest instances of it.
+
+   THE `tab:` STEP IS NOW CONTINUOUS, which is the other half of the fix. It
+   used to jump straight from 16/12/0.875rem to 24/16/0.96rem the moment the
+   viewport crossed 761 — a 50% padding step at one pixel of width. The ramps
+   pick up at 18/12/0.9rem there instead, so the compact button grows into the
+   default rather than snapping to it.
+
+   `min-h-[44px]` IS ON `BASE` NOW, NOT JUST HERE, and it states the tap-target
+   floor instead of leaving it to arithmetic. The height is DERIVED from the
+   body leading and now from a clamp as well, so it has two ways to drift under
+   44 silently; taking the page's leading to 1.2 once put the compact CTA at
+   43px with nothing in this file touched. At the tightest point of these ramps
+   — `lap:`, 12px of padding on 0.9rem of Roboto — the derived height is ~47px,
+   so the floor is headroom rather than a crutch. */
+const PAD_X = "px-[clamp(18px,12px+0.626vw,32px)]";
+const PAD_Y = "py-[clamp(12px,8px+0.417vw,22px)]";
+const SIZE_TEXT = "text-[clamp(0.9rem,0.84rem+0.1vw,1.05rem)]";
+
 const SIZES: Record<Size, string> = {
-  default: "px-6 py-4 text-[0.96rem]",
-  compact: "min-h-[44px] px-4 py-3 text-[0.875rem] tab:px-6 tab:py-4 tab:text-[0.96rem]",
+  default: `${PAD_X} ${PAD_Y} ${SIZE_TEXT}`,
+  compact:
+    "px-4 py-3 text-[0.875rem] " +
+    "tab:px-[clamp(18px,12px+0.626vw,32px)] tab:py-[clamp(12px,8px+0.417vw,22px)] " +
+    "tab:text-[clamp(0.9rem,0.84rem+0.1vw,1.05rem)]",
 };
 
 const VARIANTS: Record<Variant, string> = {

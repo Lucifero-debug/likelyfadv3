@@ -2,7 +2,7 @@ import { content } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealText } from "@/components/ui/RevealText";
-import { ANCHOR, TEXT_META, TEXT_SMALL } from "@/lib/ui";
+import { ANCHOR, SECTION, SIZE_H2, TEXT_META, TEXT_SMALL, WRAP } from "@/lib/ui";
 
 const { pricing } = content;
 
@@ -67,9 +67,31 @@ const { pricing } = content;
    The clamps run DOWNWARD only. Each lands on its desktop number by ~1280 and
    holds it above; the ramp exists for everything narrower. */
 
-/* 48px at the top, 32px on a 390 phone — the pair WhyUsV4, TestimonialsV4 and
-   FaqV4 use, which is what makes the four headings one heading. */
-const HEADING = "text-[clamp(2rem,1.35rem+2.7vw,3rem)]";
+/* THE TWO EDITORIAL MEASURES, AS RAMPS THAT ARE INERT TO 1920.
+
+   672 and 761 are the reference's, and they are right: a centred header and a
+   two-column row list are prose, and prose does not get wider because the
+   monitor did. What was wrong was that they were the ONLY thing in this band
+   with a number, so once the section's own 1280 cap came off they would have
+   been a 672px column adrift in a 1920px box.
+
+   Both vw terms are tuned to resolve to the flat value at exactly 1920 — 35vw
+   is 672 there, 39.64vw is 761 — which is the same trick WRAP's own ceiling
+   uses, and it means every width anyone has designed against resolves to the
+   number that was drawn. The ramp only opens above 1920, by 25%, and holds flat
+   again from ~2400 up. */
+const HEAD_MEASURE = "max-w-[clamp(672px,35vw,840px)]";
+const LIST_MEASURE = "max-w-[clamp(761px,39.64vw,950px)]";
+
+/* THE SECTION HEADING STEP, SHARED WITH THE WHOLE PAGE — not a fourth private
+   clamp. This was `clamp(2rem,1.35rem+2.7vw,3rem)`: 48px flat from 1100px of
+   viewport all the way up, while Why us and Testimonials ran to 64 and Work to
+   66. Three ceilings for one tier is what "some sections stop resizing" looks
+   like — scroll from Why us into Pricing on a 2560 display and the heading
+   visibly drops a third. SIZE_H2 is one ramp for all four, 32 → 64, and it
+   clears H1 at every width; see lib/ui.ts. The 48 this used to state is still
+   on the ramp, it just lands at ~1300 now instead of being the ceiling. */
+const HEADING = SIZE_H2;
 
 /* 20px inclusions, down to 18 — the same step FaqV4 sets its questions at. */
 const ROW_SIZE = "text-[clamp(1.125rem,1.05rem+0.31vw,1.25rem)]";
@@ -96,19 +118,26 @@ const MARKER =
 
 export function PricingV4() {
   return (
-    /* 1280 cap and a 56 gutter, both the reference's. The reference frame gives
-       no vertical padding at all — it is a crop, not a section — so the top and
-       bottom come from the same clamp V2 and V3 use, and the four variants can
-       be swapped for each other without the seams above and below moving. */
+    /* WRAP AND SECTION, THE PAGE'S OWN BOX — not the reference's 1280 cap and
+       56 gutter any more. The reference frame gives no vertical padding at all
+       (it is a crop, not a section), which is why the rhythm was borrowed from
+       V2 and V3 in the first place; the horizontal half was left on the
+       reference's numbers, and that is what stranded this band. Above ~1400px
+       of viewport every other section on the page kept opening — WRAP runs to
+       1520 and then ramps to 1920 — and this one stopped dead at 1280 with its
+       own narrower gutter, so the page visibly came apart below Work on any
+       large display or at any zoom-out. Same box as every other band now, which
+       also puts this section's first pixel on the same x as the hero's
+       headline. */
     <section
       id="pricing"
-      className={`${ANCHOR} mx-auto w-full max-w-[1280px] px-6 py-[clamp(32px,4.5vw,48px)] tab:px-14`}
+      className={`${ANCHOR} ${WRAP} ${SECTION}`}
       aria-label={pricing.kicker}
     >
       {/* HEADER — 672, centred. 10 under the kicker is the tightest gap in the
           whole set, and it is what binds the two lines into one header block
           rather than leaving the kicker floating above it. */}
-      <div className="mx-auto flex w-full max-w-[672px] flex-col items-center">
+      <div className={`mx-auto flex w-full ${HEAD_MEASURE} flex-col items-center`}>
         <Reveal>
           <span className="font-mono text-xs font-semibold uppercase tracking-[0.1em] text-pink-deep">
             {pricing.kicker}
@@ -135,7 +164,7 @@ export function PricingV4() {
 
       {/* THE LIST — 761, centred, and wider than the 672 header above it. See
           note 2: that inversion is the design. */}
-      <ul className="mx-auto mt-10 w-full max-w-[761px]">
+      <ul className={`mx-auto mt-10 w-full ${LIST_MEASURE}`}>
         {pricing.includes.map((item, i) => (
           <li key={item} className={row(i === 0)}>
             <Reveal delay={i * 60}>
