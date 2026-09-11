@@ -197,6 +197,25 @@ const { testimonials } = content;
    nothing crosses the row's top or bottom edge, and the pair came out together
    rather than being left behind as a padding that cancels itself.
 
+   AND THE Y AXIS IS NAILED SHUT, which is the other half of that same rule.
+   `overflow-x-auto` alone does not leave the other axis alone: per CSS Overflow,
+   when one axis is anything but `visible`/`clip`, a computed `visible` on the
+   other becomes `auto` — so the row was a scrollport on BOTH axes, and anything
+   crossing its bottom edge gave it a real internal VERTICAL scroll inside a page
+   that already scrolls.
+
+   WHAT WAS CROSSING IT WAS REVEAL, which is why the number below is 26 and not a
+   round one. Every card enters from `translate-y-[26px]`, and a transform counts
+   toward a scrollport's scrollable area even though it changes no layout — so
+   the row was 26px taller than itself on the y axis, at every width, measured,
+   until the entrance finished. `overflow-y-hidden` is what stops the browser
+   inferring the scrollport. The pad-and-pull pair is what stops it costing
+   anything: 26px of padding gives the clip box exactly the entrance's travel, so
+   a card sliding up is never cut off at the ankles, and the matching negative
+   margin hands the 26px straight back to the layout, so the row still ends where
+   it ended. It is the same trick the py-3/-my-3 above was, sized to the only
+   thing that still overshoots. Change one of the two and you change both.
+
    THE PEEK IS THE ONLY EVIDENCE THAT ANYTHING FOLLOWS THE ROW. Whole counts
    end exactly at the gutter, and a row that ends at the gutter looks finished.
    So the visible cards give up the peek's width between them and the next card
@@ -212,7 +231,8 @@ const TRACK =
   "[--track-gap:16px] [--peek:16px] " +
   "tab:[--track-gap:clamp(24px,3.5vw,48px)] tab:[--peek:clamp(24px,2.5vw,32px)] " +
   "-mx-[clamp(24px,5vw,64px)] px-[clamp(24px,5vw,64px)] scroll-px-[clamp(24px,5vw,64px)] " +
-  "flex snap-x snap-mandatory gap-[var(--track-gap)] overflow-x-auto overscroll-x-contain " +
+  "flex snap-x snap-mandatory gap-[var(--track-gap)] overflow-x-auto overflow-y-hidden overscroll-x-contain " +
+  "pb-[26px] -mb-[26px] " +
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-deep";
 
