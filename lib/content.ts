@@ -179,7 +179,7 @@ export const content = {
         label: "Podcast-style",
       },
       {
-        quote: "Insane realism.",
+        quote: "Insane realism and all tha ads looks human made.",
         who: "Creative lead, health brand",
         reel: "doctor-in-office-ai-ugc-health-product",
         label: "Health · UGC",

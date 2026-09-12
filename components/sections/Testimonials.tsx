@@ -283,21 +283,24 @@ const ARROW =
    measure of about 16 characters — and the block that bought came out 261px
    tall under a 219px video, a card 3.4 times taller than it was wide with more
    type in it than picture. The card is the video; the quote is the caption.
-   3 and 2 hold that order at every width, and the phone pays for them in
+   2 and 2 hold that order at every width, and the phone pays for them in
    truncation — which, in a 121px measure, is the trade this section can afford
-   and the height was not.
+   and the height was not. The quote came down from 3 to 2 because a third line
+   was buying a row of height off the one longest testimonial and reading as
+   prose; two lines read as a pull quote, which is what these are.
 
-   THE ATTRIBUTION IS CLAMPED HARDER THAN THE QUOTE, on purpose. It is the line
-   that runs longest — "Marketing manager, supplements brand · after the second
-   batch" — and the least load-bearing: the quote is the testimonial, the role
-   is context for it. Cutting the quote to keep the role whole would be the
-   wrong way round.
+   THE TWO ARE CLAMPED THE SAME NOW, which they were not when the quote had
+   three lines. The attribution is the line that runs longest — "Marketing
+   manager, supplements brand · after the second batch" — so it is still the
+   one that truncates most often; it is also the least load-bearing, since the
+   quote is the testimonial and the role is context for it. If either has to
+   give again, it is the role, not the quote.
 
    IT IS A SPAN INSIDE THE FLEX ROW, NOT THE ROW ITSELF. line-clamp needs
    `display: -webkit-box` and the attribution is `display: flex` — it carries
    the gradient rule as a ::before, which only exists as a flex child. Clamping
    the <p> would delete the rule; clamping a span inside it keeps both. */
-const QUOTE_CLAMP = "line-clamp-3";
+const QUOTE_CLAMP = "line-clamp-2";
 const WHO_CLAMP = "line-clamp-2";
 
 /* THERE IS NO CARD ANY MORE — the frame and its caption stand on the paper.
