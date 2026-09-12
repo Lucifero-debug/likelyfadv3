@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "sync:videos": "node scripts/sync-videos.mjs",
+    "emit:thumbnails": "node scripts/emit-thumbnails.mjs",
     "upload:blob": "node scripts/upload-blob.mjs",
     "restore:blob": "node scripts/restore-from-blob.mjs",
     "verify:library": "node scripts/verify-library.mjs"

@@ -50,4 +50,9 @@ next-env.d.ts
 # video that git has no business storing; the encoded cuts live in the blob store.
 /.source-videos
 
+# full-resolution JPEG thumbnails (scripts/emit-thumbnails.mjs). Derived from the
+# masters like everything above, read by nothing in the app, and regenerated in
+# about a minute — so it is a cache, not an asset, and does not belong in git.
+/thumbnails
+
 
