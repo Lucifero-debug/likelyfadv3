@@ -139,11 +139,34 @@ const never = () => () => {};
    with nothing subscribed to settle it. Reading both signals once and caching
    the number is what keeps the snapshot the constant React requires.
 
-   Infinity carries "this machine keeps the full wall", so the one cached value
-   goes through the same Math.min below as a real span does. */
+   THE SPAN IS NOW COMPUTED FOR EVERY MACHINE, NOT ONLY THE WEAK ONES, and the
+   lean test below decides only HOW MUCH SLACK to leave on top of it. The two
+   were conflated because the trim was written as a rescue; as a standing policy
+   it is simply "do not render tiles no viewport can ever show", which is true
+   of a workstation as well. PER_ROW is sized against a 2560 monitor — on a
+   390px phone that is roughly five viewports of tiles per set, and every one of
+   them is a node, a lazy poster and a layer the compositor carries.
+
+   IT CHANGES NOTHING ON A DESKTOP OR A TABLET, which is the check that says the
+   bound is the right one. With the slack below the span is 2*ceil(w/120) + 1,
+   so it only drops under PER_ROW's 16 at w <= 840 — a phone, a split window, or
+   a small tablet. At 1440 it is 25 and at 1920 it is 33, Math.min returns the
+   full count, and the markup is identical to what shipped. So this takes tiles
+   away only where a set was several viewports wide to begin with.
+
+   MIN_PITCH IS A FLOOR, SO THE COUNT IS AN OVERESTIMATE — see the note on it.
+   The error points at "one tile too many", which is invisible; the other
+   direction would put the wrap point on screen.
+
+   THE LEAN SLACK IS WHAT IS LEFT OF THE ORIGINAL TEST. A machine that reports
+   itself weak gets the bare span; everything else gets a viewport of slack on
+   top, so a browser whose innerWidth lags a rotation or a chrome-bar collapse
+   has tiles in hand rather than a seam. */
 let span: number | null = null;
 const rowSpan = () =>
-  (span ??= detectLean() ? Math.ceil(window.innerWidth / MIN_PITCH) + MARGIN_TILES : Infinity);
+  (span ??= Math.ceil(window.innerWidth / MIN_PITCH) +
+    MARGIN_TILES +
+    (detectLean() ? 0 : Math.ceil(window.innerWidth / MIN_PITCH)));
 
 /** How many tiles one set of a marquee lane should render on THIS machine.
 

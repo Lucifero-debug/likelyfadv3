@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { LazyVideo } from "@/components/ui/LazyVideo";
 import { Lightbox } from "@/components/ui/Lightbox";
+import { HOT } from "@/lib/useInViewPlay";
 
 /* ============================================================================
    THE REEL WALL — four columns of clips, each drifting upward on its own clock.
@@ -445,11 +446,36 @@ function Clip({
           something asks to play. The poster goes on the ATTRIBUTE rather than
           into an <img>, unlike the work wall: every tile here is inside the
           crop, so there is nothing for the browser's lazy loading to defer. */}
+      {/* THIS WALL RUNS HOT, LIKE THE WORK WALL, AND IT IS THE CHANGE THAT
+          STOPPED TILES HALTING MID-LANE. It was on the default policy, which is
+          written for a wall you scroll PAST and does three things wrong for one
+          you look AT:
+
+            cap 6 A LANE. A column shows more than six tiles at a desktop
+            height, so the lane was permanently full — the tiles at the feeding
+            edge sat frozen on their posters, waiting for one at the far edge to
+            leave, right next to tiles that were moving.
+
+            A 220ms DWELL. Every tile had to hold still for a fifth of a second
+            after arriving before it was even allowed to queue, and the queue
+            then staggered it behind everything ahead of it.
+
+            pauseOnScroll. This is the one that reads as breakage rather than as
+            slowness: the default pauses everything ALREADY RUNNING for the
+            length of a scroll gesture, so the wall in the hero — the first
+            thing on the page, and the thing being scrolled past — stopped dead
+            every time the visitor touched the wheel and restarted 160ms after
+            they stopped.
+
+          HOT removes all three and adds the 150px lead, so a tile is running
+          well before it clears the feeding edge. See the note on HOT for what
+          uncapping costs and what still bounds it. */}
       <LazyVideo
         lane={lane}
         enabled={play}
         src={clip.src}
         poster={clip.poster}
+        policy={HOT}
         className="size-full object-cover"
       />
     </button>

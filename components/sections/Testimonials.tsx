@@ -331,26 +331,6 @@ const CARD = "flex h-full flex-col";
 const MEDIA =
   "relative isolate aspect-[9/16] w-full overflow-hidden rounded-2xl bg-poster";
 
-/* THE SOUND CUE — what stands where the play disc used to.
-
-   IT ONLY EXISTS WHILE THE CLIP IS RUNNING, which is the whole idea. A control
-   on a still poster has to advertise playback; this one arrives after playback,
-   so it can advertise the only thing still missing, and it says so in words
-   rather than in a glyph nobody has to decode. Its wording changes with the
-   route in: "Click" where a pointer started it, "Tap" where scrolling did.
-
-   IT IS NOT A BUTTON, and that is deliberate rather than sloppy: the whole
-   frame is the button, so a second target inside it would only create a place
-   where the click means the same thing but the cursor implies otherwise.
-   pointer-events-none keeps it out of the way entirely.
-
-   Paper rather than glass, like the badge above it, so it holds ink type over
-   any frame without needing backdrop-filter to be supported. */
-const SOUND_CUE =
-  "pointer-events-none absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-white/92 py-1 pl-2 pr-2.5 " +
-  `font-mono ${TEXT_META} uppercase leading-none tracking-[0.08em] text-ink backdrop-blur-[2px] ` +
-  "transition-[opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,0.7,0.2,1)]";
-
 /* The format badge, and the light counterpart to the reference's glass pill:
    near-solid paper rather than a tinted blur, so it holds ink type over any
    frame without needing backdrop-filter to be supported. */
@@ -847,34 +827,6 @@ function Card({
                    snaps back reads as the clip having restarted. */
                 style={{ transform: "scaleX(0)" }}
               />
-
-              {/* THE SOUND CUE, IN PLACE OF THE PLAY BUTTON — see SOUND_CUE. It
-                  waits for `ready` rather than for `preview`, so it appears with
-                  the moving picture and not over a still poster that is about to
-                  be replaced. */}
-              <span
-                className={`${SOUND_CUE} ${
-                  ready ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"
-                }`}
-                aria-hidden="true"
-              >
-                <svg
-                  viewBox="0 0 14 12"
-                  width="12"
-                  height="11"
-                  fill="currentColor"
-                  className="text-pink-deep"
-                >
-                  <path d="M0 4h3l3-3v10L3 8H0z" />
-                  <path
-                    d="M9 3.5a4 4 0 0 1 0 5M11 2a6.5 6.5 0 0 1 0 8"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                    fill="none"
-                  />
-                </svg>
-                {hovering ? "Click for sound" : "Tap for sound"}
-              </span>
 
               <span className={BADGE}>{item.label}</span>
             </button>

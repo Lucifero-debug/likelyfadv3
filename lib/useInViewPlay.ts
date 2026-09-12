@@ -264,15 +264,38 @@ const STANDARD: PlayPolicy = {
    second — so tiles slide in already in motion. Inside the 200px attach margin
    by 50px, which is the constraint above.
 
-   14, NOT PER_LANE'S 11, AND NOT UNBOUNDED. The cap has to clear what a
-   viewport can actually hold or it is the thing making tiles sit still: with
-   the lead margin a 1440 row shows ~10 and a 1920 row ~13, so 14 does not bind
-   at any width this site is used at. It binds from ~2200 up, where the tiles it
-   holds back are the ones bunched at the feeding edge — under the fade, which
-   is where the note on PER_LANE says this pressure belongs. Three rows at 14 is
-   a 42-decoder ceiling against the old 33. */
+   NO CAP AT ALL, WHICH IS A DELIBERATE REVERSAL AND THE ONE TO UNDO FIRST IF A
+   TRACE GOES BAD. The ceiling was 14, chosen to clear what a 1920 row holds
+   (~13) so that it only bound on very wide displays. It bound in two places the
+   reasoning above missed, and both of them are visible as a tile sitting still
+   next to tiles that are moving:
+
+     THE SET IS VISIBILITY, NOT VISIBLE AREA. A lane counts a tile as visible
+     from 150px OUTSIDE the viewport, so the membership the cap is measured
+     against is always larger than what a viewport "holds" — on a 1920 row that
+     is ~13 on screen plus the lead on both edges, which is already past 14
+     before the display is unusually wide.
+
+     A FULL LANE IS FIRST-COME. reconcile() fills from the front of the visible
+     set and stops at the cap, so once a lane is full the tiles arriving at the
+     feeding edge wait for one at the far edge to leave — and on a marquee the
+     far edge is where the eye already is. The held tile is under the fade only
+     on the way IN.
+
+   Uncapped, every tile that is on screen is playing, which is what the wall
+   claims to be. The ceiling is now the viewport itself: nothing off screen ever
+   holds a decoder, because reconcile() still pauses on exit. That is the whole
+   of the budget now, and it is a real one — see the note on PER_LANE for what
+   the count used to cost, and useLeanWall for what still trims it on the
+   machines that cannot take it.
+
+   THE STAGGER IS WHAT KEEPS THIS HONEST, so it is unchanged at 120ms and must
+   stay. Uncapping raises how many tiles a lane ENDS UP running; the stagger
+   governs how many it starts at once, which is the number the connection cares
+   about. Removing the cap without it is the 4Mbps pathology in the paragraph
+   above, arriving all at once instead of gradually. */
 export const HOT: PlayPolicy = {
-  cap: 14,
+  cap: Number.POSITIVE_INFINITY,
   dwell: 0,
   stagger: START_STAGGER_MS,
   pauseOnScroll: false,

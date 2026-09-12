@@ -72,8 +72,11 @@ const ROWS = 3;
    monitor nobody on a phone is holding. This number is still what every other
    visitor gets, and still what the server renders for all of them. */
 const PER_ROW = 16;
-/* Starts past everything the hero wall shows (3 lanes x 6), so the two walls
-   are never running the same clip at the same moment. */
+/* Starts past everything the hero wall shows (4 lanes x 4), so the two walls
+   do not open on the same clips. It cannot keep them fully apart any more: the
+   deal below uses the WHOLE library to keep the three rows disjoint, and 39
+   clips cannot also cover the hero wall's 16 without overlapping. The rows are
+   the place a repeat reads as a repeat — the two walls are a page apart. */
 const OFFSET = 18;
 
 /* ONE DIRECTION FOR ALL THREE ROWS, AND THE DURATIONS ARE WHAT KEEPS THEM
@@ -95,17 +98,50 @@ const ROW_STYLE = [
   { duration: "94s" },
 ];
 
-/* Dealt column-major, so tiles adjacent in a row are 3 apart in the spread
-   order — takeReels already keeps same-shoot clips far apart, and this stops
-   the three rows from being three contiguous slices of it.
+/* NO CLIP EVER CROSSES BETWEEN ROWS, AND THAT IS NOW STRUCTURAL RATHER THAN
+   LUCKY. The rows want ROWS x PER_ROW = 48 tiles and the library holds 39, so
+   something has to repeat. This used to ask takeReels for all 48 and let the
+   modulo at the end of it wrap the window. That happened to keep the rows
+   disjoint — a wrapped pair sits `library.length` apart in the deal, and 39 is
+   divisible by ROWS, so both halves landed in the SAME row — but only while
+   the folder holds a multiple of three. One clip added or removed in Drive and
+   the same clip shows up in two rows at once, which is the one repeat nobody
+   can miss: three rows side by side get compared against each other, not
+   against the tile that passed eight seconds ago.
+
+   So the library is dealt out ONCE, column-major, into three disjoint sets:
+   clip i of the spread order goes to row i % ROWS, every clip is dealt exactly
+   once, and no row can be handed a clip another row already has — at any
+   library size. Column-major also keeps the spread working, since tiles
+   adjacent in a row are ROWS apart in takeReels' order, which is what stops
+   two clips from one shoot landing next to each other.
+
+   THE SHORTFALL IS THEN A ROW'S OWN BUSINESS, and that is the visible half of
+   this change. 39 clips over three rows is 13 each against a row of 16, so
+   each row repeats three of its OWN clips. The wrapped window put those three
+   thirteen tiles apart in a sixteen-tile cycle — three apart the short way
+   round, i.e. very nearly neighbours. Placing them half a cycle from the
+   original (PER_ROW / 2 = 8) is the furthest apart the loop allows. The row
+   renders its list twice, so every tile already has a twin 16 away regardless;
+   this only stops the extra three from sitting on top of theirs.
 
    Hoisted out of the component because it is pure over module constants. It
    used to run per render, so the whole union-find-and-sort in reelOrder re-ran
    on every pause toggle and every lightbox open and close. */
-const PICKS = takeReels(content.reels.videos, OFFSET, ROWS * PER_ROW);
-const ROWS_OF_PICKS = Array.from({ length: ROWS }, (_, row) =>
-  Array.from({ length: PER_ROW }, (_, i) => PICKS[i * ROWS + row])
-);
+const LIBRARY = content.reels.videos;
+/* Capped at the library length so takeReels' modulo never engages and no clip
+   is dealt twice. */
+const PICKS = takeReels(LIBRARY, OFFSET, Math.min(LIBRARY.length, ROWS * PER_ROW));
+const ROWS_OF_PICKS = Array.from({ length: ROWS }, (_, row) => {
+  const own = PICKS.filter((_, i) => i % ROWS === row);
+  return Array.from({ length: PER_ROW }, (_, i) =>
+    i < own.length
+      ? own[i]
+      : /* + own.length * PER_ROW keeps the subtraction positive for any row
+           short enough that half a cycle runs off the front of its own set. */
+        own[(i - Math.floor(PER_ROW / 2) + own.length * PER_ROW) % own.length]
+  );
+});
 
 /* Tiles are smaller and squarer-cornered than the hero wall's cards: this wall
    is about count, and a smaller tile puts more of them on screen.
