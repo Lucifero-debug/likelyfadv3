@@ -91,12 +91,40 @@ const OFFSET = 18;
    NOTHING REPLACES REVERSE, because the desynchrony was never its job. 88, 104
    and 94 seconds share no common multiple worth reaching, so the rows drift
    against each other continuously and no two tiles stay neighbours — which is
-   the whole of what the alternation was really providing, minus the shear. */
-const ROW_STYLE = [
-  { duration: "88s" },
-  { duration: "104s" },
-  { duration: "94s" },
-];
+   the whole of what the alternation was really providing, minus the shear.
+
+   THESE ARE THE SECONDS A FULL 16-TILE SET TAKES, NOT THE SECONDS ANY PARTICULAR
+   PHONE RUNS. laneSeconds below scales them, and that scaling is the whole of
+   what stops the wall crawling on a phone. */
+const ROW_STYLE = [{ seconds: 88 }, { seconds: 104 }, { seconds: 94 }];
+
+/* WHY THE DURATION HAS TO FOLLOW THE TILE COUNT.
+
+   A lane slides by exactly half its own length, so its SPEED is (length / 2)
+   over the duration — a distance that is not a constant. useLeanRowLength trims
+   a set to what the viewport can actually show, which is 16 tiles on a desktop
+   and about 9 on a 390px phone; against a fixed 88s those 9 tiles crawl past at
+   a little over half the pixels per second the desktop gets. The wall read as
+   nearly still on a phone for exactly that reason: not a slow animation, a
+   short lane given a long lane's clock.
+
+   SO THE CLOCK IS CUT IN THE SAME PROPORTION AS THE LANE. perRow / PER_ROW is
+   the fraction of the set this machine kept, and the duration keeps that same
+   fraction — which holds the lane at ONE TILE PER FIXED INTERVAL at every
+   width. Tile-widths per second, not pixels per second, is the right invariant
+   here: the phone's tiles are narrower too (~129px against ~158px), and a
+   marquee is read against the things moving in it rather than against the
+   screen behind them. Matching pixels instead would leave the phone reading
+   slow all over again, by the width of a tile.
+
+   THE RATIOS SURVIVE IT because all three rows are scaled by the same fraction,
+   so 88 : 104 : 94 is intact and the rows go on drifting apart as above.
+
+   IT IS A NO-OP ON ANYTHING THAT KEPT ITS FULL SET — desktops, tablets, and the
+   server, whose perRow IS PER_ROW. Hydration therefore matches, and the phone
+   picks up its shorter clock in the same client pass that slices its lane. */
+const laneSeconds = (full: number, perRow: number) =>
+  Math.round(full * (perRow / PER_ROW) * 10) / 10;
 
 /* NO CLIP EVER CROSSES BETWEEN ROWS, AND THAT IS NOW STRUCTURAL RATHER THAN
    LUCKY. The rows want ROWS x PER_ROW = 48 tiles and the library holds 39, so
@@ -527,7 +555,7 @@ export function Work() {
               className={`flex w-max animate-lane-x gap-[clamp(8px,1.2vw,12px)] will-change-transform [&:has(button:hover)]:[animation-play-state:paused] ${
                 paused || !near || active ? "[animation-play-state:paused]" : ""
               }`}
-              style={{ animationDuration: ROW_STYLE[ri].duration }}
+              style={{ animationDuration: `${laneSeconds(ROW_STYLE[ri].seconds, perRow)}s` }}
             >
               {[...row, ...row].map((clip, i) => (
                 <Tile
