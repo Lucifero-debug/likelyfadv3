@@ -38,13 +38,42 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 /* ---------------------------------------------------------------------------
    ENCODE SETTINGS — the numbers, in one place, with what each is for.
 
-   TILE: what the walls autoplay, 68 of them on one page. 720px wide covers the
-   largest box a tile is ever painted into (the 343px testimonial frame at DPR
-   2 = 686 device px) with a little headroom; the hero wall's own tiles are
-   158px and Work's are 146px, so this is sized for the worst case, not the
-   common one. CRF 30 is aggressive and right: it is a silent, small, moving
-   background element, and 68 of them against a 10 GB tier is the constraint
-   that matters more than the last few dB of PSNR.
+   TILE: what the walls autoplay, 68 of them on one page. CRF 30 is aggressive
+   and right: it is a silent, small, moving background element, and 68 of them
+   against a 10 GB tier is the constraint that matters more than the last few dB
+   of PSNR.
+
+   400 WIDE, AND IT WAS 720 FOR A BOX THAT NO LONGER READS THIS FILE. The 720
+   was sized against the 343px testimonial frame at DPR 2 — but Testimonials
+   picks `hq ?? src` (components/sections/Testimonials.tsx), and every one of
+   the 39 reels in the manifest carries an hq cut, so that frame has not painted
+   a tile cut in a long time. Nor has the lightbox, nor the v5/v6/v7 bleeds,
+   which resolve the same way. What is actually left on this file is wall tiles:
+   158px in the hero wall, 146px in Work, and nothing else.
+
+   SO THE WORST CASE IS A PHONE, NOT A DESKTOP. Work's tile is
+   clamp(112px,33vw,146px) below `tab`, which reaches its 146px cap on any
+   viewport past 442px; at DPR 3 that is 438 device px. A DPR 2 laptop asks for
+   335 at most (158px, plus the ~1.06 the wall's translateZ magnifies the near
+   column by). 400 covers the desktop case outright and lands just under the
+   highest-density phones — see the note on what that costs, below.
+
+   WHAT THE 720 COST, MEASURED. ffprobe on a shipped tile cut: 720x1280 at
+   541kbps, averaging 2.38 MB across the library. A phone parks ~11 of those
+   playing at once on the Work wall, which is ~6 Mbps sustained to hold one
+   screen of it — and 11 concurrent 720x1280 decodes is past what phone hardware
+   decoders carry, so the overflow falls to software and drops frames even on
+   wifi. Probed at 390x844 on a 4x CPU throttle against a 4 Mbps line, 9 of 11
+   running clips sat at readyState < 3: playing, with nothing buffered. That is
+   the stutter, and it is bytes rather than anything in the player.
+
+   RE-ENCODED FROM THE MASTER AT THIS WIDTH, one clip: 1.95 MB -> 0.82 MB, -58%,
+   and 31% of the pixel count, which is the half the decoder is paying for.
+
+   THE ONE THING 400 DOES NOT COVER is a DPR 3.5 Android (~412 CSS px wide,
+   asking ~476 device px), where the tile is upscaled about 1.19x. On 146px of
+   moving video that is not a visible softening; if it ever reads as one, 480 is
+   the width that meets it and costs -45% instead of -58%.
 
    AUDIO IS STRIPPED, NOT MUTED. `-an` removes the track; muting in the player
    would still ship the bytes and still make the element one the browser has to
@@ -63,7 +92,7 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
    atom sits at the end of the file and the browser cannot start playing until
    the whole clip has arrived — which for the wall means nothing moves until
    every tile is fully downloaded. */
-const TILE_WIDTH = 720;
+const TILE_WIDTH = 400;
 const HQ_MAX_WIDTH = 1080;
 const TILE_CRF = 30;
 
