@@ -173,7 +173,7 @@ export const content = {
         label: "Fashion · UGC",
       },
       {
-        quote: "You cooked on this edit. The AI looks so real. Very convincing.",
+        quote: "You cooked on this edit. The AI looks so realistic. Very convincing.",
         who: "DTC brand owner · on a podcast-style ad",
         reel: "ai-podcast",
         label: "Podcast-style",
