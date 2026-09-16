@@ -175,7 +175,7 @@ export default function Home() {
 
         {/* <Faq /> <FaqV2 /> <FaqV3 /> */}
          <FaqV4 />
-          {/* <FaqV5 /> */}
+          {/* <Faqs5 /> */}
       </main>
 
       {/* <Footer /> <FooterV2 /> */}
