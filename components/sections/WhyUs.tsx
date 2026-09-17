@@ -112,10 +112,7 @@ const NUMERAL =
   "grid size-9 shrink-0 place-items-center rounded-full bg-ink/4 " +
   "font-mono text-[0.78rem] leading-none tabular-nums text-pink-deep";
 
-/* Two corner washes on warm paper rather than a flat tint: the flame stop
-   enters top-left, the violet stop leaves bottom-right, so the band carries the
-   gradient's direction without competing with the type sitting on it. */
-/* THE CLAIM CARD'S GROUND — /bg.png, with the two brand tints washed over it.
+/* THE CLAIM CARD'S GROUND — /bg.png, and now the ONLY copy of it in the card.
 
    THE IMAGE IS MIRRORED, AND IT IS MIRRORED IN THE FILE RATHER THAN IN CSS.
    A transform would turn the element and everything in it, and there is no way
@@ -124,15 +121,31 @@ const NUMERAL =
    pixel-for-pixel against the flopped source) and came out 25% smaller than it
    was, 6.9MB to 5.1MB.
 
-   THAT IS ALSO WHY THE GRADED LAYER BELOW NEEDS NO MIRRORING OF ITS OWN. It
-   points at the same file with the same cover/center, so the two copies of the
-   photograph register exactly and the toned version sits on the sharp version of
-   itself. A CSS flop would have had to be repeated there, in the same direction,
-   forever — and here it would show immediately, because both copies are sharp.
+   THE SECOND COPY THAT USED TO SIT OVER THIS ONE IS GONE. Two treatments have
+   now been tried on it and both have been removed: first a masked 18px blur,
+   then a sepia grade at `sepia(0.85) saturate(2.2) brightness(0.9)`. The blur
+   destroyed the photograph in exactly the middle of the card, which is where a
+   picture of several hundred video panels is legible as a WALL. The sepia kept
+   the detail and traded it for a hue — it pushed every pixel onto one warm axis
+   and held saturation above 1 so the card read amber rather than beige, which is
+   to say it put a yellow cast over the whole thing. That was its stated intent
+   and it is the reason it is gone.
 
-   (The tints this note used to share a background list with have moved to
-   CLAIM_SCRIM, so that they paint OVER the darkening rather than under it.
-   The layer order that mattered is now expressed in DOM order instead.)
+   WHAT REPLACED BOTH IS NOTHING, AND THAT IS A MEASUREMENT RATHER THAN A
+   SHRUG. The no-treatment variant was tested on a live side-by-side and held
+   7.46:1 worst case with the scrim alone over a completely sharp photograph.
+   The scrim was always carrying the contrast; the second copy was only ever
+   carrying a look. With it gone the wall keeps its colour and its detail edge
+   to edge, which is the whole reason a picture of a video wall sits behind a
+   claim about VOLUME.
+
+   IF A GRADE EVER COMES BACK, MAKE IT NEUTRAL AND MAKE IT UNIFORM. Neutral
+   because a warm one agrees with the flame end of the page's gradient and
+   argues with the violet end, and because the brand radials that used to
+   justify a warm cast are no longer in CLAIM_SCRIM. Uniform because a MASKED
+   grade would put a colour boundary across the middle of the card, and a hue
+   edge is far more visible than a sharpness edge — a blur ramp can be hidden,
+   a tone ramp cannot.
 
    IT WAS RENDERING NO BACKGROUND AT ALL BEFORE THIS, and that is worth knowing
    because the bug is invisible and the shape that caused it is easy to write
@@ -147,159 +160,80 @@ const NUMERAL =
 
    WHAT IS LEFT IN THIS LIST IS NOW ONE IMAGE, which is the other half of that
    lesson: the fewer layers share a declaration, the less one bad value can take
-   with it. The two brand radials that used to sit here have moved up to
-   CLAIM_SCRIM so they paint over the darkening rather than under it, and the
-   photograph is the whole of the card's own background again. Order between the
-   three treatment layers is DOM order now, not comma order.
+   with it.
 
    THE BASE COLOUR IS noir, AND IT IS NOT DOING WHAT THIS NOTE USED TO SAY.
    The claim was that /bg.png is a third transparent and noir fills the holes.
    Measured, the file is 100% OPAQUE — it carries an alpha channel, but every
-   one of its 4,227,072 pixels is at alpha 255, so nothing under it has ever
-   shown through and paper-2 would have been just as invisible. What noir
-   actually buys is the moment BEFORE the image arrives: a 5MB background on a
-   card whose type is `text-paper` renders as near-white on near-white if the
-   ground under it is light, so the base colour is what keeps the claim legible
-   while its texture is still downloading. Keep it for that, not for holes.
+   one of its pixels is at alpha 255, so nothing under it has ever shown through
+   and paper-2 would have been just as invisible. What noir actually buys is the
+   moment BEFORE the image arrives: a 5MB background on a card whose type is
+   `text-paper` renders as near-white on near-white if the ground under it is
+   light, so the base colour is what keeps the claim legible while its texture is
+   still downloading. Keep it for that, not for holes.
 
-   cover/center/no-repeat RATHER THAN THE NATURAL SIZE. The source is 2816x1536
-   against a card that is wide and short, so at natural size it would tile and
-   show its seams. `cover` crops to the middle band, which on this image is the
-   part with the texture in it.
+   cover/center/no-repeat RATHER THAN THE NATURAL SIZE. The source is wide and
+   the card is wide and short, so at natural size it would tile and show its
+   seams. `cover` crops to the middle band, which on this image is the part with
+   the texture in it.
 
-   THAT NUMBER HAS ALREADY MOVED ONCE — it read 2752x1536 until the photograph
-   was replaced, and the replacement is 64px wider and 9.3MB against the old
-   5.1MB. Nothing here breaks when it changes again (cover/center does not care
-   about the intrinsic size), but the treatment below IS tuned to where this
+   THE INTRINSIC SIZE HAS ALREADY MOVED TWICE and the comment chased it both
+   times, so it is not recorded here any more. Nothing breaks when it changes —
+   cover/center does not care — but the scrim below IS tuned to where this
    particular picture is bright, so re-measure the contrast behind the claim
    whenever the file is swapped. Bright content moving into the middle is the
    failure it would not survive. */
 const CLAIM_BG = "bg-noir bg-cover bg-center bg-no-repeat bg-[url('/bg.png')]";
 
-/* THE CLAIM CARD GRADES ITS PHOTOGRAPH RATHER THAN SOFTENING IT.
+/* THE SCRIM IS THE WHOLE TREATMENT NOW, AND IT IS ENOUGH ON ITS OWN.
 
-   THIS REPLACED A MASKED 18px BLUR, and the blur's reasoning is worth keeping
-   because it was sound and still lost. That layer put a second, blurred copy of
-   /bg.png over the sharp one and masked it to an ellipse in the middle, so detail
-   dissolved under the statement and survived at the corners. It worked. It was
-   also two fragile classes — the card's notes below record one of them silently
-   resolving to `mask-image: none` while still LOOKING correct — and it destroyed
-   the photograph in exactly the middle of the card, which is where a picture of
-   several hundred video panels is legible as a WALL. It was chosen against five
-   alternatives on a live side-by-side.
+   That ordering was always the house rule — Testimonials.tsx puts it plainly:
+   the fill carries the contrast and any softening is the finish, not the other
+   way round. What changed is that there is no finish left. Measured over a
+   completely sharp, completely untoned photograph this gradient holds 7.46:1
+   worst case against `text-paper`, comfortably past AA, so nothing above it is
+   required for legibility.
 
-   Nothing here is blurred. The second copy of /bg.png is laid over the first at
-   full opacity, unmasked, carrying `sepia(0.85) saturate(2.2) brightness(0.9)` —
-   so every thumbnail keeps its shape and its detail, and what changes is its
-   COLOUR. The wall stays a wall, edge to edge, and reads as a single warm
-   monochrome object rather than as several hundred unrelated pictures.
+   Which is also why the card has no fallback story to worry about. It used to
+   depend on `filter` and `mask-image` having run; now it depends on a
+   background-image gradient, which is as old as the box model. A hardened
+   browser, a "reduce transparency" setting or a print stylesheet all leave this
+   layer intact.
 
-   WHY IT REPLACED A BLUR. The previous cut of this variant kept 18px of blur and
-   pulled the mask in to 30%/62%, which left the photograph sharp almost
-   everywhere and a small soft pool behind the type. Measured against the
-   no-treatment variant it came back 1.03 per channel across the whole card —
-   under what the eye picks up — because the two differ only inside that pool.
-   Two options that need a side-by-side crop to tell apart are one option. A hue
-   shift cannot hide like that: it is present in every pixel of the card at once.
+   ONE ELEMENT, ONE IMAGE LAYER. The warm and cool corner radials that used to
+   ride here at 10% alpha are gone. They were the only thing tying this card to
+   the page's flame/violet run, and removing them is a real cost — but they were
+   also reading as a yellow cast in the top-left corner once the sepia grade was
+   removed from under them, and a lone violet wash in the opposite corner reads
+   as a stray tint rather than as half of a deliberate pair. If the tie to the
+   brand ramp is wanted back, bring BOTH radials back together or neither.
 
-   SEPIA RATHER THAN A DRAIN, WHICH IS THE POINT OF HAVING BOTH. The desaturated
-   variant pulls colour OUT and lands on neutral grey; this one pushes everything
-   ONTO one warm axis and holds saturation slightly above 1 so the result is
-   amber rather than beige. They are the two opposite answers to the same problem
-   — a photograph too colourful to sit behind type — and putting them side by
-   side is the comparison worth having. A neutral grade is quieter and lets the
-   brand radials in CLAIM_SCRIM read as the only colour in the card; a warm one
-   agrees with the flame end of the gradient and argues with the violet end.
+   THE RAMP: 0.82 at the centre where the statement sits, still 0.70 at 42% —
+   the measure caps at 26ch, so the type never leaves that plateau — then down
+   to 0.40 at the corners, which is dark enough to sit under the hairline
+   without flattening the thumbnails into mud.
 
-   brightness(0.9) IS DELIBERATELY HIGH, AND THE FIRST CUT OF THIS GOT IT WRONG.
-   That draft ran `sepia(0.6) brightness(0.5) saturate(1.15)` on the reasoning that
-   halving luminance is what keeps near-white type safe over a photograph whose
-   left two thirds are bright. The reasoning is sound and the result was useless:
-   measured against the desaturated variant it came back 1.39 per channel across
-   the whole card, indistinguishable, because both treatments ended at effectively
-   the same lightness — L* 13.3 against 13.1 — and CLAIM_SCRIM's 0.82 centre then
-   crushed what hue difference survived. Two filters that disagree about colour
-   but agree about brightness look identical under a dark scrim.
-
-   SO THE SCRIM CARRIES THE CONTRAST HERE AND THIS LAYER CARRIES ONLY THE COLOUR,
-   which is Testimonials.tsx's rule applied strictly rather than hedged. The scrim
-   below is untouched at 0.82/0.70/0.40 and it is sufficient on its own — the
-   no-treatment variant proves that, holding 7.46:1 with nothing but the scrim over
-   a completely sharp photograph. Once the fill is doing the whole job, this layer
-   is free to stay bright, and it has to: sepia at half brightness under a 0.82
-   scrim is not a warm card, it is a black one.
-
-   saturate(2.2) FOR THE SAME REASON. Sepia collapses everything onto one hue but
-   leaves it pale, and pale is exactly what a dark scrim erases first. Pushing
-   saturation well past 1 after the tone is what makes the card read as amber
-   rather than as a slightly warm grey once the scrim is over it.
-
-   `filter` ON ITS OWN COPY, DELIBERATELY NOT `backdrop-filter`. A backdrop-filter
-   has to re-read and re-raster whatever is behind it; Lightbox.tsx documents what
-   that measured on this site — 4 hitches and a 160ms worst frame, "no cheap
-   frosted setting to tune down to". A filter on an element's OWN background
-   rasters once into a cached texture and never samples the page.
-
-   IT STILL SHARES cover/center AND inset-0 WITH CLAIM_BG, so the two copies of
-   the photograph register exactly and the graded version sits precisely on the
-   sharp version of itself. That registration matters more here than in the
-   blurred variants: both copies are SHARP, so any misalignment would show as a
-   visible double edge on every thumbnail rather than as a soft ghost. */
-/* EVERY CLASS BELOW IS WRITTEN OUT WHOLE INSIDE ONE STRING LITERAL, and that is
-   not a style preference. Tailwind scans source TEXT for candidates: it never
+   THE CLASS IS WRITTEN OUT WHOLE INSIDE ONE STRING LITERAL, and that is not a
+   style preference. Tailwind scans source TEXT for candidates: it never
    evaluates this file, so a class assembled across a `+` or out of a `${}` is a
    class it never sees and never generates. Splitting BETWEEN classes is fine —
-   the concatenations here all break on a space — but splitting INSIDE one, or
+   the concatenation here breaks on a space — but splitting INSIDE one, or
    interpolating its value from a constant, silently produces no rule at all.
 
    THIS IS NOT HYPOTHETICAL, IT HAPPENED TWICE ON THIS CARD. The note on
    CLAIM_BG above records the first: one invalid layer in a comma list took the
    whole declaration with it, and Chrome reported `background-image: none` on an
    element that looked fine because something else was painting. The second was
-   this treatment's first draft, which hoisted the mask into a CLAIM_BLUR_MASK
-   constant and interpolated it. Computed style came back `mask-image: none` and
-   `background-image: none` on the scrim — the blur's own edge falloff was doing
-   a passable impression of a ramp, so it LOOKED like it worked.
+   the blur treatment's first draft, which hoisted its mask into a constant and
+   interpolated it. Computed style came back `mask-image: none` and
+   `background-image: none` — the blur's own edge falloff was doing a passable
+   impression of a ramp, so it LOOKED like it worked.
 
    Both failures are invisible in the browser and invisible in review. Check
-   computed style, not the screenshot, whenever a class here changes.
-
-   THERE IS NO MASK ON THIS LAYER, at either breakpoint. The paragraph that used
-   to stand here explained why an ellipse needs different radii above and below
-   `lap`, because a radial-gradient sizes its two radii independently against a
-   box whose aspect changes from 1.4:1 to 4.2:1. A tonal grade has no such
-   problem and must not have one: a masked grade would put a COLOUR boundary
-   across the middle of the card, amber in the centre and full colour at the
-   corners, and a hue edge is far more visible than a sharpness edge. A blur ramp
-   can be hidden; this cannot. Uniform, or not at all. The note above still
-   applies in full to the two classes that remain. */
-const CLAIM_TONE =
-  "pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat bg-[url('/bg.png')] [filter:sepia(0.85)_saturate(2.2)_brightness(0.9)]";
-
-/* THE SCRIM IS WHAT ACTUALLY MAKES THE TYPE LEGIBLE, AND THAT ORDERING IS THE
-   HOUSE RULE — Testimonials.tsx puts it plainly: the fill carries the contrast
-   and the blur is the finish, not the other way round. Blur alone would leave
-   the claim sitting on a smear of the SAME average brightness it started at.
-
-   Which is also the fallback story. `filter` and `mask-image` are both old
-   enough not to worry about, but if either is switched off — a hardened browser,
-   a "reduce transparency" setting, a print stylesheet — the card degrades to
-   this gradient over the photograph, and the text stays readable. Nothing here
-   depends on a filter having run.
-
-   TOP-DOWN, ONE ELEMENT, THREE IMAGE LAYERS. The warm and cool corner radials
-   move here from CLAIM_BG so they sit OVER the darkening rather than under it —
-   at 10% alpha they would not have survived a 0.5 scrim, and they are the only
-   thing tying this card to the page's flame/violet run. The dark ellipse is
-   last, so it is nearest the photograph and furthest from the type.
-
-   THE RAMP IS THE BLUR'S, ROUGHLY. 0.88 at the centre where the statement sits,
-   still 0.78 at 42% — the measure caps at 26ch, so the type never leaves that
-   plateau — then down to 0.50 at the corners, which is dark enough to sit under
-   the hairline without flattening the thumbnails into mud. */
+   computed style, not the screenshot, whenever this class changes. */
 const CLAIM_SCRIM =
   "pointer-events-none absolute inset-0 " +
-  "bg-[image:radial-gradient(90%_130%_at_10%_0%,rgba(255,106,61,0.1),rgba(255,106,61,0)_55%),radial-gradient(90%_130%_at_95%_100%,rgba(138,79,224,0.1),rgba(138,79,224,0)_55%),radial-gradient(85%_115%_at_50%_50%,rgba(14,12,17,0.82)_0%,rgba(14,12,17,0.7)_42%,rgba(14,12,17,0.4)_100%)]";
+  "bg-[image:radial-gradient(85%_115%_at_50%_50%,rgba(14,12,17,0.82)_0%,rgba(14,12,17,0.7)_42%,rgba(14,12,17,0.4)_100%)]";
 
 export function WhyUs() {
   return (
@@ -395,10 +329,10 @@ export function WhyUs() {
           ))}
         </div>
 
-        {/* The argument, not a card in the grid — so it gets the tinted ground,
-            the larger radius, and a padding step above the pillars to match.
-            Worth knowing if it ever looks empty: the claim text caps at 26ch, so
-            most of this box's width IS padding at a desktop measure.
+        {/* The argument, not a card in the grid — so it gets the photographic
+            ground, the larger radius, and a padding step above the pillars to
+            match. Worth knowing if it ever looks empty: the claim text caps at
+            26ch, so most of this box's width IS padding at a desktop measure.
 
             THE TOP MARGIN IS CARD_GAP'S CLAMP, SPELLED OUT. The section is not a
             flex column any more, so this seam is a margin rather than a gap, and
@@ -413,15 +347,14 @@ export function WhyUs() {
             `text-paper` look like the whole job. Its mean is dark; its left two
             thirds are not, and measured on the pixels behind the statement 43%
             of them sat under 4.5:1 against paper, with a worst case of 1.04:1.
-            That is the bug CLAIM_TONE and CLAIM_SCRIM exist to fix; the same
-            measurement now reads 9.9:1 worst case. Everything in this box was
-            drawn for the near-white ground it replaced: the statement
-            inherited `text-ink`
-            (#16141a) from the body, the CTA was `variant="dark"` (ink pill,
-            paper text) and the hairline was `border-line`, ink at 10% alpha.
-            All three are near-black on near-black. Left alone the card would
-            have rendered as a dark rectangle with an invisible sentence and an
-            invisible button in it.
+            That is the bug CLAIM_SCRIM exists to fix, and it fixes it alone: the
+            same measurement over a sharp, untoned photograph reads 7.46:1 worst
+            case. Everything in this box was drawn for the near-white ground it
+            replaced: the statement inherited `text-ink` (#16141a) from the body,
+            the CTA was `variant="dark"` (ink pill, paper text) and the hairline
+            was `border-line`, ink at 10% alpha. All three are near-black on
+            near-black. Left alone the card would have rendered as a dark
+            rectangle with an invisible sentence and an invisible button in it.
 
             `text-paper` here rather than on the statement itself so the whole
             box inherits it — the CTA's own variant sets its colour, so nothing
@@ -430,22 +363,21 @@ export function WhyUs() {
 
             `border-white/10` is `border-line` mirrored: the same 10% hairline,
             measured from the other end of the scale. */}
-        {/* `isolate` so the two treatment layers stack against this card and
-            nothing else, `overflow-hidden` so both of them take the 3xl radius —
-            an absolutely-positioned inset-0 child is a rectangle otherwise, and
-            the graded layer would square off the corners the border is rounding. */}
+        {/* `isolate` so the scrim stacks against this card and nothing else,
+            `overflow-hidden` so it takes the 3xl radius — an absolutely-
+            positioned inset-0 child is a rectangle otherwise, and the scrim
+            would square off the corners the border is rounding. */}
         <div
           className={`relative isolate mt-[clamp(32px,3.5vw,48px)] overflow-hidden rounded-3xl border border-white/10 p-[clamp(32px,3.5vw,48px)] text-center text-paper ${CLAIM_BG}`}
         >
-          <div aria-hidden className={CLAIM_TONE} />
           <div aria-hidden className={CLAIM_SCRIM} />
 
           {/* THE FLEX COLUMN MOVED OFF THE CARD AND ONTO THIS, because the card
-              now has absolutely-positioned children and they must not become
-              flex items. `relative` is all the lift the content needs: it and
-              the two layers are all positioned with an auto z-index, so paint
-              order is DOM order and the content is last. No z-index anywhere,
-              which is why `isolate` above is enough to keep it that way. */}
+              now has an absolutely-positioned child and it must not become a
+              flex item. `relative` is all the lift the content needs: it and the
+              scrim are both positioned with an auto z-index, so paint order is
+              DOM order and the content is last. No z-index anywhere, which is
+              why `isolate` above is enough to keep it that way. */}
           <div className="relative flex flex-col items-center gap-6">
             {/* A DIRECT flex child, deliberately: `display: inline` on a flex item
                 blockifies, which is what lets the 26ch measure apply. Wrap it in a
