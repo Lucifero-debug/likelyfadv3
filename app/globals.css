@@ -154,6 +154,38 @@
   initial-value: 3;
 }
 
+/* ============================================================================
+   THE HEIGHT OF THE FIXED BAR, AS ONE NUMBER.
+
+   Three things need to know how tall the header is and they used to know it
+   separately: `scroll-padding-top` for the browser's OWN anchor navigation (a
+   pasted #faq link, a hash restored on reload), `ANCHOR` in lib/ui.ts for the
+   per-section scroll-margin, and Lenis's `scrollTo` offset in
+   app/smooth-scroll.tsx, which carried a flat -100 that matched the bar at no
+   viewport in particular. All three now read this.
+
+   THE VALUE IS THE BAR'S OWN HEIGHT RAMP PLUS ~3px, and it is measured rather
+   than chosen — see the long note on ANCHOR in lib/ui.ts, which this is lifted
+   from and which explains every term in it. In short: Nav's padding, wordmark
+   and type are all clamps, so the bar is ~48px tall at a 360px viewport and
+   ~121px at 3840, and any flat number is short at one end and dead air at the
+   other. This clears it by 2.7 to 7.6px across that whole range.
+
+   IT TRACKS THE BAR AT REST, NOT COMPACTED. The scrolled state is ~8px shorter,
+   so using the resting height means an anchor jump lands a few px lower than it
+   strictly must — which is the correct way round. The other way puts the
+   heading under the bar for the 280ms the header takes to expand again.
+
+   IF NAV'S RAMPS MOVE, RE-MEASURE THIS. It is the one number in the project
+   that is derived from another component's geometry by hand. */
+:root {
+  --nav-h: clamp(76px, 54px + 2.05vw, 128px);
+}
+
+html {
+  scroll-padding-top: var(--nav-h);
+}
+
 :root {
   /* TWO CUTS OF ONE RAMP, ON PURPOSE. --grad is the bright brand ramp: correct
      on dark surfaces and on filled shapes (buttons, ticks, rules) where it is

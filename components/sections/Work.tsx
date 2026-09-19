@@ -494,6 +494,10 @@ export function Work() {
          SECTION clamp); the `auto` keyword means the browser replaces that
          estimate with the measured height the first time it renders, so the
          guess only has to be close once. */
+      /* The nav is transparent, so it needs telling which bands are dark
+         enough to flip its link colour — see the observer in Nav.tsx. This
+         is the biggest of them. */
+      data-nav-dark
       className={`${SECTION} ${ANCHOR} relative overflow-hidden [content-visibility:auto] [contain-intrinsic-size:auto_1200px] bg-[radial-gradient(120%_90%_at_50%_-10%,#241d2b,#17141b_72%)] text-[#f5f3f0]`}
     >
       <div className={WRAP}>
@@ -630,12 +634,30 @@ export function Work() {
           </Button>
         </Reveal>
 
-        {/* <MotionToggle
+        {/* THE ONLY WAY TO STOP THIS WALL, AND IT IS NOT OPTIONAL. Three lanes
+            drag 96 clips past continuously for the life of the page, which is
+            well past the five seconds WCAG 2.2.2 allows anything to move on its
+            own without a control. It was commented out at some point with no
+            note saying why; `paused` stayed wired to the lanes below, so the
+            wall kept the ability to stop and lost the only thing that could
+            ask it to.
+
+            THE reduced-motion BLOCK DOES NOT COVER THIS. That serves the
+            visitor who has set a preference at the OS level; this serves the
+            much commoner one who has not set anything and simply wants to look
+            at a tile without it sliding away. Hover pauses a lane already
+            (`[&:has(button:hover)]`), but hover is pointer-only — on a touch
+            screen or a keyboard this button is the whole mechanism.
+
+            NOT WRAPPED IN <Reveal>, unlike the CTA above it. A control that
+            fades in when the section scrolls into view is a control that is not
+            there yet at the moment the movement starts. */}
+        <MotionToggle
           paused={paused}
           onToggle={() => setPaused((p) => !p)}
           label="the work wall"
           tone="dark"
-        /> */}
+        />
       </div>
 
       {/* Dozens of near-identical tile labels would be noise to a screen

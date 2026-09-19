@@ -283,12 +283,34 @@ export const SIZE_16 = "text-[clamp(0.875rem,0.83rem+0.19vw,1rem)]";
 
    THE CEILING IS KEYED TO WHERE THE BAR STOPS GROWING, not to a round number.
    Nav's three ramps top out between ~2900 and ~3460, at a bar of ~121px; 128
-   here clears that and is reached at ~3610, so the last stretch where the bar
+   there clears that and is reached at ~3610, so the last stretch where the bar
    is still growing is covered by the ramp rather than by the cap. A ceiling of
    108 — the bar's height at 2500 — looked generous and was 13px SHORT at 3840,
    which is an anchor jump that lands the heading under the bar and nothing in
-   this file would have said so. If Nav's ramps move, re-measure this. */
-export const ANCHOR = "scroll-mt-[clamp(76px,54px+2.05vw,128px)]";
+   this file would have said so. If Nav's ramps move, re-measure this.
+
+   THIS IS NOW A NO-OP, AND IT HAS TO BE. The offset moved to a single
+   `scroll-padding-top: var(--nav-h)` on <html> in globals.css, and the two
+   CANNOT BOTH BE ON — scroll-padding insets the scrollport and scroll-margin
+   outsets the target, so a target carrying both is pushed down by the SUM. That
+   is true of the browser's own anchor navigation, and Lenis does the same thing
+   explicitly (it subtracts scrollMarginTop and scrollPaddingTop before applying
+   any offset of its own). Measured with both on, a #faq jump landed 187px low.
+
+   scroll-padding-top IS THE ONE THAT SURVIVED because it is a property of the
+   SCROLLPORT rather than of each target, so it protects every anchor on the
+   page rather than the ones somebody remembered to class. `#main` and `#top`
+   carry no class and now get the clearance anyway — in their case the practical
+   effect is nil, since both sit at the top of the document and there is nothing
+   above them to scroll away, but the next anchor added below the fold does not
+   depend on whoever adds it knowing this constant exists.
+
+   IT STAYS EXPORTED, AND EMPTY, rather than being deleted out of sixteen call
+   sites. Twelve of those are parked variants that are not mounted; editing them
+   to remove a class that now costs nothing is churn against files nobody is
+   running. Leave the call sites alone. If the offset ever has to go back to
+   being per-target, this is where it goes and nothing else has to move. */
+export const ANCHOR = "";
 
 /* NOTE ON REPEATING THE CLAMP. Two places outside this file spell SECTION's
    clamp out verbatim rather than importing it — the reel wall's bottom padding

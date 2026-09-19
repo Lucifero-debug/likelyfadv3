@@ -101,7 +101,14 @@ export function FooterV3() {
        48+24 = 72px in from the edge at 1920 while every band above it started
        at 64. One clamp, the same one WRAP carries, and the inner px is gone —
        so the footer's first pixel is on the same x as the hero's headline. */
-    <footer className="bg-noir p-[clamp(24px,5vw,64px)] text-white/60" aria-label="Footer">
+    <footer
+      /* Dark ground, so the transparent nav flips to its light links over
+         it — see the observer in Nav.tsx. It only ever matters on the way
+         back up, since the bar is retracted on the way down. */
+      data-nav-dark
+      className="bg-noir p-[clamp(24px,5vw,64px)] text-white/60"
+      aria-label="Footer"
+    >
       {/* `items-center`, not `items-start`: the two sides are different heights
           and the reference centres them against each other. Below `lap:` they
           stack and the alignment stops mattering. */}

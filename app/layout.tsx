@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Montserrat, Roboto } from "next/font/google";
 import { MEDIA_ORIGIN, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 import "./globals.css";
+import SmoothScroll from "./smooth-scroll";
 
 /* One face for every heading — display type, wordmarks and card titles alike.
    Montserrat has a large x-height, so it holds at small sizes too and there is
@@ -106,7 +107,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${roboto.variable} ${jetbrains.variable} scroll-smooth [font-feature-settings:'ss01']`}
+      className={`${montserrat.variable} ${roboto.variable} ${jetbrains.variable} [font-feature-settings:'ss01']`}
     >
       <head>
         {/* WARM THE MEDIA ORIGIN BEFORE ANYTHING ASKS IT FOR A BYTE.
@@ -164,6 +165,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <SmoothScroll />
         {children}
       </body>
     </html>

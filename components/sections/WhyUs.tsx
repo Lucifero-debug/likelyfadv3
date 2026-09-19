@@ -368,6 +368,10 @@ export function WhyUs() {
             positioned inset-0 child is a rectangle otherwise, and the scrim
             would square off the corners the border is rounding. */}
         <div
+          /* Not full-bleed, but it is wider than the wrap the nav links sit
+             in, so it passes under them — and it is a dark photograph. Same
+             flag the work band and the footer carry; see Nav.tsx. */
+          data-nav-dark
           className={`relative isolate mt-[clamp(32px,3.5vw,48px)] overflow-hidden rounded-3xl border border-white/10 p-[clamp(32px,3.5vw,48px)] text-center text-paper ${CLAIM_BG}`}
         >
           <div aria-hidden className={CLAIM_SCRIM} />
