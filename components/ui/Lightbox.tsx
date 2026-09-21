@@ -16,6 +16,12 @@ import type { Reel } from "@/lib/reels.generated";
 export function Lightbox({ reel, onClose }: { reel: Reel; onClose: () => void }) {
   const [shown, setShown] = useState(false);
   const closeBtn = useRef<HTMLButtonElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
+
+  /* Starts false because the intent is to open WITH sound. The autoplay effect
+     below flips it to true if the browser refuses, so this is the state the
+     control reports rather than the state it requests. */
+  const [muted, setMuted] = useState(false);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setShown(true));
@@ -31,6 +37,32 @@ export function Lightbox({ reel, onClose }: { reel: Reel; onClose: () => void })
       document.body.style.overflow = prev;
     };
   }, [onClose]);
+
+  /* AUTOPLAY WITH SOUND, AND THE FALLBACK IS NOT OPTIONAL. This dialog only
+     ever opens from a click on a wall tile, so sticky user activation is there
+     and the policy allows an unmuted start — which is the whole point of the
+     HQ cut, the only tier that HAS an audio track. (`hqArgs` in
+     scripts/sync-videos.mjs maps `0:a:0?` and encodes AAC; the tile cut the
+     walls play is built with `-an` and has no track at all, so a lightbox
+     that stays muted is the only place on the page a visitor could ever hear
+     one of these ads.)
+
+     A browser with a stricter setting still rejects the promise, and leaving a
+     dead first frame there would read as a broken overlay rather than as a
+     policy. Muting and retrying gets it running; `muted` state then makes the
+     control say what happened, so the fix is one visible click away.
+
+     THE SAME SHAPE AS Testimonials, deliberately — see the note on its own
+     play effect. Two players, one policy. */
+  useEffect(() => {
+    const el = video.current;
+    if (!el) return;
+    el.play().catch(() => {
+      el.muted = true;
+      setMuted(true);
+      void el.play().catch(() => {});
+    });
+  }, []);
 
   return createPortal(
     <div
@@ -87,18 +119,59 @@ export function Lightbox({ reel, onClose }: { reel: Reel; onClose: () => void })
         }`}
       >
         {/* The HQ tier: larger cut, fetched only now that someone has asked to
-            look closely. Falls back to the tile cut when the Drive sync ran
-            without ffmpeg. */}
+            look closely, and THE ONLY TIER WITH AN AUDIO TRACK. Falls back to
+            the tile cut when the Drive sync ran without ffmpeg — which is also
+            a fall back to silence, since that cut is built with `-an`.
+
+            NO `autoPlay` AND NO `muted` ATTRIBUTE — both are the effect's job
+            now. `autoPlay` on the element races the effect, and the browser
+            settles that race by applying its unmuted-autoplay policy before the
+            effect can install the muted fallback, which is how you get a silent
+            frozen frame under a control claiming to be unmuted. */}
         <video
+          ref={video}
           src={reel.hq ?? reel.src}
           poster={reel.poster ?? undefined}
-          autoPlay
           loop
-          muted
           playsInline
           preload="auto"
           className="size-full object-cover"
         />
+
+        {/* INSIDE THE STAGE, WHICH IS WHAT KEEPS IT CLICKABLE. The backdrop
+            closes on click and the stage stops propagation, so a mute control
+            parked on the backdrop would toggle and dismiss in one gesture. */}
+        <button
+          type="button"
+          onClick={() => {
+            const el = video.current;
+            if (!el) return;
+            el.muted = !el.muted;
+            setMuted(el.muted);
+            /* An unmute IS a gesture, so it is also the moment a play() the
+               policy refused earlier can be retried. */
+            if (!el.muted && el.paused) void el.play().catch(() => {});
+          }}
+          aria-label={muted ? "Unmute reel" : "Mute reel"}
+          className="absolute bottom-4 right-4 grid size-11 place-items-center rounded-full border border-white/20 bg-black/45 text-white transition-[background-color,border-color] duration-150 hover:border-white/45 hover:bg-black/65 active:bg-black/80"
+        >
+          {muted ? (
+            <svg viewBox="0 0 14 12" width="16" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M0 4h3l3-3v10L3 8H0z" />
+              <path d="M9 4l4 4M13 4l-4 4" stroke="currentColor" strokeWidth="1.4" fill="none" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 14 12" width="16" height="14" fill="currentColor" aria-hidden="true">
+              <path d="M0 4h3l3-3v10L3 8H0z" />
+              <path
+                d="M9 3.5a4 4 0 0 1 0 5M11 2a6.5 6.5 0 0 1 0 8"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                fill="none"
+              />
+            </svg>
+          )}
+        </button>
       </div>
     </div>,
     document.body
