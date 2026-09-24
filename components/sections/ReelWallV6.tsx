@@ -437,7 +437,7 @@ function Clip({
          z-10 is what lets the magnified card overlap the clips above and below
          instead of being painted under them. Horizontal room for it comes from
          the cell's padding — see the grid. */
-      className="group relative aspect-[9/16] w-[clamp(112px,33vw,146px)] mr-[clamp(8px,1.2vw,12px)] flex-none cursor-pointer overflow-hidden rounded-[12px] bg-poster transition-[scale] duration-[280ms] ease-[cubic-bezier(0.22,0.7,0.2,1)] hover:z-10 hover:scale-[1.06] focus-visible:z-10 focus-visible:scale-[1.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cue active:scale-[1.02] tab:mr-0 tab:mb-[clamp(8px,1.2vw,12px)] tab:w-[clamp(116px,12vw,158px)]"
+      className="group relative aspect-[9/16] w-[clamp(112px,33vw,146px)] mr-[clamp(8px,1.2vw,12px)] flex-none cursor-pointer overflow-hidden rounded-[12px] bg-poster transition-[scale] duration-[280ms] ease-[cubic-bezier(0.22,0.7,0.2,1)] hover:z-10 hover:scale-[1.06] focus-visible:z-10 focus-visible:scale-[1.06] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-deep active:scale-[1.02] tab:mr-0 tab:mb-[clamp(8px,1.2vw,12px)] tab:w-[clamp(116px,12vw,158px)]"
     >
       {/* preload="none" AND no src until the tile is near — LazyVideo owns
           both, and useInViewPlay still owns playback. `metadata` here once

@@ -2,7 +2,7 @@ import { content } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealText } from "@/components/ui/RevealText";
-import { ANCHOR, SECTION, SIZE_H2, TEXT_META, TEXT_SMALL, WRAP } from "@/lib/ui";
+import { ANCHOR, SECTION, SIZE_H2, TEXT_META, TEXT_SMALL } from "@/lib/ui";
 
 const { pricing } = content;
 
@@ -67,31 +67,45 @@ const { pricing } = content;
    The clamps run DOWNWARD only. Each lands on its desktop number by ~1280 and
    holds it above; the ramp exists for everything narrower. */
 
-/* THE TWO EDITORIAL MEASURES, AS RAMPS THAT ARE INERT TO 1920.
+/* THE SPLIT — title left, list right, inside Why us's own box: the same 1180
+   cap and gutter as `.wrap` in globals.css, so this band's edges line up with
+   the Why us band above instead of running out to WRAP's 1520. Stacks below
+   `lap:`. FaqV4 uses the same split — change them together. */
+export const SPLIT =
+  "wrap grid gap-y-10 lap:grid-cols-[5fr_7fr] lap:items-start lap:gap-x-16";
 
-   672 and 761 are the reference's, and they are right: a centred header and a
-   two-column row list are prose, and prose does not get wider because the
-   monitor did. What was wrong was that they were the ONLY thing in this band
-   with a number, so once the section's own 1280 cap came off they would have
-   been a 672px column adrift in a 1920px box.
+/* The left column's kicker and title, set to match Why us's `.kicker` and h2
+   (globals.css) so the three bands that share this width also share a
+   heading voice: the same pink, the same 28px rule before the label, bold not
+   extrabold. */
+export const KICKER =
+  "inline-flex items-center gap-[0.65em] font-mono text-[0.74rem] font-medium uppercase " +
+  "tracking-[0.22em] text-pink-deep before:h-px before:w-7 before:bg-current before:opacity-55 " +
+  "before:content-['']";
+export const TITLE = `font-display ${SIZE_H2} font-bold leading-[1.03] tracking-[-0.025em]`;
 
-   Both vw terms are tuned to resolve to the flat value at exactly 1920 — 35vw
-   is 672 there, 39.64vw is 761 — which is the same trick WRAP's own ceiling
-   uses, and it means every width anyone has designed against resolves to the
-   number that was drawn. The ramp only opens above 1920, by 25%, and holds flat
-   again from ~2400 up. */
-const HEAD_MEASURE = "max-w-[clamp(672px,35vw,840px)]";
-const LIST_MEASURE = "max-w-[clamp(761px,39.64vw,950px)]";
-
-/* THE SECTION HEADING STEP, SHARED WITH THE WHOLE PAGE — not a fourth private
-   clamp. This was `clamp(2rem,1.35rem+2.7vw,3rem)`: 48px flat from 1100px of
-   viewport all the way up, while Why us and Testimonials ran to 64 and Work to
-   66. Three ceilings for one tier is what "some sections stop resizing" looks
-   like — scroll from Why us into Pricing on a 2560 display and the heading
-   visibly drops a third. SIZE_H2 is one ramp for all four, 32 → 64, and it
-   clears H1 at every width; see lib/ui.ts. The 48 this used to state is still
-   on the ramp, it just lands at ~1300 now instead of being the ceiling. */
-const HEADING = SIZE_H2;
+/* THE TITLE, ONE BLOCK PER COPY LINE. The narrow column wraps each half of
+   the heading again, and left to itself it strands a word — "brief," and
+   "out." each sat alone on a line. `text-balance` fixes that, but Chrome only
+   balances the lines BEFORE a <br>, which is how RevealText sets the copy's
+   "\n". So each line is its own RevealText, displayed block, and each balances on
+   its own. The delay carries the word count forward so the reveal still reads
+   as one sweep, at RevealText's default 45ms stagger. */
+export function SplitTitle({ text, className = "" }: { text: string; className?: string }) {
+  const lines = text.split("\n");
+  const counts = lines.map((line) => line.trim().split(/\s+/).length);
+  return (
+    <h2 className={`${TITLE} ${className}`}>
+      {/* The block is a wrapper, not a class on RevealText: its root always
+          carries `inline`, which would win over a `block` passed alongside. */}
+      {lines.map((line, i) => (
+        <span key={line} className="block text-balance">
+          <RevealText text={line} delay={counts.slice(0, i).reduce((a, b) => a + b, 0) * 45} />
+        </span>
+      ))}
+    </h2>
+  );
+}
 
 /* 20px inclusions, down to 18 — the same step FaqV4 sets its questions at. */
 const ROW_SIZE = "text-[clamp(1.125rem,1.05rem+0.31vw,1.25rem)]";
@@ -131,66 +145,56 @@ export function PricingV4() {
        headline. */
     <section
       id="pricing"
-      className={`${ANCHOR} ${WRAP} ${SECTION}`}
+      className={`${ANCHOR} ${SECTION}`}
       aria-label={pricing.kicker}
     >
-      {/* HEADER — 672, centred. 10 under the kicker is the tightest gap in the
-          whole set, and it is what binds the two lines into one header block
-          rather than leaving the kicker floating above it. */}
-      <div className={`mx-auto flex w-full ${HEAD_MEASURE} flex-col items-center`}>
-        <Reveal>
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.1em] text-pink-deep">
-            {pricing.kicker}
-          </span>
-        </Reveal>
+      <div className={SPLIT}>
+        {/* LEFT — the title block, pinned while the list scrolls past it. */}
+        <div className="flex flex-col lap:sticky lap:top-28">
+          <Reveal>
+            <span className={KICKER}>{pricing.kicker}</span>
+          </Reveal>
 
-        {/* No `text-balance`: the copy carries a hard \n at the comma, which
-            RevealText turns into a <br>, so the break is already decided in
-            lib/content.ts and balancing would go looking for a second one. */}
-        <RevealText
-          as="h2"
-          text={pricing.heading}
-          className={`mt-2.5 text-center font-display ${HEADING} font-extrabold leading-[1.088] tracking-[-0.02em]`}
-        />
+          <SplitTitle text={pricing.heading} className="mt-4" />
 
-        <Reveal delay={80}>
-          <p
-            className={`mt-6 text-pretty text-center font-sans ${TEXT_SMALL} leading-6 text-ink-soft`}
-          >
-            {pricing.body}
-          </p>
-        </Reveal>
+          <Reveal delay={80}>
+            <p className={`mt-6 max-w-[46ch] text-pretty font-sans ${TEXT_SMALL} leading-6 text-ink-soft`}>
+              {pricing.body}
+            </p>
+          </Reveal>
+        </div>
+
+        {/* RIGHT — the ruled list, then the close. */}
+        <div>
+          <ul className="w-full">
+            {pricing.includes.map((item, i) => (
+              <li key={item} className={row(i === 0)}>
+                <Reveal delay={i * 60}>
+                  <div className="flex w-full items-center justify-between gap-6 py-6">
+                    <span
+                      className={`font-display ${ROW_SIZE} font-bold leading-[1.3] tracking-[-0.02em]`}
+                    >
+                      {item}
+                    </span>
+                    <span className={MARKER} aria-hidden="true">
+                      ✓
+                    </span>
+                  </div>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+
+          {/* The footnote is the answer to the number this table does not
+              print; see the header note. */}
+          <Reveal delay={100} className="mt-10 flex flex-col items-start gap-3">
+            <Button contact variant="grad" withArrow>
+              {pricing.cta}
+            </Button>
+            <p className={`font-sans ${TEXT_META} text-ink-faint`}>{pricing.foot}</p>
+          </Reveal>
+        </div>
       </div>
-
-      {/* THE LIST — 761, centred, and wider than the 672 header above it. See
-          note 2: that inversion is the design. */}
-      <ul className={`mx-auto mt-10 w-full ${LIST_MEASURE}`}>
-        {pricing.includes.map((item, i) => (
-          <li key={item} className={row(i === 0)}>
-            <Reveal delay={i * 60}>
-              <div className="flex w-full items-center justify-between gap-6 py-6">
-                <span
-                  className={`font-display ${ROW_SIZE} font-bold leading-[1.3] tracking-[-0.02em]`}
-                >
-                  {item}
-                </span>
-                <span className={MARKER} aria-hidden="true">
-                  ✓
-                </span>
-              </div>
-            </Reveal>
-          </li>
-        ))}
-      </ul>
-
-      {/* THE CLOSE — 40 under the list, centred. The footnote is the answer to
-          the number this table does not print; see the header note. */}
-      <Reveal delay={100} className="mt-10 flex flex-col items-center gap-3">
-        <Button contact variant="grad" withArrow>
-          {pricing.cta}
-        </Button>
-        <p className={`font-sans ${TEXT_META} text-ink-faint`}>{pricing.foot}</p>
-      </Reveal>
     </section>
   );
 }

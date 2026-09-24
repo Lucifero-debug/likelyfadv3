@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { content } from "@/lib/content";
+import { content } from "@/lib/redesign/content";
 import { takeReels } from "@/lib/reelOrder";
 import { HOT } from "@/lib/useInViewPlay";
 import { useLeanRowLength } from "@/lib/useLeanWall";
 import type { Reel } from "@/lib/reels.generated";
-import { Button } from "@/components/ui/Button";
 import { LazyVideo } from "@/components/ui/LazyVideo";
 import { Lightbox } from "@/components/ui/Lightbox";
-import { Reveal } from "@/components/ui/Reveal";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { DRIVE_LIBRARY_URL } from "@/lib/site";
-import { ANCHOR, HEAD_GAP, SECTION, TEXT_META, WRAP } from "@/lib/ui";
+import { ANCHOR, SECTION, TEXT_LEAD, WRAP } from "@/lib/redesign/ui";
+import { CaptionText } from "@/components/redesign/CaptionText";
 
 const { work } = content;
 
@@ -158,24 +156,17 @@ const laneSeconds = (full: number, perRow: number) =>
 const LIBRARY = content.reels.videos;
 /* Capped at the library length so takeReels' modulo never engages and no clip
    is dealt twice. */
-function dealRows(offset: number) {
-  const picks = takeReels(LIBRARY, offset, Math.min(LIBRARY.length, ROWS * PER_ROW));
-  return Array.from({ length: ROWS }, (_, row) => {
-    const own = picks.filter((_, i) => i % ROWS === row);
-    return Array.from({ length: PER_ROW }, (_, i) =>
-      i < own.length
-        ? own[i]
-        : /* + own.length * PER_ROW keeps the subtraction positive for any row
-             short enough that half a cycle runs off the front of its own set. */
-          own[(i - Math.floor(PER_ROW / 2) + own.length * PER_ROW) % own.length]
-    );
-  });
-}
-const ROWS_OF_PICKS = dealRows(OFFSET);
-
-/* The hero's backdrop is this same wall, dealt from a different start so its
-   rows do not open on the clips this section opens on. */
-export const HERO_ROWS_OF_PICKS = dealRows(0);
+const PICKS = takeReels(LIBRARY, OFFSET, Math.min(LIBRARY.length, ROWS * PER_ROW));
+const ROWS_OF_PICKS = Array.from({ length: ROWS }, (_, row) => {
+  const own = PICKS.filter((_, i) => i % ROWS === row);
+  return Array.from({ length: PER_ROW }, (_, i) =>
+    i < own.length
+      ? own[i]
+      : /* + own.length * PER_ROW keeps the subtraction positive for any row
+           short enough that half a cycle runs off the front of its own set. */
+        own[(i - Math.floor(PER_ROW / 2) + own.length * PER_ROW) % own.length]
+  );
+});
 
 /* Tiles are smaller and squarer-cornered than the hero wall's cards: this wall
    is about count, and a smaller tile puts more of them on screen.
@@ -213,17 +204,16 @@ export const HERO_ROWS_OF_PICKS = dealRows(0);
    the ::after is free to paint its shadow OUTSIDE the tile. The background
    image needs no clip of its own — a background is already clipped to the
    border box, radius included. */
-const TILE_FRAME =
-  "relative aspect-[9/16] flex-none rounded-lg " +
-  "bg-[#1a1620] shadow-[0_12px_32px_rgba(0,0,0,0.45)] tab:rounded-xl";
-const TILE_SIZE = "w-[clamp(112px,33vw,146px)] tab:w-[clamp(116px,12vw,158px)]";
-const TILE_HOVER =
+const TILE =
+  "relative aspect-[9/16] w-[clamp(112px,33vw,146px)] flex-none rounded-lg " +
+  "bg-[#1a1620] shadow-[0_12px_32px_rgba(0,0,0,0.45)] " +
   "transition-[opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,0.7,0.2,1)] " +
   "hover:scale-[1.05] active:brightness-90 " +
   "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] " +
   "after:shadow-[0_20px_54px_rgba(0,0,0,0.62)] after:opacity-0 after:content-[''] " +
   "after:transition-opacity after:duration-[280ms] hover:after:opacity-100 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-white";
+  "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-white " +
+  "tab:w-[clamp(116px,12vw,158px)] tab:rounded-xl";
 
 /* The fade at each end, painted ON TOP rather than masked. A mask forces the
    layer beneath it — here a ~2720px-wide row holding thirty-two decoding
@@ -257,13 +247,10 @@ function Tile({
   label,
   lane,
   enabled,
-  size,
 }: {
   reel: Reel;
-  /** Absent makes the tile a plain, inert picture — see WorkLanes. */
-  onOpen?: () => void;
+  onOpen: () => void;
   label: string;
-  size: string;
   /** This tile's row, as a play-budget bucket. Unique across the page: the
       hero wall's columns are lanes too and must not collide with these. */
   lane: string;
@@ -272,14 +259,8 @@ function Tile({
       passes false under prefers-reduced-motion; the note in Work() says why. */
   enabled: boolean;
 }) {
-  const Frame = onOpen ? "button" : "div";
   return (
-    <Frame
-      {...(onOpen
-        ? { type: "button" as const, onClick: onOpen, "aria-label": label }
-        : { "aria-hidden": true })}
-      className={`${TILE_FRAME} ${size} ${onOpen ? TILE_HOVER : ""}`}
-    >
+    <button type="button" onClick={onOpen} aria-label={label} className={TILE}>
       {/* The clip gets its own box so the tile is free to paint shadows outside
           itself. A wrapper rather than border-radius straight on the <video>:
           Safari has been unreliable about clipping video to its own corners,
@@ -326,7 +307,7 @@ function Tile({
           className="relative size-full object-cover"
         />
       </span>
-    </Frame>
+    </button>
   );
 }
 
@@ -457,6 +438,25 @@ export function Work() {
     () => typeof window !== "undefined" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
+  /* HOW MANY TILES EACH LANE ACTUALLY NEEDS ON THIS MACHINE. PER_ROW on
+     everything that does not report itself weak, which is the server's answer
+     and therefore the one the markup hydrates against; on a weak machine, the
+     count that spans this viewport and no more. The wall looks the same either
+     way — see the note at the head of lib/useLeanWall.ts for why a lane can
+     lose two thirds of its tiles without losing anything you can see. */
+  const perRow = useLeanRowLength(PER_ROW);
+
+  /* Sliced rather than re-dealt, so a trimmed lane is a PREFIX of the same
+     column-major deal ROWS_OF_PICKS already made. Re-running takeReels against
+     a smaller count would re-do the union-find spread and could pull two clips
+     from one shoot next to each other, which is the one thing that deal exists
+     to prevent. */
+  const rows = useMemo(
+    () =>
+      perRow >= PER_ROW ? ROWS_OF_PICKS : ROWS_OF_PICKS.map((row) => row.slice(0, perRow)),
+    [perRow]
+  );
+
   return (
     <section
       ref={sectionRef}
@@ -497,23 +497,96 @@ export function Work() {
       className={`${SECTION} ${ANCHOR} relative overflow-hidden [content-visibility:auto] [contain-intrinsic-size:auto_1200px] bg-[radial-gradient(120%_90%_at_50%_-10%,#241d2b,#17141b_72%)] text-[#f5f3f0]`}
     >
       <div className={WRAP}>
-        <div className={HEAD_GAP}>
-          <SectionHeading kicker={work.kicker} heading={work.heading} tone="bright" />
-          <Reveal delay={100}>
-            <p className={`mt-3 text-center font-mono ${TEXT_META} leading-1.2 tracking-[0.04em] text-ink-dim`}>
-              {work.sub}
-            </p>
-          </Reveal>
-        </div>
+        {/* THE HEADING SITS ON THE WALL, set in white caption boxes — the
+            default on-screen text style of the apps these ads run in. The
+            negative bottom margin drops its last line over the first row of
+            clips, and z-[4] keeps it above the rows and their edge fades, so
+            the claim is literally captioning the work. */}
+        <h2
+          className="relative z-[4] -mb-[clamp(20px,2.4vw,40px)] max-w-[14ch] px-[0.2em] text-balance font-display text-[clamp(2.5rem,1.1rem+3.6vw,4.75rem)] font-extrabold leading-[1.2]"
+        >
+          <CaptionText text={work.heading} tone="white" />
+        </h2>
       </div>
 
-      <WorkLanes
-        rows={ROWS_OF_PICKS}
-        lane="work-row"
-        running={near && !active}
-        onOpen={setActive}
-        play={play}
-      />
+      {/* Full-bleed: the rows run edge to edge, outside the wrap's cap. That is
+          the whole effect — they run OUT of the page rather than stopping at an
+          edge, which is what the fade sells. The two overlays span all three
+          rows, so the effect costs two elements rather than one mask per row. */}
+      <div className="relative flex flex-col gap-[clamp(8px,1.2vw,12px)]">
+        {rows.map((row, ri) => (
+          <div
+            key={ri}
+            /* Hovering a row dims everything except the tile under the pointer,
+               so one clip can be read out of forty-eight without the rest going
+               dark. `:not(:hover)` rather than dim-all-then-undim-one: two
+               rules writing opacity at equal specificity would have their
+               winner decided by emit order.
+
+               `contain` scopes the marquee's per-frame layout and paint
+               invalidation to the row rather than letting it walk the page.
+
+               py-3 -my-3 IS WHAT GIVES THE HOVER SCALE SOMEWHERE TO GO. Both
+               `overflow-hidden` and `contain: paint` clip at the padding box,
+               and a row with no padding is exactly as tall as its tiles — so a
+               tile growing 5% would have had its top and bottom sliced off. The
+               12px of padding is the room, and the equal negative margin hands
+               it straight back to the layout, so the visible gap between rows
+               is still the container's own and nothing below moves. At the
+               widest tile (158px, so 281px tall) a 1.05 scale needs 7px a side:
+               inside 12, with margin to spare. Raise the scale and this has to
+               rise with it.
+
+               The rows' padding boxes now OVERLAP by that same 12px, which is
+               why the hover needs a z-index as well: without it the next row
+               paints over the part of the magnified tile that bleeds into the
+               shared strip. Rows are flex items, so z-index applies to them
+               with no positioning of their own. */
+            className="py-3 -my-3 overflow-hidden [contain:layout_paint_style] hover:z-[3] [&:hover_button:not(:hover)]:opacity-45"
+          >
+            <div
+              /* Hovering a tile stops THIS row and leaves the other two
+                 running — see the same note on the hero wall's lane.
+
+                 `active` STOPS ALL THREE, and it is the lightbox's blur that
+                 needs it rather than anything visual: a full-viewport
+                 backdrop-filter has to re-sample whatever moves behind it, so
+                 three marquees dragging 96 clips underneath an overlay nobody
+                 can see through were being paid for on every composited frame.
+                 Nothing is visible past the scrim, so nothing needs to move. */
+              className={`flex w-max animate-lane-x gap-[clamp(8px,1.2vw,12px)] will-change-transform [&:has(button:hover)]:[animation-play-state:paused] ${
+                !near || active ? "[animation-play-state:paused]" : ""
+              }`}
+              style={{ animationDuration: `${laneSeconds(ROW_STYLE[ri].seconds, perRow)}s` }}
+            >
+              {[...row, ...row].map((clip, i) => (
+                <Tile
+                  key={`${ri}-${i}`}
+                  reel={clip}
+                  lane={`work-row-${ri}`}
+                  onOpen={() => setActive(clip)}
+                  enabled={play}
+                  /* Numbered off the count this lane actually rendered, not off
+                     PER_ROW: the two diverge on a trimmed wall, and against the
+                     constant the second copy of the set would be announced with
+                     a different number from the first — the same clip, twice,
+                     under two names. */
+                  label={`Play reel ${ri * row.length + (i % row.length) + 1} full size`}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div
+          aria-hidden="true"
+          className={`${FADE} left-0 bg-[linear-gradient(to_right,#17141b,rgba(23,20,27,0))]`}
+        />
+        <div
+          aria-hidden="true"
+          className={`${FADE} right-0 bg-[linear-gradient(to_left,#17141b,rgba(23,20,27,0))]`}
+        />
+      </div>
 
       {/* THE ONE CONTROL ON THIS BAND, AND IT IS THE END OF THE SCROLL RATHER
           THAN AN INTERRUPTION IN IT. The wall answers "is this real"; a visitor
@@ -542,22 +615,20 @@ export function Work() {
           edge, which is the right place for a utility control and the wrong
           place for the section's ask. */}
       <div
-        className={`${WRAP} mt-[clamp(32px,4.5vw,64px)] flex flex-col items-center gap-4`}
+        className={`${WRAP} mt-[clamp(32px,4.5vw,64px)] flex flex-col gap-2 lap:flex-row lap:items-center lap:justify-between`}
       >
-        <Reveal>
-          <Button
-            href={DRIVE_LIBRARY_URL}
-            /* EXTERNAL, so the tab that opens cannot navigate this one — see
-               the note on the prop. It is also the reason this is not a plain
-               <a>: the rel is the half that gets forgotten. */
-            external
-            variant="light"
-            withArrow
-            ariaLabel={work.ctaAria}
-          >
-            {work.cta}
-          </Button>
-        </Reveal>
+        <p className={`max-w-[40ch] font-sans ${TEXT_LEAD} leading-normal text-ink-dim`}>{work.sub}</p>
+        {/* A text link, not a second pill: the page's one button style is kept
+            for the DM. New tab with noopener, since it leaves the site. */}
+        <a
+          href={DRIVE_LIBRARY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={work.ctaAria}
+          className="inline-flex min-h-[44px] items-center font-sans font-bold text-white underline decoration-white/35 underline-offset-[0.3em] transition-colors hover:decoration-white"
+        >
+          {work.cta}
+        </a>
       </div>
 
       {/* Dozens of near-identical tile labels would be noise to a screen
@@ -566,131 +637,5 @@ export function Work() {
 
       {active && <Lightbox reel={active} onClose={() => setActive(null)} />}
     </section>
-  );
-}
-
-/* THE THREE LANES, WITHOUT THE BAND AROUND THEM — so the hero can stand the
-   same wall behind its headline. With `onOpen` the tiles are buttons that open
-   the lightbox and the rows answer hover; without it every tile is an inert,
-   aria-hidden picture and nothing on the wall reacts to the pointer. */
-export function WorkLanes({
-  rows: dealt,
-  lane,
-  running,
-  onOpen,
-  play,
-  size = TILE_SIZE,
-  className = "",
-}: {
-  rows: Reel[][];
-  /** Play-budget bucket prefix; each row appends its index. Unique per wall. */
-  lane: string;
-  /** False parks all three marquees. */
-  running: boolean;
-  onOpen?: (reel: Reel) => void;
-  play: boolean;
-  /** The tile's width classes. The height follows from the 9:16 frame. */
-  size?: string;
-  className?: string;
-}) {
-  /* HOW MANY TILES EACH LANE ACTUALLY NEEDS ON THIS MACHINE. PER_ROW on
-     everything that does not report itself weak, which is the server's answer
-     and therefore the one the markup hydrates against; on a weak machine, the
-     count that spans this viewport and no more. The wall looks the same either
-     way — see the note at the head of lib/useLeanWall.ts for why a lane can
-     lose two thirds of its tiles without losing anything you can see. */
-  const perRow = useLeanRowLength(PER_ROW);
-
-  /* Sliced rather than re-dealt, so a trimmed lane is a PREFIX of the same
-     column-major deal ROWS_OF_PICKS already made. Re-running takeReels against
-     a smaller count would re-do the union-find spread and could pull two clips
-     from one shoot next to each other, which is the one thing that deal exists
-     to prevent. */
-  const rows = useMemo(
-    () => (perRow >= PER_ROW ? dealt : dealt.map((row) => row.slice(0, perRow))),
-    [dealt, perRow]
-  );
-
-  /* Full-bleed: the rows run edge to edge, outside the wrap's cap. That is the
-     whole effect — they run OUT of the page rather than stopping at an edge,
-     which is what the fade sells. The two overlays span all three rows, so the
-     effect costs two elements rather than one mask per row. */
-  return (
-    <div className={`relative flex flex-col gap-[clamp(8px,1.2vw,12px)] ${className}`}>
-      {rows.map((row, ri) => (
-        <div
-          key={ri}
-          /* Hovering a row dims everything except the tile under the pointer,
-             so one clip can be read out of forty-eight without the rest going
-             dark. `:not(:hover)` rather than dim-all-then-undim-one: two
-             rules writing opacity at equal specificity would have their
-             winner decided by emit order.
-
-             `contain` scopes the marquee's per-frame layout and paint
-             invalidation to the row rather than letting it walk the page.
-
-             py-3 -my-3 IS WHAT GIVES THE HOVER SCALE SOMEWHERE TO GO. Both
-             `overflow-hidden` and `contain: paint` clip at the padding box,
-             and a row with no padding is exactly as tall as its tiles — so a
-             tile growing 5% would have had its top and bottom sliced off. The
-             12px of padding is the room, and the equal negative margin hands
-             it straight back to the layout, so the visible gap between rows
-             is still the container's own and nothing below moves. At the
-             widest tile (158px, so 281px tall) a 1.05 scale needs 7px a side:
-             inside 12, with margin to spare. Raise the scale and this has to
-             rise with it.
-
-             The rows' padding boxes now OVERLAP by that same 12px, which is
-             why the hover needs a z-index as well: without it the next row
-             paints over the part of the magnified tile that bleeds into the
-             shared strip. Rows are flex items, so z-index applies to them
-             with no positioning of their own. */
-          className="py-3 -my-3 overflow-hidden [contain:layout_paint_style] hover:z-[3] [&:hover_button:not(:hover)]:opacity-45"
-        >
-          <div
-            /* Hovering a tile stops THIS row and leaves the other two
-               running — see the same note on the hero wall's lane.
-
-               `running` false STOPS ALL THREE. Work passes it false while the
-               lightbox is open, and it is the lightbox's blur that
-               needs it rather than anything visual: a full-viewport
-               backdrop-filter has to re-sample whatever moves behind it, so
-               three marquees dragging 96 clips underneath an overlay nobody
-               can see through were being paid for on every composited frame.
-               Nothing is visible past the scrim, so nothing needs to move. */
-            className={`flex w-max animate-lane-x gap-[clamp(8px,1.2vw,12px)] will-change-transform [&:has(button:hover)]:[animation-play-state:paused] ${
-              !running ? "[animation-play-state:paused]" : ""
-            }`}
-            style={{ animationDuration: `${laneSeconds(ROW_STYLE[ri].seconds, perRow)}s` }}
-          >
-            {[...row, ...row].map((clip, i) => (
-              <Tile
-                key={`${ri}-${i}`}
-                reel={clip}
-                lane={`${lane}-${ri}`}
-                onOpen={onOpen && (() => onOpen(clip))}
-                size={size}
-                enabled={play}
-                /* Numbered off the count this lane actually rendered, not off
-                   PER_ROW: the two diverge on a trimmed wall, and against the
-                   constant the second copy of the set would be announced with
-                   a different number from the first — the same clip, twice,
-                   under two names. */
-                label={`Play reel ${ri * row.length + (i % row.length) + 1} full size`}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-
-      <div
-        aria-hidden="true"
-        className={`${FADE} left-0 bg-[linear-gradient(to_right,#17141b,rgba(23,20,27,0))]`}
-      />
-      <div
-        aria-hidden="true"
-        className={`${FADE} right-0 bg-[linear-gradient(to_left,#17141b,rgba(23,20,27,0))]`}
-      />
-    </div>
   );
 }

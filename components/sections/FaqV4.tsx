@@ -4,8 +4,8 @@ import { useState } from "react";
 import { content } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
-import { RevealText } from "@/components/ui/RevealText";
-import { ANCHOR, SECTION, SIZE_H2, TEXT_SMALL, WRAP } from "@/lib/ui";
+import { ANCHOR, SECTION, TEXT_SMALL } from "@/lib/ui";
+import { KICKER, SPLIT, SplitTitle } from "@/components/sections/PricingV4";
 
 const { faq } = content;
 
@@ -98,18 +98,6 @@ const { faq } = content;
    The clamps run DOWNWARD only. Each lands on its desktop number by ~1280 and
    holds it above; the ramp exists for everything narrower. */
 
-/* THE TWO EDITORIAL MEASURES, AS RAMPS THAT ARE INERT TO 1920. Same pair and
-   same reasoning as PricingV4 — the vw terms resolve to the flat 672 and 761 at
-   exactly 1920, so every designed width is untouched and the ramp only opens
-   above it. Read the longer note there. */
-const HEAD_MEASURE = "max-w-[clamp(672px,35vw,840px)]";
-const LIST_MEASURE = "max-w-[clamp(761px,39.64vw,950px)]";
-
-/* THE SECTION HEADING STEP, SHARED WITH THE WHOLE PAGE — see the note on the
-   same constant in PricingV4. This was a private clamp topping out at 48 while
-   Why us and Testimonials ran to 64 and Work to 66. */
-const HEADING = SIZE_H2;
-
 /* 20px questions, down to 18. */
 const QUESTION_SIZE = "text-[clamp(1.125rem,1.05rem+0.31vw,1.25rem)]";
 
@@ -186,113 +174,94 @@ export function FaqV4() {
   return (
     <section
       id="faq"
-      /* WRAP AND SECTION, THE PAGE'S OWN BOX — not the reference's 1280 cap
-         and its own gutter clamp. See the longer note on the same change in
-         PricingV4: leaving the horizontal half on the reference's numbers is
-         what left this band frozen at 1280 while every other section on the
-         page kept opening past it. */
-      className={`${ANCHOR} ${WRAP} ${SECTION} flex flex-col items-center`}
+      className={`${ANCHOR} ${SECTION}`}
       aria-label="Frequently asked questions"
     >
-      {/* HEADER — a 672 measure, centred, and NARROWER than the list below it.
-          See note 2 before widening it to match. */}
-      <div className={`flex w-full ${HEAD_MEASURE} flex-col items-center`}>
-        {/* Bare centred mono, no bar — see note 3. */}
-        <Reveal>
-          <span className="block text-center font-mono text-xs uppercase leading-5 tracking-[0.1em] text-ink-faint">
-            {faq.kicker}
-          </span>
-        </Reveal>
+      <div className={SPLIT}>
+        {/* LEFT — the title block, pinned while the questions scroll past. */}
+        <div className="flex flex-col lap:sticky lap:top-28">
+          <Reveal>
+            <span className={KICKER}>{faq.kicker}</span>
+          </Reveal>
 
-        {/* EXTRABOLD, and `leading-[1.088]` is the reference's 52.22-on-48 kept
-            as a ratio so it travels down the clamp. The `pt-2.5` is the
-            reference's 10 — see note 4 — and it sits on the wrapper rather than
-            as a margin on the heading so it survives RevealText's inline
-            layout.
+          <SplitTitle text={faq.heading} className="mt-4" />
 
-            No `text-balance`: the copy carries a hard \n at the gradient
-            boundary, which RevealText turns into a <br>, so the break is already
-            decided in lib/content.ts and balancing would fight it. */}
-        <div className="w-full pt-2.5">
-          <RevealText
-            as="h2"
-            text={faq.heading}
-            className={`text-center font-display ${HEADING} font-extrabold leading-[1.088] tracking-[-0.02em]`}
-          />
+          {/* THE CTA SITS UNDER THE TITLE, not after the eighth question: the
+              column is sticky, so the way out stays in view the whole time a
+              reader is working down the list, and it fills what was an empty
+              column beside a long one. */}
+          <Reveal delay={100} className="pt-8">
+            <Button contact variant="light" withArrow>
+              {faq.cta}
+            </Button>
+          </Reveal>
+        </div>
+
+        {/* RIGHT — the questions, then the close. */}
+        <div>
+          <div className="w-full">
+            {faq.items.map((item, i) => {
+              const isOpen = open.includes(i);
+              return (
+                /* Stagger caps at four steps: at 8 × 60ms the last row would still
+                   be arriving well after a reader reached it. */
+                <Reveal key={item.q} delay={Math.min(i, 3) * 60}>
+                  <div className={row(i === 0)}>
+                    {/* A HEADING WITH A BUTTON INSIDE IT, not a button styled as a
+                        heading: the h3 is what puts all eight questions into a
+                        screen reader's outline, and the button is what makes each
+                        one operable. <summary> was doing both jobs by itself. */}
+                    <h3>
+                      <button
+                        type="button"
+                        id={`faq-v4-q-${i}`}
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-v4-a-${i}`}
+                        data-open={isOpen ? "" : undefined}
+                        onClick={() =>
+                          setOpen((prev) =>
+                            prev.includes(i) ? prev.filter((n) => n !== i) : [...prev, i],
+                          )
+                        }
+                        className={QUESTION}
+                      >
+                        <span>{item.q}</span>
+                        <span className={MARKER} aria-hidden="true">
+                          <span className={GLYPH}>+</span>
+                        </span>
+                      </button>
+                    </h3>
+
+                    <div
+                      id={`faq-v4-a-${i}`}
+                      role="region"
+                      aria-labelledby={`faq-v4-q-${i}`}
+                      className={`${PANEL} ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+                    >
+                      {/* THE CLIP LIVES HERE AND NOWHERE ELSE. Move
+                          `overflow-hidden` up onto the grid and the row still
+                          collapses correctly, but the paragraph's own transform is
+                          then clipped against a box that is mid-flight — the copy
+                          slides under an edge that is itself moving. */}
+                      <div className="overflow-hidden" inert={!isOpen}>
+                        <p
+                          className={`${ANSWER} ${
+                            isOpen
+                              ? "translate-y-0 opacity-100 delay-[90ms]"
+                              : "-translate-y-1 opacity-0"
+                          }`}
+                        >
+                          {item.a}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
         </div>
       </div>
-
-      {/* 40 under the header, and a 761 measure — wider than the 672 above. */}
-      <div className={`w-full ${LIST_MEASURE} pt-10`}>
-        {faq.items.map((item, i) => {
-          const isOpen = open.includes(i);
-          return (
-            /* Stagger caps at four steps: at 8 × 60ms the last row would still
-               be arriving well after a reader reached it. */
-            <Reveal key={item.q} delay={Math.min(i, 3) * 60}>
-              <div className={row(i === 0)}>
-                {/* A HEADING WITH A BUTTON INSIDE IT, not a button styled as a
-                    heading: the h3 is what puts all eight questions into a
-                    screen reader's outline, and the button is what makes each
-                    one operable. <summary> was doing both jobs by itself. */}
-                <h3>
-                  <button
-                    type="button"
-                    id={`faq-v4-q-${i}`}
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-v4-a-${i}`}
-                    data-open={isOpen ? "" : undefined}
-                    onClick={() =>
-                      setOpen((prev) =>
-                        prev.includes(i) ? prev.filter((n) => n !== i) : [...prev, i],
-                      )
-                    }
-                    className={QUESTION}
-                  >
-                    <span>{item.q}</span>
-                    <span className={MARKER} aria-hidden="true">
-                      <span className={GLYPH}>+</span>
-                    </span>
-                  </button>
-                </h3>
-
-                <div
-                  id={`faq-v4-a-${i}`}
-                  role="region"
-                  aria-labelledby={`faq-v4-q-${i}`}
-                  className={`${PANEL} ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-                >
-                  {/* THE CLIP LIVES HERE AND NOWHERE ELSE. Move
-                      `overflow-hidden` up onto the grid and the row still
-                      collapses correctly, but the paragraph's own transform is
-                      then clipped against a box that is mid-flight — the copy
-                      slides under an edge that is itself moving. */}
-                  <div className="overflow-hidden" inert={!isOpen}>
-                    <p
-                      className={`${ANSWER} ${
-                        isOpen
-                          ? "translate-y-0 opacity-100 delay-[90ms]"
-                          : "-translate-y-1 opacity-0"
-                      }`}
-                    >
-                      {item.a}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          );
-        })}
-      </div>
-
-      {/* The reference ends on the last rule. This copy has a CTA, and with a
-          centred header there is no side column to put it in — so it closes the
-          section, on the same 40 the list opened with. */}
-      <Reveal delay={100} className="pt-10">
-        <Button contact variant="light" withArrow>
-          {faq.cta}
-        </Button>
-      </Reveal>
     </section>
   );
 }

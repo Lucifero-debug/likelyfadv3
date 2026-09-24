@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { contactUrl } from "@/lib/site";
 
-type Variant = "grad" | "dark" | "ghost" | "light";
+type Variant = "grad" | "dark" | "ghost" | "light" | "pink";
 type Size = "default" | "compact";
 
 /* Buttons hold still. Hover changes colour, border and shadow only — nothing
@@ -77,6 +77,12 @@ const VARIANTS: Record<Variant, string> = {
     "border-transparent bg-[image:var(--grad)] text-white " +
     "shadow-[0_12px_30px_-12px_rgba(236,72,153,0.6)] hover:shadow-[var(--shadow-pink)]",
   dark: "border-transparent bg-ink text-paper hover:shadow-[var(--shadow-pink)]",
+  /* THE DM COLOUR. Pink on the page means "message us", so the DM buttons on
+     paper carry it, and the pricing band is the same colour grown into a field.
+     Ink text, not white: ink on #f0407f is 5:1, white is 3.6 and fails at this
+     size. Hover flips to ink rather than to a darker pink, which would drop the
+     text under 4.5:1. */
+  pink: "border-transparent bg-pink text-ink hover:bg-ink hover:text-paper",
   /* Full-strength ink rather than the hairline the `light` variant uses: this
      one sits beside the gradient CTA in the hero and needs enough weight to
      read as the second half of a pair. */

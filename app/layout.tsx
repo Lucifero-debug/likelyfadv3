@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Montserrat, Roboto } from "next/font/google";
+import { Archivo, JetBrains_Mono, Montserrat, Roboto } from "next/font/google";
 import { MEDIA_ORIGIN, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 import SmoothScroll from "./smooth-scroll";
@@ -44,6 +44,16 @@ const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-jetbrains",
+  display: "swap",
+});
+
+/* The /v2 redesign's one family. Loaded with its width axis so the condensed
+   headings and the normal-width body come out of one variable file; only the
+   [data-site="redesign"] subtree uses it (globals.css). */
+const archivo = Archivo({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--font-archivo",
   display: "swap",
 });
 
@@ -107,7 +117,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${roboto.variable} ${jetbrains.variable} [font-feature-settings:'ss01']`}
+      className={`${montserrat.variable} ${roboto.variable} ${jetbrains.variable} ${archivo.variable} [font-feature-settings:'ss01']`}
     >
       <head>
         {/* WARM THE MEDIA ORIGIN BEFORE ANYTHING ASKS IT FOR A BYTE.
