@@ -4,11 +4,18 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { content } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { TEXT_H1, TEXT_LEAD, TEXT_META } from "@/lib/ui";
-import { HERO_ROWS_OF_PICKS, WorkLanes } from "./Work";
+import { HERO_ROWS_OF_PICKS, WorkLanes } from "@/components/sections/Work";
+import { mountHeroField } from "./heroField";
+import { Magnetic } from "./Magnetic";
 
 const { hero } = content;
 
-/* THE HERO — THE WORK FIRST, THE PITCH SECOND.
+/* V7 HERO — HeroReel, plus a WebGL field under the copy (see heroField.ts).
+   Everything below is HeroReel's own note and still holds; the only changes
+   are the field layer, which rides the same `b` as the dim, a word-by-word
+   settle on the headline as `r` completes, and a magnetic primary CTA.
+
+   THE HERO — THE WORK FIRST, THE PITCH SECOND.
 
    The page opens on the work wall and nothing else: three rows of real client
    clips filling the screen, full bleed, with no headline over them. The wall is
@@ -95,13 +102,15 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
    entrance, and a word reveal playing on load would be spent off screen. */
 const [HEAD_PLAIN, HEAD_GRAD = ""] = hero.headline.split("*");
 
-export function HeroReel() {
+export function HeroV7() {
   const ref = useRef<HTMLElement>(null);
   const wallRef = useRef<HTMLDivElement>(null);
   const dimRef = useRef<HTMLDivElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
   const edgeRef = useRef<HTMLDivElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLHeadingElement>(null);
   const [play] = useState(() => typeof window !== "undefined" && !reduceMotion());
   const [inView, setInView] = useState(true);
 
@@ -112,7 +121,11 @@ export function HeroReel() {
     const copy = copyRef.current;
     const edge = edgeRef.current;
     const cue = cueRef.current;
-    if (!el || !wall || !dim || !copy || !edge || !cue) return;
+    const fieldHost = fieldRef.current;
+    const head = headRef.current;
+    if (!el || !wall || !dim || !copy || !edge || !cue || !fieldHost || !head) return;
+
+    const field = mountHeroField(fieldHost);
 
     /* The last values written, so a frame whose progress rounds to the same
        numbers writes nothing at all. */
@@ -127,17 +140,22 @@ export function HeroReel() {
         dim.style.setProperty("-webkit-backdrop-filter", blur);
         dim.style.opacity = String(b);
         cue.style.opacity = String(clamp01(1 - b * 4));
+        field?.setLevel(b);
       }
       if (r !== lastR) {
         lastR = r;
         copy.style.transform = `translate3d(0,calc(${1 - r} * (50svh - 8.5rem + 50%)),0)`;
         edge.style.opacity = String(1 - r);
+        /* The words settle once the copy is nearly home: tracked out and
+           lifted while it travels, locked tight as it lands. */
+        if (r > 0.92) head.dataset.landed = "";
+        else delete head.dataset.landed;
       }
     };
 
     if (reduceMotion()) {
       apply(1, 1);
-      return;
+      return () => field?.dispose();
     }
 
     let raf = 0;
@@ -159,6 +177,7 @@ export function HeroReel() {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      field?.dispose();
     };
   }, []);
 
@@ -218,6 +237,13 @@ export function HeroReel() {
           className="pointer-events-none absolute inset-0 bg-[rgba(23,20,27,0.62)] opacity-0"
         />
 
+        {/* THE FIELD — WebGL, mounted by heroField.ts, faded in by b. */}
+        <div
+          ref={fieldRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-0"
+        />
+
         {/* A fixed floor under the peeking copy, so the kicker and the first
             line are legible over bright clips before the dim arrives. */}
         <div
@@ -248,9 +274,10 @@ export function HeroReel() {
             </span>
 
             <h1
-              className={`mt-3 max-w-[18ch] text-balance font-display ${TEXT_H1} font-bold leading-[1.04] tracking-[-0.022em]`}
+              ref={headRef}
+              className={`group/head mt-3 max-w-[18ch] text-balance font-display ${TEXT_H1} font-bold leading-[1.04] tracking-[-0.022em]`}
             >
-              {HEAD_PLAIN}
+              <HeadWords text={HEAD_PLAIN} from={0} />
               <span className="bg-[image:var(--grad)] box-decoration-clone bg-clip-text text-transparent">
                 {HEAD_GRAD}
               </span>
@@ -263,9 +290,11 @@ export function HeroReel() {
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-2">
-              <Button contact variant="grad" withArrow>
-                {hero.primaryCta}
-              </Button>
+              <Magnetic>
+                <Button contact variant="grad" withArrow>
+                  {hero.primaryCta}
+                </Button>
+              </Magnetic>
               <Button
                 href={hero.secondaryHref}
                 variant="ghost"
@@ -308,5 +337,31 @@ export function HeroReel() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* The plain run of the headline, one span per word. While the copy travels
+   each word sits slightly lifted and faded in sequence; when the h1 carries
+   data-landed they drop into place one after another. The gradient run is
+   left whole — splitting it would restart the gradient on every word. */
+function HeadWords({ text, from }: { text: string; from: number }) {
+  const words = text.split(/(\s+)/);
+  let n = from;
+  return (
+    <>
+      {words.map((w, i) => {
+        if (/^\s+$/.test(w) || !w) return w;
+        const k = n++;
+        return (
+          <span
+            key={i}
+            style={{ transitionDelay: `${k * 45}ms` }}
+            className="inline-block translate-y-[0.12em] opacity-70 transition-[transform,opacity] duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-data-[landed]/head:translate-y-0 group-data-[landed]/head:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100"
+          >
+            {w}
+          </span>
+        );
+      })}
+    </>
   );
 }

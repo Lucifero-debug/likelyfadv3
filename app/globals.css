@@ -1495,3 +1495,93 @@ html:has([data-site="v6"]) body {
 .p-toast {
   animation: p-toast-in var(--p-duration-250) var(--p-ease) both;
 }
+
+/* ============================================================================
+   /v7 — the screening room (components/v7/WorkReelV7.tsx). A new clip settles
+   in rather than cutting, and the active thumbnail's three bars bounce while
+   it plays. Both are flattened by the reduced-motion block above.
+   ========================================================================== */
+@keyframes v7-clip-in {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+@keyframes v7-eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* /v7 - page-wide pieces, scoped to the [data-v7] wrapper in app/v7/page.tsx
+   so no other version is touched. */
+
+/* The nav drops in on first paint. */
+[data-v7] > header {
+  animation: v7-nav-in 900ms cubic-bezier(0.16, 1, 0.3, 1) 200ms backwards;
+}
+@keyframes v7-nav-in {
+  from {
+    transform: translateY(-110%);
+  }
+}
+
+/* Why-us pillars flip up out of the page instead of sliding, and the gradient
+   bar on each one sweeps across once as it lands. */
+[data-v7] .why-grid[data-phase="armed"] [data-reveal-item] {
+  opacity: 0;
+  transform: perspective(900px) translateY(40px) rotateX(-22deg);
+}
+[data-v7] .why-grid[data-phase="in"] [data-reveal-item] {
+  transform-origin: 50% 100%;
+  animation: v7-pillar-in 1100ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: var(--reveal-delay, 0s);
+}
+[data-v7] .why-grid[data-phase="in"] .pillar::before {
+  animation: v7-bar-sweep 1300ms cubic-bezier(0.65, 0, 0.35, 1) backwards;
+  animation-delay: calc(var(--reveal-delay, 0s) + 350ms);
+}
+@keyframes v7-pillar-in {
+  from {
+    opacity: 0;
+    transform: perspective(900px) translateY(40px) rotateX(-22deg);
+  }
+}
+@keyframes v7-bar-sweep {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  50% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  50.01% {
+    transform-origin: right;
+  }
+  100% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+}
+
+/* Pricing's tick squircles pop as their stroke draws. */
+@keyframes v7-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* The cursor follower's two states (Cursor.tsx). */
+.v7-cursor[data-mode="hot"] {
+  background-color: rgba(240, 64, 127, 0.12);
+}
+.v7-cursor[data-mode="label"] {
+  background-color: var(--color-pink);
+  border-color: transparent;
+}

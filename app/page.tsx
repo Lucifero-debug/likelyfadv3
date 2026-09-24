@@ -1,11 +1,12 @@
 import { Nav } from "@/components/sections/Nav";
 import { HeroReel } from "@/components/sections/HeroReel";
 import { WhyUs } from "@/components/sections/WhyUs";
-import { Work } from "@/components/sections/Work";
+import { WorkCorridor } from "@/components/sections/WorkCorridor";
 import { PricingV4 } from "@/components/sections/PricingV4";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { FaqV4 } from "@/components/sections/FaqV4";
 import { FooterV3 } from "@/components/sections/FooterV3";
+import { Work } from "@/components/sections/Work";
 
 /* The home page. The redesigned version of this page lives at /v2
    (app/v2/page.tsx), built from its own copies in components/redesign.
