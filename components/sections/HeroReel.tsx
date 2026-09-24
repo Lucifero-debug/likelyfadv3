@@ -52,14 +52,14 @@ const { hero } = content;
    in it — in an intermediate render surface on every frame of the resting
    hero, to draw it exactly as it would have drawn anyway.
 
-   THE TRACK IS 240svh: one screen of stage plus 140svh of scroll. The blur
+   THE TRACK IS 180svh: one screen of stage plus 80svh of scroll. The blur
    runs over the first 64% of that, the rise from 10% to 80%, and the last 20%
    holds the finished frame so it does not start leaving the moment it lands.
 
    REDUCED MOTION gets the finished frame and no track — a one-screen section
    with the copy centred on the blurred wall, and the clips held on posters. */
 
-const TRACK = "h-[240svh] motion-reduce:h-svh";
+const TRACK = "h-[180svh] motion-reduce:h-svh";
 
 /* The wall fills the stage's height exactly: three rows of 9:16 tiles with two
    row gaps between them, so tile width = (100svh - gaps) / 3 x 9/16. The gap
