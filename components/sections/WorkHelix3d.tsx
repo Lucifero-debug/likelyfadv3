@@ -122,7 +122,7 @@ export function WorkHelix3D() {
     const loader = new THREE.TextureLoader();
     const materials = ALL.map((reel) => {
       const m = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false, fog: true });
-      loader.load(reel.poster, (tex) => {
+      if (reel.poster) loader.load(reel.poster, (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
         m.map = tex;
@@ -162,7 +162,8 @@ export function WorkHelix3D() {
         const m = materials[videoOn];
         m.map = null;
         m.needsUpdate = true;
-        loader.load(ALL[videoOn].poster, (tex) => {
+        const poster = ALL[videoOn].poster;
+        if (poster) loader.load(poster, (tex) => {
           tex.colorSpace = THREE.SRGBColorSpace;
           m.map = tex;
           m.needsUpdate = true;

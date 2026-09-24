@@ -170,7 +170,7 @@ export function WorkWall3D() {
 
       /* Posters load in their own time; a panel is its tint until one arrives,
          which reads as a wall powering on rather than as a gap. */
-      loader.load(reel.poster, (tex) => {
+      if (reel.poster) loader.load(reel.poster, (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
         material.map = tex;
@@ -193,7 +193,8 @@ export function WorkWall3D() {
         /* The poster is re-requested from cache rather than kept in memory: the
            browser has it, and holding thirty-nine decoded rasters to avoid one
            cache hit is the wrong trade. */
-        loader.load(ALL[videoOn].poster, (tex) => {
+        const poster = ALL[videoOn].poster;
+        if (poster) loader.load(poster, (tex) => {
           tex.colorSpace = THREE.SRGBColorSpace;
           if (videoOn !== meshes[videoOn].userData.index || true) {
             m.map = tex;

@@ -154,7 +154,7 @@ export function createReelStage(host: HTMLElement, o: StageOptions) {
 
     /* Posters arrive in their own time; a panel is its tint until one lands,
        which reads as a wall powering on rather than as a hole. */
-    loader.load(reel.poster, (tex) => {
+    if (reel.poster) loader.load(reel.poster, (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
       material.map = tex;
@@ -176,7 +176,7 @@ export function createReelStage(host: HTMLElement, o: StageOptions) {
       /* Re-requested from cache rather than held: the browser has it, and
          keeping every decoded raster alive to save one cache hit is the wrong
          trade at this count. */
-      loader.load(poster, (tex) => {
+      if (poster) loader.load(poster, (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         m.map = tex;
         m.needsUpdate = true;
