@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { content } from "@/lib/content";
 import { takeReels } from "@/lib/reelOrder";
 import { HOT } from "@/lib/useInViewPlay";
-import { useLeanRowLength } from "@/lib/useLeanWall";
+import { useLeanRowLength, usePitchRowLength } from "@/lib/useLeanWall";
 import type { Reel } from "@/lib/reels.generated";
 import { Button } from "@/components/ui/Button";
 import { LazyVideo } from "@/components/ui/LazyVideo";
@@ -580,6 +580,7 @@ export function WorkLanes({
   onOpen,
   play,
   size = TILE_SIZE,
+  pitch = null,
   className = "",
 }: {
   rows: Reel[][];
@@ -591,6 +592,10 @@ export function WorkLanes({
   play: boolean;
   /** The tile's width classes. The height follows from the 9:16 frame. */
   size?: string;
+  /** Tile width plus gap as a function of the viewport, for a wall whose tiles
+      are not Work's size — see usePitchRowLength. Keep it a stable reference
+      (module scope), or the store re-reads on every render. */
+  pitch?: ((vw: number, vh: number) => number) | null;
   className?: string;
 }) {
   /* HOW MANY TILES EACH LANE ACTUALLY NEEDS ON THIS MACHINE. PER_ROW on
@@ -599,7 +604,9 @@ export function WorkLanes({
      count that spans this viewport and no more. The wall looks the same either
      way — see the note at the head of lib/useLeanWall.ts for why a lane can
      lose two thirds of its tiles without losing anything you can see. */
-  const perRow = useLeanRowLength(PER_ROW);
+  const leanRow = useLeanRowLength(PER_ROW);
+  const pitchRow = usePitchRowLength(PER_ROW, pitch);
+  const perRow = pitch ? pitchRow : leanRow;
 
   /* Sliced rather than re-dealt, so a trimmed lane is a PREFIX of the same
      column-major deal ROWS_OF_PICKS already made. Re-running takeReels against

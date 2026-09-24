@@ -181,3 +181,38 @@ export function useLeanRowLength(full: number): number {
 
   return useSyncExternalStore(never, get, onServer);
 }
+
+/* A WALL WHOSE TILES ARE NOT WORK'S SIZE CANNOT USE MIN_PITCH.
+
+   The span above divides by Work's smallest tile, which is right for Work and
+   badly wrong for the hero: its tiles are sized off the viewport HEIGHT
+   (three rows fill the screen), so at 1440x900 its pitch is ~176px, not 120.
+   Against 120 the hero rendered 16 tiles a set — 96 tiles, 96 video layers —
+   where 10 span the screen. Measured on the production build at 1440x900,
+   three runs a side: trimming to 10 cut missed frames while scrolling the hero
+   from ~220 to ~125 and the resting ones from 23 to 4, and it was the untrimmed
+   wall that fell off the cliff described at the head of this file.
+
+   SO THE CALLER HANDS IN ITS OWN PITCH, as a function of the viewport, and the
+   answer is the set that spans the screen plus two tiles. No viewport of slack
+   on top, which is what made the MIN_PITCH answer come out at the full 16 on
+   every desktop: instead this one RE-READS ON RESIZE, so a window that grows
+   gets its tiles back rather than a seam. A resize re-renders the lanes, which
+   is a cost paid only when someone is dragging a window edge. */
+const subscribeResize = (onChange: () => void) => {
+  window.addEventListener("resize", onChange);
+  return () => window.removeEventListener("resize", onChange);
+};
+
+/** How many tiles one set of a lane needs when the caller knows its own tile
+    pitch. `pitch` null means "not this kind of wall": returns `full`. */
+export function usePitchRowLength(full: number, pitch: ((vw: number, vh: number) => number) | null): number {
+  const get = useCallback(() => {
+    if (!pitch) return full;
+    const step = pitch(window.innerWidth, window.innerHeight);
+    return Math.min(full, Math.ceil(window.innerWidth / step) + MARGIN_TILES + 1);
+  }, [full, pitch]);
+  const onServer = useCallback(() => full, [full]);
+
+  return useSyncExternalStore(pitch ? subscribeResize : never, get, onServer);
+}

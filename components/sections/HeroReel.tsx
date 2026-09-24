@@ -22,8 +22,7 @@ const { hero } = content;
 
      THE COPY RISES from the bottom of the screen to its centre, over the wall.
      At rest its top sits 8.5rem above the bottom edge, so the kicker and the
-     first line of the headline peek into view: that is the only cue to
-     scroll, and it is the real content rather than a "scroll" label. A short
+     first line of the headline peek into view. A short
      fade at the bottom edge swallows the line below it, so the peek ends in a
      fade rather than in a glyph sliced in half.
 
@@ -31,9 +30,27 @@ const { hero } = content;
      time the copy lands it is reading against a soft dark field instead of
      against moving footage.
 
-   Both are written as CSS custom properties on the section (--r for the rise,
-   eased; --b for the blur, linear) from one rAF-throttled scroll handler, so a
-   frame costs one style write and no React render.
+     THE SCROLL CUE, a vertical "Scroll" label over a line with a pink bead
+     running down it, sits in the bottom-right corner, clear of the centred
+     peek, and fades out over the first stretch of the blur, so it is gone
+     long before the copy lands.
+
+   Both come from one rAF-throttled scroll handler (r for the rise, eased; b
+   for the blur, linear), and no React render.
+
+   WRITTEN STRAIGHT ONTO THE FOUR ELEMENTS THAT USE THEM, NOT AS CUSTOM
+   PROPERTIES ON THE SECTION. They used to be --r and --b on the <section>, read
+   through var() below — and custom properties INHERIT, so every scroll frame
+   invalidated the style of the whole subtree, all ninety-six wall tiles
+   included, to change four elements. Measured on the production build, that
+   was ~120ms of style recalculation per second of scrolling against ~60 with
+   the wall gone. An inline transform, filter or opacity is not inherited, so
+   each write now restyles one element.
+
+   AND THE WALL CARRIES `filter: none`, NOT `blur(0px)`, UNTIL THE BLUR BEGINS.
+   A zero blur is still a filter: it holds the entire wall — every video layer
+   in it — in an intermediate render surface on every frame of the resting
+   hero, to draw it exactly as it would have drawn anyway.
 
    THE TRACK IS 240svh: one screen of stage plus 140svh of scroll. The blur
    runs over the first 64% of that, the rise from 10% to 80%, and the last 20%
@@ -48,6 +65,12 @@ const TRACK = "h-[240svh] motion-reduce:h-svh";
    row gaps between them, so tile width = (100svh - gaps) / 3 x 9/16. The gap
    is WorkLanes' own clamp at its 12px ceiling. */
 const TILE_SIZE = "w-[calc((100svh-24px)*3/16)]";
+
+/* The same size as a number, plus WorkLanes' 12px gap, so the lanes can render
+   only the tiles that span the screen — see usePitchRowLength. innerHeight
+   stands in for 100svh; where the two differ it overstates the tile, which
+   understates the count, so the extra two tiles in that hook are the margin. */
+const TILE_PITCH = (_vw: number, vh: number) => ((vh - 24) * 3) / 16 + 12;
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -66,16 +89,44 @@ const [HEAD_PLAIN, HEAD_GRAD = ""] = hero.headline.split("*");
 
 export function HeroReel() {
   const ref = useRef<HTMLElement>(null);
+  const wallRef = useRef<HTMLDivElement>(null);
+  const dimRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const edgeRef = useRef<HTMLDivElement>(null);
+  const cueRef = useRef<HTMLDivElement>(null);
   const [play] = useState(() => typeof window !== "undefined" && !reduceMotion());
   const [inView, setInView] = useState(true);
 
   useIsoLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    const wall = wallRef.current;
+    const dim = dimRef.current;
+    const copy = copyRef.current;
+    const edge = edgeRef.current;
+    const cue = cueRef.current;
+    if (!el || !wall || !dim || !copy || !edge || !cue) return;
+
+    /* The last values written, so a frame whose progress rounds to the same
+       numbers writes nothing at all. */
+    let lastB = -1;
+    let lastR = -1;
+    const apply = (b: number, r: number) => {
+      if (b !== lastB) {
+        lastB = b;
+        wall.style.transform = b > 0 ? `scale(${1 - b * 0.05})` : "";
+        wall.style.filter = b > 0 ? `blur(${(b * 14).toFixed(2)}px)` : "";
+        dim.style.opacity = String(b);
+        cue.style.opacity = String(clamp01(1 - b * 4));
+      }
+      if (r !== lastR) {
+        lastR = r;
+        copy.style.transform = `translate3d(0,calc(${1 - r} * (50svh - 8.5rem + 50%)),0)`;
+        edge.style.opacity = String(1 - r);
+      }
+    };
 
     if (reduceMotion()) {
-      el.style.setProperty("--r", "1");
-      el.style.setProperty("--b", "1");
+      apply(1, 1);
       return;
     }
 
@@ -85,8 +136,7 @@ export function HeroReel() {
       const rect = el.getBoundingClientRect();
       const run = rect.height - window.innerHeight;
       const p = run > 0 ? clamp01(-rect.top / run) : 1;
-      el.style.setProperty("--b", clamp01(p / 0.64).toFixed(4));
-      el.style.setProperty("--r", easeOut(clamp01((p - 0.1) / 0.7)).toFixed(4));
+      apply(+clamp01(p / 0.64).toFixed(4), +easeOut(clamp01((p - 0.1) / 0.7)).toFixed(4));
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -127,14 +177,15 @@ export function HeroReel() {
       ref={ref}
       aria-label="Introduction"
       data-nav-dark
-      className={`relative ${TRACK} bg-[#17141b] text-[#f5f3f0] [--b:0] [--r:0]`}
+      className={`relative ${TRACK} bg-[#17141b] text-[#f5f3f0]`}
     >
       <div className="sticky top-0 h-svh overflow-hidden">
         {/* THE WALL. Inert: pointer-events off on the whole layer, every tile
-            aria-hidden. It blurs, dims and recedes by --b. */}
+            aria-hidden. It blurs, dims and recedes by b, written inline. */}
         <div
+          ref={wallRef}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 flex items-center [transform:scale(calc(1-var(--b)*0.05))] [filter:blur(calc(var(--b)*14px))]"
+          className="pointer-events-none absolute inset-0 flex items-center"
         >
           <WorkLanes
             rows={HERO_ROWS_OF_PICKS}
@@ -142,6 +193,7 @@ export function HeroReel() {
             running={inView}
             play={play}
             size={TILE_SIZE}
+            pitch={TILE_PITCH}
             className="w-full"
           />
         </div>
@@ -149,8 +201,9 @@ export function HeroReel() {
         {/* The dim that the blur comes in with, so the copy reads against a
             dark field rather than against footage. */}
         <div
+          ref={dimRef}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[rgba(23,20,27,0.62)] opacity-[var(--b)]"
+          className="pointer-events-none absolute inset-0 bg-[rgba(23,20,27,0.62)] opacity-0"
         />
 
         {/* A fixed floor under the peeking copy, so the kicker and the first
@@ -160,9 +213,11 @@ export function HeroReel() {
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[34svh] bg-[linear-gradient(to_top,#17141b_8%,rgba(23,20,27,0))]"
         />
 
-        {/* THE COPY. Centred on the stage, then pushed down by (1 - --r) of
+        {/* THE COPY. Centred on the stage, then pushed down by (1 - r) of
             (50svh - 8.5rem + half its own height) — which puts its top edge
-            8.5rem above the bottom when --r is 0, and exactly centred at 1.
+            8.5rem above the bottom when r is 0, and exactly centred at 1. The
+            class is that r = 0 frame, so the server and a script-less page
+            render the peek; the scroll handler takes over inline.
 
             The ::before is a soft dark halo that travels WITH the copy. The
             dim only reaches full strength once the copy has landed, and on the
@@ -170,8 +225,9 @@ export function HeroReel() {
             the halo is what keeps them legible over it. */}
         <div className="absolute inset-0 flex items-center justify-center px-[clamp(24px,5vw,64px)]">
           <div
+            ref={copyRef}
             onFocus={onFocusCopy}
-            className="relative isolate flex max-w-[60rem] flex-col items-center text-center will-change-transform [transform:translate3d(0,calc((1-var(--r))*(50svh-8.5rem+50%)),0)] before:absolute before:-inset-x-[25%] before:-inset-y-[35%] before:-z-10 before:bg-[radial-gradient(closest-side,rgba(23,20,27,0.72),rgba(23,20,27,0))] before:content-['']"
+            className="relative isolate flex max-w-[60rem] flex-col items-center text-center will-change-transform [transform:translate3d(0,calc(50svh-8.5rem+50%),0)] before:absolute before:-inset-x-[25%] before:-inset-y-[35%] before:-z-10 before:bg-[radial-gradient(closest-side,rgba(23,20,27,0.72),rgba(23,20,27,0))] before:content-['']"
           >
             <span
               className={`inline-flex items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink before:h-px before:w-[1.7rem] before:bg-current before:opacity-55 before:content-[''] after:h-px after:w-[1.7rem] after:bg-current after:opacity-55 after:content-['']`}
@@ -217,9 +273,27 @@ export function HeroReel() {
             of the screen instead of cutting a line in half. Gone by the time
             the copy lands, so it can never sit over the CTAs. */}
         <div
+          ref={edgeRef}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[4.5rem] bg-[linear-gradient(to_top,#17141b_30%,rgba(23,20,27,0))] opacity-[calc(1-var(--r))]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[4.5rem] bg-[linear-gradient(to_top,#17141b_30%,rgba(23,20,27,0))]"
         />
+
+        {/* THE SCROLL CUE. Faded out by b, written inline; absent under
+            reduced motion, where there is no track to scroll through. */}
+        <div
+          ref={cueRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-6 right-[clamp(24px,5vw,64px)] flex flex-col items-center gap-3 motion-reduce:hidden"
+        >
+          <span
+            className={`font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-[#f5f3f0]/75 [writing-mode:vertical-rl]`}
+          >
+            Scroll
+          </span>
+          <span className="relative h-12 w-px overflow-hidden bg-white/25">
+            <span className="scroll-cue absolute inset-x-0 top-0 h-1/2 bg-pink" />
+          </span>
+        </div>
       </div>
     </section>
   );

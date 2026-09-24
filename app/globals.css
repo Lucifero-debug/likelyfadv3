@@ -54,6 +54,50 @@
   --color-ink-dim: #a39fa8;
   --color-poster: #efe7e1;    /* warm neutral behind a clip that has not loaded */
 
+  /* /v3 only — Apple's neutral ramp. #6e6e73 holds 4.6:1 on the band. */
+  --color-v3-ink: #1d1d1f;
+  --color-v3-ink-2: #6e6e73;
+  --color-v3-band: #f5f5f7;
+  --color-v3-line: rgba(0, 0, 0, 0.1);
+
+  /* /v4 only — Material 3 window size classes: compact is the bare utility,
+     medium 600+, expanded 840+, large 1200+. */
+  --breakpoint-medium: 600px;
+  --breakpoint-expanded: 840px;
+  --breakpoint-large: 1200px;
+
+  /* /v4 only — a Material 3 colour scheme, generated from the brand pink as
+     seed (primary), with the ramp's violet as the tertiary key colour. These
+     are the LIGHT roles; the dark ones override them under [data-site="v4"]
+     at the foot of this file. Every pairing is an on-X over X, so contrast
+     is built into the names. */
+  --color-m3-primary: #b0134f;
+  --color-m3-on-primary: #ffffff;
+  --color-m3-primary-container: #ffd9e0;
+  --color-m3-on-primary-container: #3f0017;
+  --color-m3-secondary: #75565d;
+  --color-m3-on-secondary: #ffffff;
+  --color-m3-secondary-container: #f6dce2;
+  --color-m3-on-secondary-container: #2b151a;
+  --color-m3-tertiary: #6c45c4;
+  --color-m3-on-tertiary: #ffffff;
+  --color-m3-tertiary-container: #eaddff;
+  --color-m3-on-tertiary-container: #23005c;
+  --color-m3-surface: #fff8f8;
+  --color-m3-on-surface: #22191b;
+  --color-m3-on-surface-variant: #524346;
+  --color-m3-surface-container-lowest: #ffffff;
+  --color-m3-surface-container-low: #fef1f3;
+  --color-m3-surface-container: #f8ebed;
+  --color-m3-surface-container-high: #f2e5e7;
+  --color-m3-surface-container-highest: #ece0e2;
+  --color-m3-outline: #847376;
+  --color-m3-outline-variant: #d7c1c5;
+  --color-m3-inverse-surface: #382e30;
+  --color-m3-inverse-on-surface: #feedef;
+  --color-m3-inverse-primary: #ffb1c3;
+  --color-m3-scrim: #000000;
+
   /* Marquee lanes. Every track renders its clips TWICE and slides by exactly
      half its own length, so the frame the animation ends on is pixel-identical
      to the one it started on — the loop is seamless with no JS driving it. */
@@ -389,11 +433,26 @@ html {
   animation: typing-dot 1s ease-in-out infinite;
 }
 
+/* SCROLL CUE: the pink bead that runs down the hero's scroll line, on a
+   loop, until the first scroll fades the cue out. */
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+.scroll-cue {
+  animation: scroll-cue 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
 /* The global reduced-motion rule shortens durations but not delays, so these
    are switched off outright: the words and labels are simply there. */
 @media (prefers-reduced-motion: reduce) {
   .caption-pop,
-  .typing-dot {
+  .typing-dot,
+  .scroll-cue {
     animation: none;
   }
 }
@@ -651,4 +710,788 @@ html {
   .why-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================================================
+   /v3 — THE APPLE-STYLE PAGE. Only what a utility cannot be: the materials
+   (they have to change under three accessibility preferences), the hero's
+   scroll-linked card transforms, and the one-shot load rise.
+   ========================================================================== */
+
+/* The nav height, and the anchor clearance that follows from it. */
+[data-site="v3"] {
+  --v3-nav: 52px;
+}
+html:has([data-site="v3"]) {
+  scroll-padding-top: 64px;
+}
+
+/* MATERIALS. A light one for chrome, a dark one for chips that sit on video.
+   Never a light material on a light material. The bright top edge is light
+   catching the surface. */
+.v3-material {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.v3-material-dark {
+  background: rgba(20, 20, 22, 0.45);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .v3-material {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .v3-material-dark {
+    background: rgba(20, 20, 22, 0.88);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .v3-material {
+    background: #fff;
+    box-shadow: 0 1px 0 #1d1d1f;
+  }
+  .v3-material-dark {
+    background: #000;
+  }
+}
+
+/* THE HERO'S DEAL. --v3-p is registered so each scroll frame is a number
+   swap, not a re-parse of five transform strings. Every card reads it against
+   its own slot constants (set inline in Hero.tsx). */
+@property --v3-p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+.v3-card {
+  --x1: 0;
+  --y0: 0;
+  --r0: 0;
+  --s0: 1;
+  --s1: 1;
+  transform:
+    translate3d(
+      calc(var(--cw) * (var(--x0) + (var(--x1) - var(--x0)) * var(--v3-p))),
+      calc(var(--cw) * var(--y0) * (1 - var(--v3-p))),
+      0
+    )
+    rotate(calc(var(--r0) * (1 - var(--v3-p)) * 1deg))
+    scale(calc(var(--s0) + (var(--s1) - var(--s0)) * var(--v3-p)));
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v3-stage {
+    --v3-p: 1;
+  }
+}
+
+/* The load rise — hero text only, once. Under reduced motion it is a
+   cross-fade with no travel, and no delay to sit through. */
+@keyframes v3-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.v3-rise {
+  animation: v3-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v3-rise {
+    animation: v3-fade 200ms ease both;
+    animation-delay: 0s !important;
+  }
+  @keyframes v3-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* ============================================================================
+   /v4 — THE MATERIAL 3 PAGE. Colour roles live in @theme (m3-*); this block
+   holds what a utility cannot be: the dark scheme, state layers, the ripple,
+   Expressive shapes, the carousel's scroll-driven mask, and motion tokens.
+   ========================================================================== */
+
+html:has([data-site="v4"]) {
+  scroll-padding-top: 80px;
+  background: var(--color-m3-surface);
+}
+html:has([data-site="v4"]) body {
+  background: var(--color-m3-surface);
+}
+
+[data-site="v4"] {
+  --v4-bar: 64px;
+  /* The starred phrase in a heading. The darkened ramp on light surfaces,
+     the bright one on dark. */
+  --v4-highlight: var(--grad-ink);
+
+  /* MOTION. Easing and duration tokens for effects (colour, opacity), and
+     M3 Expressive's spatial springs, sampled into linear() so a plain CSS
+     transition can overshoot the way the spring does. Spatial = position,
+     size, shape. Effects never overshoot. */
+  --m3-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --m3-ease-emphasized-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --m3-ease-emphasized-accel: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --m3-spring-fast: linear(0, 0.027, 0.096, 0.193, 0.303, 0.422, 0.54, 0.652, 0.75, 0.839, 0.913, 0.971, 1.018, 1.052, 1.075, 1.088, 1.094, 1.093, 1.088, 1.08, 1.07, 1.059, 1.048, 1.038, 1.028, 1.019, 1.011, 1.005, 1, 0.996, 0.994, 0.992, 0.991, 0.991, 0.991, 0.992, 0.993, 0.994, 0.995, 0.996, 1);
+  --m3-spring-fast-ms: 340ms;
+  --m3-spring-default: linear(0, 0.021, 0.074, 0.148, 0.233, 0.321, 0.411, 0.498, 0.579, 0.652, 0.718, 0.775, 0.825, 0.867, 0.901, 0.93, 0.953, 0.971, 0.985, 0.995, 1.003, 1.008, 1.012, 1.014, 1.015, 1.015, 1.014, 1.013, 1.012, 1.011, 1.009, 1.008, 1.007, 1.006, 1.005, 1.004, 1);
+  --m3-spring-default-ms: 400ms;
+
+  /* ELEVATION. Shadows are for things that float (the FAB, the drawer);
+     everything else is lifted by surface-container tone, not a shadow. */
+  --m3-elev-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --m3-elev-3: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --m3-elev-4: 0 2px 3px rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
+
+  color-scheme: light;
+}
+
+/* THE DARK SCHEME — the same seed, read at dark tones. */
+@media (prefers-color-scheme: dark) {
+  html:has([data-site="v4"]),
+  [data-site="v4"] {
+    --color-m3-primary: #ffb1c3;
+    --color-m3-on-primary: #650029;
+    --color-m3-primary-container: #8d003c;
+    --color-m3-on-primary-container: #ffd9e0;
+    --color-m3-secondary: #e3bdc4;
+    --color-m3-on-secondary: #422930;
+    --color-m3-secondary-container: #5b3f46;
+    --color-m3-on-secondary-container: #ffd9e0;
+    --color-m3-tertiary: #d2bbff;
+    --color-m3-on-tertiary: #3c0090;
+    --color-m3-tertiary-container: #5327ab;
+    --color-m3-on-tertiary-container: #eaddff;
+    --color-m3-surface: #191113;
+    --color-m3-on-surface: #efdfe1;
+    --color-m3-on-surface-variant: #d7c1c5;
+    --color-m3-surface-container-lowest: #140c0e;
+    --color-m3-surface-container-low: #22191b;
+    --color-m3-surface-container: #261d1f;
+    --color-m3-surface-container-high: #312829;
+    --color-m3-surface-container-highest: #3c3234;
+    --color-m3-outline: #9f8c90;
+    --color-m3-outline-variant: #524346;
+    --color-m3-inverse-surface: #efdfe1;
+    --color-m3-inverse-on-surface: #382e30;
+    --color-m3-inverse-primary: #b0134f;
+    --v4-highlight: var(--grad);
+    color-scheme: dark;
+  }
+}
+
+/* FOCUS. M3's focus indicator: a 3px ring in secondary, offset outside the
+   component, following its shape. */
+[data-site="v4"] :focus-visible {
+  outline: 3px solid var(--color-m3-secondary);
+  outline-offset: 2px;
+}
+/* A carousel item is clip-pathed, which would cut an outside ring off. */
+[data-site="v4"] .m3-carousel-mask:focus-visible {
+  outline-offset: -5px;
+}
+
+/* STATE LAYERS. An overlay in the component's own content colour, at M3's
+   fixed opacities: hover 8%, focus 10%, pressed 10%. It follows the
+   component's shape because it inherits the radius. */
+/* IN THE COMPONENTS LAYER, SO A UTILITY CAN OVERRIDE IT. Unlayered, this
+   `position: relative` beat Tailwind's `fixed` on the FAB — which then sat in
+   the page flow under the footer instead of floating. Layered, a positioning
+   utility on the element wins and everything else still gets relative. */
+@layer components {
+  .m3-state {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+.m3-state::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms linear;
+}
+@media (hover: hover) {
+  .m3-state:hover::before {
+    opacity: 0.08;
+  }
+}
+.m3-state:focus-visible::before,
+.m3-state:active::before {
+  opacity: 0.1;
+}
+.m3-state:disabled::before,
+.m3-state[aria-disabled="true"]::before {
+  opacity: 0;
+}
+
+/* THE RIPPLE. Spawned at the press point by components/v4/Ripple.tsx; grows
+   with emphasized-decelerate, fades on release. */
+.m3-ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.12;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: m3-ripple-grow 450ms var(--m3-ease-emphasized-decel) forwards;
+}
+.m3-ripple-wave[data-out] {
+  transition: opacity 200ms linear;
+  opacity: 0;
+}
+@keyframes m3-ripple-grow {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* BUTTONS. Expressive shape morph: fully round at rest, squarer while
+   pressed, sprung back on release. Radius is in px (half the height) so the
+   interpolation is even, not stuck near "fully round" for most of it. */
+.m3-btn {
+  border-radius: var(--m3-btn-r, 20px);
+  transition:
+    border-radius var(--m3-spring-fast-ms) var(--m3-spring-fast),
+    background-color 200ms var(--m3-ease-standard),
+    box-shadow 200ms var(--m3-ease-standard);
+}
+.m3-btn:active {
+  border-radius: var(--m3-btn-r-pressed, 8px);
+  transition-duration: 120ms;
+}
+
+/* EXPRESSIVE SHAPES. The arch and the 9-point cookie from the M3 shape
+   library, as clip-paths so video can sit inside them. */
+.m3-shape-arch {
+  border-radius: 9999px 9999px 28px 28px;
+}
+.m3-shape-cookie {
+  clip-path: var(--m3-cookie);
+}
+
+@keyframes m3-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+.m3-spin {
+  animation: m3-spin 40s linear infinite;
+}
+
+/* The hero's one-shot entrance: emphasized-decelerate, a short rise. */
+@keyframes m3-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+.m3-enter {
+  animation: m3-enter 600ms var(--m3-ease-emphasized-decel) backwards;
+}
+@keyframes m3-pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+.m3-pop {
+  animation: m3-pop 700ms var(--m3-spring-default) backwards;
+}
+
+/* THE CAROUSEL — M3 multi-browse. Items at either edge are masked narrower
+   and grow to full width as they scroll in, which is the carousel's keyline
+   behaviour done with a scroll-driven clip rather than a layout pass. Where
+   view timelines are unsupported the items simply stay full width. */
+.m3-carousel {
+  scrollbar-width: none;
+}
+.m3-carousel::-webkit-scrollbar {
+  display: none;
+}
+@supports (animation-timeline: view()) {
+  .m3-carousel-item > .m3-carousel-mask {
+    animation: m3-carousel-mask linear both;
+    animation-timeline: view(inline);
+  }
+  @keyframes m3-carousel-mask {
+    entry 0% {
+      clip-path: inset(0 62% 0 0 round 28px);
+    }
+    entry 100% {
+      clip-path: inset(0 0 0 0 round 28px);
+    }
+    exit 0% {
+      clip-path: inset(0 0 0 0 round 28px);
+    }
+    exit 100% {
+      clip-path: inset(0 0 0 62% round 28px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m3-spin,
+  .m3-carousel-item > .m3-carousel-mask {
+    animation: none;
+  }
+  .m3-enter,
+  .m3-pop {
+    animation: m3-fade 200ms linear both;
+    animation-delay: 0s !important;
+  }
+  .m3-ripple-wave {
+    display: none;
+  }
+  @keyframes m3-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* ============================================================================
+   /v5 — THE CARBON PAGE. Only what a utility cannot be.
+
+   THE TOKENS ARE THEME-SCOPED VARIABLES, NOT FIXED COLOURS. Carbon's layering
+   model means the same component asks for `$layer-01` and gets #f4f4f4 on a
+   White band, #ffffff on a Gray 10 band and #262626 on a Gray 100 one. So the
+   raw values live on the theme scopes below (--cds-*), and @theme INLINE maps
+   the utilities onto them: `bg-cds-layer` compiles to var(--cds-layer-01)
+   resolved AT THE ELEMENT, which is what lets a .cds-g100 band re-theme
+   everything inside it. A plain @theme would resolve the var once, on :root,
+   and every band would come out White.
+
+   Four themes, paired the way Carbon ships them: the page is White with Gray 10
+   bands and a Gray 100 lead space; in dark mode the page is Gray 100 and the
+   bands step to Gray 90.
+   ========================================================================== */
+
+@theme inline {
+  /* Carbon's 2x Grid breakpoints: md 672 (8 cols), lg 1056 (16 cols),
+     xlg 1312, max 1584. sm (4 cols) is the bare utility. */
+  --breakpoint-cds-md: 672px;
+  --breakpoint-cds-lg: 1056px;
+  --breakpoint-cds-xlg: 1312px;
+  --breakpoint-cds-max: 1584px;
+
+  --color-cds-background: var(--cds-background);
+  --color-cds-background-hover: var(--cds-background-hover);
+  --color-cds-layer: var(--cds-layer-01);
+  --color-cds-layer-hover: var(--cds-layer-hover-01);
+  --color-cds-layer-selected: var(--cds-layer-selected-01);
+  --color-cds-border-subtle-0: var(--cds-border-subtle-00);
+  --color-cds-border-subtle: var(--cds-border-subtle-01);
+  --color-cds-border-strong: var(--cds-border-strong-01);
+  --color-cds-border-interactive: var(--cds-border-interactive);
+  --color-cds-text-primary: var(--cds-text-primary);
+  --color-cds-text-secondary: var(--cds-text-secondary);
+  --color-cds-text-helper: var(--cds-text-helper);
+  --color-cds-text-on-color: #ffffff;
+  --color-cds-text-inverse: var(--cds-text-inverse);
+  --color-cds-icon-secondary: var(--cds-icon-secondary);
+  --color-cds-link: var(--cds-link-primary);
+  --color-cds-link-hover: var(--cds-link-primary-hover);
+  --color-cds-btn-primary: var(--cds-button-primary);
+  --color-cds-btn-primary-hover: var(--cds-button-primary-hover);
+  --color-cds-btn-primary-active: var(--cds-button-primary-active);
+  --color-cds-btn-secondary: var(--cds-button-secondary);
+  --color-cds-btn-secondary-hover: var(--cds-button-secondary-hover);
+  --color-cds-btn-secondary-active: var(--cds-button-secondary-active);
+  --color-cds-btn-tertiary: var(--cds-button-tertiary);
+  --color-cds-btn-tertiary-hover: var(--cds-button-tertiary-hover);
+  --color-cds-btn-tertiary-active: var(--cds-button-tertiary-active);
+  --color-cds-tag: var(--cds-tag-background);
+  --color-cds-tag-text: var(--cds-tag-text);
+  --color-cds-overlay: var(--cds-overlay);
+  --color-cds-skeleton: var(--cds-skeleton-background);
+}
+
+/* WHITE — the page. */
+[data-site="v5"] {
+  --cds-background: #ffffff;
+  --cds-background-hover: rgba(141, 141, 141, 0.12);
+  --cds-layer-01: #f4f4f4;
+  --cds-layer-hover-01: #e8e8e8;
+  --cds-layer-selected-01: #e0e0e0;
+  --cds-border-subtle-00: #e0e0e0;
+  --cds-border-subtle-01: #c6c6c6;
+  --cds-border-strong-01: #8d8d8d;
+  --cds-border-interactive: #0f62fe;
+  --cds-text-primary: #161616;
+  --cds-text-secondary: #525252;
+  --cds-text-helper: #6f6f6f;
+  --cds-text-inverse: #ffffff;
+  --cds-icon-secondary: #525252;
+  --cds-link-primary: #0f62fe;
+  --cds-link-primary-hover: #0043ce;
+  --cds-focus: #0f62fe;
+  --cds-focus-inset: #ffffff;
+  --cds-button-primary: #0f62fe;
+  --cds-button-primary-hover: #0050e6;
+  --cds-button-primary-active: #002d9c;
+  --cds-button-secondary: #393939;
+  --cds-button-secondary-hover: #474747;
+  --cds-button-secondary-active: #6f6f6f;
+  --cds-button-tertiary: #0f62fe;
+  --cds-button-tertiary-hover: #0050e6;
+  --cds-button-tertiary-active: #002d9c;
+  --cds-tag-background: #e0e0e0;
+  --cds-tag-text: #161616;
+  --cds-overlay: rgba(22, 22, 22, 0.5);
+  --cds-skeleton-background: #e8e8e8;
+  --cds-skeleton-element: #c6c6c6;
+
+  /* MOTION — Carbon's duration and easing tokens. Productive for every state
+     change; expressive only for the lead space's entrance. No bounce anywhere. */
+  --cds-fast-01: 70ms;
+  --cds-fast-02: 110ms;
+  --cds-moderate-01: 150ms;
+  --cds-moderate-02: 240ms;
+  --cds-slow-01: 400ms;
+  --cds-slow-02: 700ms;
+  --cds-standard-productive: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --cds-entrance-productive: cubic-bezier(0, 0, 0.38, 0.9);
+  --cds-exit-productive: cubic-bezier(0.2, 0, 1, 0.9);
+  --cds-standard-expressive: cubic-bezier(0.4, 0.14, 0.3, 1);
+  --cds-entrance-expressive: cubic-bezier(0, 0, 0.3, 1);
+
+  --v5-header: 48px;
+  color-scheme: light;
+}
+
+/* GRAY 10 — the alternating bands. Layers step UP to white on it. */
+[data-site="v5"] .cds-g10 {
+  --cds-background: #f4f4f4;
+  --cds-layer-01: #ffffff;
+  --cds-layer-hover-01: #e8e8e8;
+  --cds-layer-selected-01: #e0e0e0;
+  --cds-border-subtle-00: #c6c6c6;
+  --cds-border-subtle-01: #e0e0e0;
+}
+
+/* GRAY 100 — the header, the lead space, the close and the footer. */
+[data-site="v5"] .cds-g100 {
+  --cds-background: #161616;
+  --cds-background-hover: rgba(141, 141, 141, 0.16);
+  --cds-layer-01: #262626;
+  --cds-layer-hover-01: #333333;
+  --cds-layer-selected-01: #393939;
+  --cds-border-subtle-00: #393939;
+  --cds-border-subtle-01: #393939;
+  --cds-border-strong-01: #6f6f6f;
+  --cds-border-interactive: #4589ff;
+  --cds-text-primary: #f4f4f4;
+  --cds-text-secondary: #c6c6c6;
+  --cds-text-helper: #a8a8a8;
+  --cds-text-inverse: #161616;
+  --cds-icon-secondary: #c6c6c6;
+  --cds-link-primary: #78a9ff;
+  --cds-link-primary-hover: #a6c8ff;
+  --cds-focus: #ffffff;
+  --cds-focus-inset: #161616;
+  --cds-button-secondary: #6f6f6f;
+  --cds-button-secondary-hover: #5e5e5e;
+  --cds-button-secondary-active: #393939;
+  --cds-button-tertiary: #ffffff;
+  --cds-button-tertiary-hover: #f4f4f4;
+  --cds-button-tertiary-active: #c6c6c6;
+  --cds-tag-background: #393939;
+  --cds-tag-text: #e0e0e0;
+  --cds-overlay: rgba(0, 0, 0, 0.65);
+  --cds-skeleton-background: #292929;
+  --cds-skeleton-element: #393939;
+  color-scheme: dark;
+}
+
+/* DARK MODE — the page goes Gray 100, the bands Gray 90. */
+@media (prefers-color-scheme: dark) {
+  [data-site="v5"] {
+    --cds-background: #161616;
+    --cds-background-hover: rgba(141, 141, 141, 0.16);
+    --cds-layer-01: #262626;
+    --cds-layer-hover-01: #333333;
+    --cds-layer-selected-01: #393939;
+    --cds-border-subtle-00: #393939;
+    --cds-border-subtle-01: #393939;
+    --cds-border-strong-01: #6f6f6f;
+    --cds-border-interactive: #4589ff;
+    --cds-text-primary: #f4f4f4;
+    --cds-text-secondary: #c6c6c6;
+    --cds-text-helper: #a8a8a8;
+    --cds-text-inverse: #161616;
+    --cds-icon-secondary: #c6c6c6;
+    --cds-link-primary: #78a9ff;
+    --cds-link-primary-hover: #a6c8ff;
+    --cds-focus: #ffffff;
+    --cds-focus-inset: #161616;
+    --cds-button-secondary: #6f6f6f;
+    --cds-button-secondary-hover: #5e5e5e;
+    --cds-button-secondary-active: #393939;
+    --cds-button-tertiary: #ffffff;
+    --cds-button-tertiary-hover: #f4f4f4;
+    --cds-button-tertiary-active: #c6c6c6;
+    --cds-tag-background: #393939;
+    --cds-tag-text: #e0e0e0;
+    --cds-overlay: rgba(0, 0, 0, 0.65);
+    --cds-skeleton-background: #292929;
+    --cds-skeleton-element: #393939;
+    color-scheme: dark;
+  }
+  [data-site="v5"] .cds-g10 {
+    --cds-background: #262626;
+    --cds-layer-01: #393939;
+    --cds-layer-hover-01: #474747;
+    --cds-layer-selected-01: #525252;
+    --cds-border-subtle-00: #525252;
+    --cds-border-subtle-01: #525252;
+    --cds-border-strong-01: #8d8d8d;
+    --cds-tag-background: #525252;
+    --cds-tag-text: #f4f4f4;
+    --cds-skeleton-background: #333333;
+    --cds-skeleton-element: #474747;
+  }
+}
+
+html:has([data-site="v5"]) {
+  scroll-padding-top: 64px;
+}
+html:has([data-site="v5"]),
+html:has([data-site="v5"]) body {
+  background: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  html:has([data-site="v5"]),
+  html:has([data-site="v5"]) body {
+    background: #161616;
+  }
+}
+
+/* FOCUS — 2px, inset, always visible. The claim card is carried over from
+   the home page untouched, focus ring included, so it is excluded. */
+[data-site="v5"] :focus-visible:not([data-keep] *) {
+  outline: 2px solid var(--cds-focus);
+  outline-offset: -2px;
+}
+/* On a filled button Carbon draws the double ring: the focus colour outside,
+   a 1px inset of the background inside it, so it reads on blue too. */
+[data-site="v5"] .cds-btn:focus-visible {
+  outline: 2px solid var(--cds-focus);
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 3px var(--cds-focus-inset);
+}
+
+/* SKELETON — Carbon's loading state, painted behind a clip until its poster
+   lands. The shimmer is a transform on a pseudo-element, so it composites
+   rather than paints; and it runs a bounded number of times, because a tile
+   whose poster has covered it would otherwise animate unseen forever. */
+.cds-skeleton {
+  position: relative;
+  background: var(--cds-skeleton-background);
+  overflow: hidden;
+}
+.cds-skeleton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--cds-skeleton-element);
+  transform-origin: left;
+  animation: cds-skeleton 3000ms var(--cds-standard-productive) 5;
+  opacity: 0;
+}
+@keyframes cds-skeleton {
+  0% {
+    opacity: 0.3;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  20% {
+    opacity: 1;
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  28% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+  51% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+  58% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+  82% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+  83% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  96% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  100% {
+    opacity: 0.3;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+}
+
+/* THE LEAD SPACE'S ENTRANCE — the page's one expressive moment: slow-01,
+   expressive entrance, a short rise, 70ms between siblings. */
+@keyframes cds-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+.cds-enter {
+  animation: cds-enter var(--cds-slow-01) var(--cds-entrance-expressive) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cds-skeleton::before {
+    animation: none;
+  }
+  .cds-enter {
+    animation-delay: 0s !important;
+  }
+}
+
+/* ============================================================================
+   /v6 — THE POLARIS PAGE. The landing page as a Shopify admin screen: a dark
+   top bar, a grey navigation column, white cards on a grey page.
+
+   Colours are Polaris's semantic roles (p-* utilities), named for the job and
+   never for the hue. ONE THEME, deliberately: the Shopify admin ships light,
+   and a Polaris dark scheme would be a guess rather than the system.
+   ========================================================================== */
+
+@theme {
+  /* Polaris breakpoints: sm 490, md 768 (the nav column appears), lg 1040,
+     xl 1440. xs is the bare utility. */
+  --breakpoint-p-sm: 490px;
+  --breakpoint-p-md: 768px;
+  --breakpoint-p-lg: 1040px;
+  --breakpoint-p-xl: 1440px;
+
+  --color-p-bg: #f1f1f1;
+  --color-p-bg-nav: #ebebeb;
+  --color-p-bg-topbar: #1a1a1a;
+  --color-p-bg-surface: #ffffff;
+  --color-p-bg-surface-secondary: #f7f7f7;
+  --color-p-bg-surface-hover: #f7f7f7;
+  --color-p-bg-surface-active: #f3f3f3;
+  --color-p-bg-surface-selected: #fafafa;
+  --color-p-bg-fill-secondary: #f1f1f1;
+  --color-p-bg-fill-tertiary: #e3e3e3;
+  --color-p-bg-fill-brand: #303030;
+  --color-p-bg-fill-brand-hover: #1a1a1a;
+  --color-p-bg-fill-brand-active: #1a1a1a;
+  --color-p-bg-fill-success: #cdfee1;
+  --color-p-bg-fill-info: #eaf4ff;
+  --color-p-bg-fill-magic: #f5f3ff;
+  --color-p-bg-inverse: #303030;
+  --color-p-text: #303030;
+  --color-p-text-secondary: #616161;
+  --color-p-text-disabled: #b5b5b5;
+  --color-p-text-brand-on-bg-fill: #ffffff;
+  --color-p-text-success: #0c5132;
+  --color-p-text-info: #00527c;
+  --color-p-text-magic: #5700d1;
+  --color-p-text-link: #005bd3;
+  --color-p-text-link-hover: #004299;
+  --color-p-text-inverse: #e3e3e3;
+  --color-p-icon: #4a4a4a;
+  --color-p-icon-secondary: #8a8a8a;
+  --color-p-icon-success: #29845a;
+  --color-p-border: #e3e3e3;
+  --color-p-border-secondary: #ebebeb;
+  --color-p-border-focus: #005bd3;
+}
+
+[data-site="v6"] {
+  /* SHADOWS — Polaris's bevel: a 1px drop plus inset edges that read as a
+     lit top and a shaded bottom. Cards and secondary buttons carry it; the
+     page does not. */
+  --p-shadow-card:
+    0 1px 0 0 rgba(26, 26, 26, 0.07), inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.1), inset 1px 0 0 0 rgba(0, 0, 0, 0.08),
+    inset -1px 0 0 0 rgba(0, 0, 0, 0.08);
+  --p-shadow-btn:
+    0 1px 0 0 #e3e3e3 inset, 1px 0 0 0 #e3e3e3 inset, -1px 0 0 0 #e3e3e3 inset, 0 -1px 0 0 #b5b5b5 inset;
+  --p-shadow-btn-pressed: inset 0 2px 1px 0 rgba(26, 26, 26, 0.2), inset 0 0 0 1px #e3e3e3;
+  --p-shadow-btn-primary:
+    0 -1px 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 0 1px #303030 inset, 0 0.5px 0 1.5px rgba(255, 255, 255, 0.25) inset;
+  --p-shadow-btn-primary-pressed: 0 3px 0 0 #000 inset;
+  --p-shadow-popover: 0 8px 16px -4px rgba(26, 26, 26, 0.22), 0 0 0 1px rgba(26, 26, 26, 0.08);
+
+  /* MOTION — Polaris is modest: 100–250ms, one ease, nothing springy. */
+  --p-duration-100: 100ms;
+  --p-duration-150: 150ms;
+  --p-duration-200: 200ms;
+  --p-duration-250: 250ms;
+  --p-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  --v6-topbar: 56px;
+  color-scheme: light;
+}
+
+html:has([data-site="v6"]) {
+  scroll-padding-top: 72px;
+}
+html:has([data-site="v6"]),
+html:has([data-site="v6"]) body {
+  background: var(--color-p-bg);
+}
+
+/* FOCUS — Polaris's ring: 2px of border-focus, 1px clear of the control,
+   following its radius. The claim card keeps the home page's own. */
+[data-site="v6"] :focus-visible:not([data-keep] *) {
+  outline: 2px solid var(--color-p-border-focus);
+  outline-offset: 1px;
+}
+
+/* BUTTONS. The bevel moves on press: the lit edge flips to an inset shade,
+   so the button reads as pushed in rather than recoloured. */
+.p-btn-secondary {
+  box-shadow: var(--p-shadow-btn);
+}
+.p-btn-secondary:active {
+  box-shadow: var(--p-shadow-btn-pressed);
+}
+.p-btn-primary {
+  box-shadow: var(--p-shadow-btn-primary);
+}
+.p-btn-primary:active {
+  box-shadow: var(--p-shadow-btn-primary-pressed);
+}
+
+/* THE TOAST — enters from below on duration-250, leaves on duration-200. */
+@keyframes p-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+}
+.p-toast {
+  animation: p-toast-in var(--p-duration-250) var(--p-ease) both;
 }
