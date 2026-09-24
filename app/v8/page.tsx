@@ -13,6 +13,10 @@ import { Cursor } from "@/components/v7/Cursor";
 import { WorkCorridor } from "@/components/sections/WorkCorridor";
 import { WorkGrid } from "@/components/sections/WorkGate";
 import { WorkWall3D } from "@/components/sections/WorkWall3d";
+import { WorkSphere3D } from "@/components/sections/WorkSphere3d";
+import { WorkTunnel3D } from "@/components/sections/WorkTunnels3d";
+import { WorkHelix3D } from "@/components/sections/WorkHelix3d";
+import { WorkDrift3D } from "@/components/sections/WorkDrift3d";
 
 /* V7 — the home page, animated end to end. Same sections, order, copy, fonts
    and claim card as app/page.tsx; every band gains motion of its own:
@@ -56,11 +60,11 @@ export default function V7Page() {
       <main id="main">
         <HeroV7 />
         <WhyUsV7 />
-        <WorkReelV7 />
-        <WorkGrid/>
-        <WorkCorridor/>
-        <WorkWall3D/>
         <PricingV7 />
+        <WorkSphere3D/>
+        <WorkTunnel3D/>
+        <WorkHelix3D/>
+        <WorkDrift3D/>
         <TestimonialsV7 />
         <FaqV7 />
       </main>
