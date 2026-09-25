@@ -138,7 +138,7 @@ const BAR_STRIP = STRIP_HALF * 2;
    The strongest stop has `solid: 0`, i.e. it is already fading at the very top
    of the strip. It still lands at full strength where it matters because the
    strip starts ABOVE the type, at the viewport edge. */
-const BLUR_RAMP = [
+export const BLUR_RAMP = [
   { blur: 1, solid: 60, reach: 100 },
   { blur: 2, solid: 40, reach: 82 },
   { blur: 4, solid: 24, reach: 62 },
@@ -151,7 +151,7 @@ const BLUR_RAMP = [
    `transparent` because in a gradient the keyword is interpolated as
    transparent BLACK in some engines and transparent WHITE in others; a mask
    built on the wrong one greys out from the middle. */
-const maskFor = (solid: number, reach: number) =>
+export const maskFor = (solid: number, reach: number) =>
   `linear-gradient(to bottom, rgb(0 0 0) 0%, rgb(0 0 0) ${(solid / reach) * 100}%, rgb(0 0 0 / 0) 100%)`;
 
 /* A WHITE WASH UNDER THE BLUR, and it has a job beyond taste: blur alone moves
@@ -193,7 +193,7 @@ const maskFor = (solid: number, reach: number) =>
    FADED ON ITS OWN MASK, more steeply than the blur, so the wash is gone well
    before the blur is. A wash that outlived the blur would be a pale band with a
    soft bottom edge — exactly the hairline this bar does not have. */
-const TINT_MASK =
+export const TINT_MASK =
   "linear-gradient(to bottom, rgb(0 0 0) 0%, rgb(0 0 0) 42%, rgb(0 0 0 / 0) 92%)";
 
 export function Nav() {

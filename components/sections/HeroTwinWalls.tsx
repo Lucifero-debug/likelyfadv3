@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { content } from "@/lib/content";
+import { TopFrost } from "./TopFrost";
 import { Button } from "@/components/ui/Button";
 import { TEXT_H1, TEXT_LEAD, TEXT_META } from "@/lib/ui";
 import { TwinWalls } from "./TwinWalls";
@@ -189,7 +190,8 @@ export function HeroTwinWalls() {
     <section
       ref={ref}
       aria-label="Introduction"
-      data-nav-dark
+      /* Not marked as a dark band for the nav: the top edge is frosted
+         white, so the nav's links have to stay ink over it. */
       className={`relative ${TRACK} bg-[#17141b] text-[#f5f3f0]`}
     >
       <div className="sticky top-0 h-svh overflow-hidden">
@@ -203,15 +205,10 @@ export function HeroTwinWalls() {
           <TwinWalls running={inView} play={play && inView} />
         </div>
 
-        {/* THE TOP EDGE: a white haze over the wall's upper rim, so the lanes
-            dissolve into light at the top of the screen rather than stopping
-            at it. The blur is one fixed radius, masked to fade out downward,
-            over a strip rather than the full stage, so the per-frame
-            re-sample of the moving wall under it stays small. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-[22svh] bg-[linear-gradient(to_bottom,rgba(255,255,255,0.55),rgba(255,255,255,0.18)_45%,rgba(255,255,255,0))] backdrop-blur-[10px] [mask-image:linear-gradient(to_bottom,#000_20%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,#000_20%,transparent)]"
-        />
+        {/* THE TOP EDGE: the nav's frosted white band (TopFrost), so the
+            wall frosts out to white at the top of the screen as it does
+            under the bar on /v7. */}
+        <TopFrost />
 
         {/* The dim, and the fixed-radius backdrop blur that fades in with it
             (see the head of the file), so the copy reads against a
