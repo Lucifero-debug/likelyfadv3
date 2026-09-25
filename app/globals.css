@@ -541,8 +541,9 @@ html {
 
    THE ORIGINAL'S PALETTE IS SCOPED TO THE SECTION. It was pink → rose on a
    cooler ink, and those values live as custom properties on `.why` rather than
-   in @theme, so nothing outside this band changes. --grad-ink is overridden
-   too, because that is the ramp RevealText paints *starred* words with.
+   in @theme, so nothing outside this band changes. --grad-ink is NOT
+   overridden: the heading's *starred* words keep the page's orange-to-violet
+   ramp.
 
    `.section`, `.wrap`, `.lead`, `.kicker` and `.display-lg` are this
    markup's names, not the page's — nothing else on the page uses them.
@@ -560,7 +561,6 @@ html {
   --why-shadow-pink: 0 20px 46px -16px rgba(236, 72, 153, 0.45);
   --why-ease: cubic-bezier(0.22, 0.7, 0.2, 1);
   --why-ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
-  --grad-ink: var(--why-grad);
 
   color: var(--why-ink);
 }
@@ -607,7 +607,8 @@ html {
   opacity: 0.55;
 }
 
-.why h2,
+/* h3 only: the h2 is utility-styled (WhyUs.tsx), and this unlayered rule
+   would beat its Tailwind classes. */
 .why h3 {
   font-family: var(--font-display);
   font-weight: 700;

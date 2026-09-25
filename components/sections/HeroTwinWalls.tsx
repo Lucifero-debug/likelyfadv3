@@ -4,11 +4,17 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { content } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { TEXT_H1, TEXT_LEAD, TEXT_META } from "@/lib/ui";
-import { HERO_ROWS_OF_PICKS, WorkLanes } from "./Work";
+import { TwinWalls } from "./TwinWalls";
 
 const { hero } = content;
 
-/* THE HERO — THE WORK FIRST, THE PITCH SECOND.
+/* THE /v3 HERO — HeroReel with its wall swapped for TwinWalls: two walls of
+   four vertical lanes with a seam between them. Everything else — the scroll
+   track, the rise, the blur, the hidden-at-rest copy, the cue — is HeroReel's,
+   copied rather than shared so the home hero can change without moving this
+   one. The notes below are HeroReel's and still apply.
+
+   THE HERO — THE WORK FIRST, THE PITCH SECOND.
 
    The page opens on the work wall and nothing else: three rows of real client
    clips filling the screen, full bleed, with no headline over them. The wall is
@@ -73,17 +79,6 @@ const { hero } = content;
 
 const TRACK = "h-[180svh] motion-reduce:h-svh";
 
-/* The wall fills the stage's height exactly: three rows of 9:16 tiles with two
-   row gaps between them, so tile width = (100svh - gaps) / 3 x 9/16. The gap
-   is WorkLanes' own clamp at its 12px ceiling. */
-const TILE_SIZE = "w-[calc((100svh-24px)*3/16)]";
-
-/* The same size as a number, plus WorkLanes' 12px gap, so the lanes can render
-   only the tiles that span the screen — see usePitchRowLength. innerHeight
-   stands in for 100svh; where the two differ it overstates the tile, which
-   understates the count, so the extra two tiles in that hook are the margin. */
-const TILE_PITCH = (_vw: number, vh: number) => ((vh - 24) * 3) / 16 + 12;
-
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -99,7 +94,7 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
    entrance, and a word reveal playing on load would be spent off screen. */
 const [HEAD_PLAIN, HEAD_GRAD = ""] = hero.headline.split("*");
 
-export function HeroReel() {
+export function HeroTwinWalls() {
   const ref = useRef<HTMLElement>(null);
   const wallRef = useRef<HTMLDivElement>(null);
   const dimRef = useRef<HTMLDivElement>(null);
@@ -198,22 +193,14 @@ export function HeroReel() {
       className={`relative ${TRACK} bg-[#17141b] text-[#f5f3f0]`}
     >
       <div className="sticky top-0 h-svh overflow-hidden">
-        {/* THE WALL. Inert: pointer-events off on the whole layer, every tile
-            aria-hidden. It recedes by b, written inline. */}
+        {/* THE WALLS. Inert: pointer-events off on the whole layer, every
+            tile aria-hidden. They recede by b, written inline. */}
         <div
           ref={wallRef}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 flex items-center"
+          className="pointer-events-none absolute inset-0"
         >
-          <WorkLanes
-            rows={HERO_ROWS_OF_PICKS}
-            lane="hero-row"
-            running={inView}
-            play={play && inView}
-            size={TILE_SIZE}
-            pitch={TILE_PITCH}
-            className="w-full"
-          />
+          <TwinWalls running={inView} play={play && inView} />
         </div>
 
         {/* THE TOP EDGE: a white haze over the wall's upper rim, so the lanes

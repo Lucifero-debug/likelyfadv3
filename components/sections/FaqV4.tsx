@@ -179,12 +179,16 @@ export function FaqV4() {
     >
       <div className={SPLIT}>
         {/* LEFT — the title block, pinned while the questions scroll past. */}
-        <div className="flex flex-col lap:sticky lap:top-28">
+        {/* `@container` so the title can size itself off this column, as
+            Pricing's does: from `lap:` it is set at 8.7% of the column's width,
+            which runs its longer line ("The stuff founders ask", ~11.2 em) the
+            full width of the half. Below `lap:` it keeps SIZE_H2. */}
+        <div className="@container flex flex-col lap:sticky lap:top-28">
           <Reveal>
             <span className={KICKER}>{faq.kicker}</span>
           </Reveal>
 
-          <SplitTitle text={faq.heading} className="mt-4" />
+          <SplitTitle text={faq.heading} className="mt-4 lap:text-[8.7cqw]" />
 
           {/* THE CTA SITS UNDER THE TITLE, not after the eighth question: the
               column is sticky, so the way out stays in view the whole time a

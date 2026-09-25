@@ -1,17 +1,15 @@
 "use client";
 
 import { content } from "@/lib/content";
-import { TEXT_STATEMENT } from "@/lib/ui";
+import { HEAD_GAP, SIZE_24, SIZE_32, SIZE_64, TEXT_STATEMENT } from "@/lib/ui";
 import { Reveal } from "@/components/anim/Reveal";
-import { RevealText } from "@/components/anim/RevealText";
 import { Reveal as UiReveal } from "@/components/ui/Reveal";
 import { RevealText as UiRevealText } from "@/components/ui/RevealText";
 import { Button } from "@/components/ui/Button";
 
-/* Why us. The heading and the pillars are replicated from the original
-   likelyfad build — its SectionHeading markup is written out here rather than
-   using this site's shared one, which is centred and utility-styled. Their
-   styles are in globals.css under WHY US.
+/* Why us. The pillars are replicated from the original likelyfad build; their
+   styles are in globals.css under WHY US. The heading above them is this
+   site's own centred one, with its gradient run.
 
    The claim card under the pillars is NOT from that build. It is this site's
    own photographic card, kept exactly as it was. */
@@ -32,16 +30,26 @@ export function WhyUs() {
   return (
     <section className="section why" id="why" aria-label="Why us">
       <div className="wrap">
-        <div className="why-head">
-          <div className="section-head">
-            <Reveal>
-              <span className="kicker">{why.kicker}</span>
-            </Reveal>
-            <RevealText as="h2" className="display-lg section-head-title" text={why.heading} />
-          </div>
-          <Reveal delay={0.1}>
-            <p className="why-lead lead">{why.lead}</p>
-          </Reveal>
+        {/* THE HEADER IS THE OLD CENTRED ONE, not the replicated build's: the
+            *asterisk* run in why.heading is set in the page gradient by
+            UiRevealText. Its own flex column, because RevealText's root is
+            inline and a margin on it would be inert. */}
+        <div className={`${HEAD_GAP} flex flex-col items-center gap-3 text-center`}>
+          <UiReveal>
+            <span className={`inline-flex items-center gap-[0.62em] font-sans ${SIZE_24} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:w-[2.2em] before:bg-current before:opacity-55 before:content-['']`}>
+              {why.kicker}
+            </span>
+          </UiReveal>
+          <UiRevealText
+            as="h2"
+            text={why.heading}
+            className={`mx-auto max-w-[13em] text-center text-balance font-display ${SIZE_64} font-bold leading-[1.1] tracking-[-0.022em]`}
+          />
+          <UiReveal delay={100} className="mt-3">
+            <p className={`mx-auto max-w-[54ch] text-center text-pretty font-sans ${SIZE_32} leading-[1.45] text-ink-soft`}>
+              {why.lead}
+            </p>
+          </UiReveal>
         </div>
 
         <Reveal stagger className="why-grid" start="top 80%">

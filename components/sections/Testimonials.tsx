@@ -184,11 +184,9 @@ const { testimonials } = content;
    page's scale — 24, 32, 48 — which is the rule for a clamp in lib/ui; what
    they resolve to in between is the part that makes them fluid.
 
-   IT BLEEDS THE GUTTER AND PUTS IT STRAIGHT BACK AS PADDING. The negative
-   margin lets the overflow run to the edge of the wrap instead of being clipped
-   at the text column; the matching padding keeps the FIRST card starting at the
-   same x as every other container on this page, so the alignment rule in lib/ui
-   survives intact. `scroll-px` states it a third time, so a snapped card lands
+   IT RUNS FULL BLEED WITH A HAIRLINE GUTTER. The row sits outside the WRAP and
+   carries only 8px (12px from `tab:`) of side padding, so the first card starts
+   just off the left edge of the viewport, like the Work wall. `scroll-px` states it a third time, so a snapped card lands
    on that x too rather than flush against the bleed.
 
    THERE IS NO VERTICAL PADDING ON THE ROW, and there was: overflow on one axis
@@ -230,7 +228,7 @@ const { testimonials } = content;
 const TRACK =
   "[--track-gap:16px] [--peek:16px] " +
   "tab:[--track-gap:clamp(24px,3.5vw,48px)] tab:[--peek:clamp(24px,2.5vw,32px)] " +
-  "-mx-[clamp(24px,5vw,64px)] px-[clamp(24px,5vw,64px)] scroll-px-[clamp(24px,5vw,64px)] " +
+  "px-2 scroll-px-2 tab:px-3 tab:scroll-px-3 " +
   "flex snap-x snap-mandatory gap-[var(--track-gap)] overflow-x-auto overflow-y-hidden overscroll-x-contain " +
   "pb-[26px] -mb-[26px] " +
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden " +
@@ -1024,8 +1022,11 @@ export function Testimonials() {
             className={`mt-3 text-balance font-display ${SIZE_H2} font-bold leading-[1.1] tracking-[-0.022em]`}
           />
         </div>
+      </div>
 
-        {/* RELATIVE ON THE OUTSIDE, NOT ON THE SCROLLER. The arrows have to
+      {/* FULL BLEED, like the Work wall: the row sits outside the WRAP, so it
+          runs edge to edge across the viewport, flush at both sides. */}
+      {/* RELATIVE ON THE OUTSIDE, NOT ON THE SCROLLER. The arrows have to
             stand still while the row moves under them, and a child of a
             scrollport is positioned against the scrolled content — it would
             slide away with the cards it is meant to move. */}
@@ -1073,7 +1074,7 @@ export function Testimonials() {
             onClick={() => page(-1)}
             aria-label="Previous testimonials"
             disabled={!edges.start}
-            className={`${ARROW} -left-[calc((clamp(24px,5vw,64px)_+_32px)/2)] ${
+            className={`${ARROW} left-3 ${
               edges.start ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -1087,7 +1088,7 @@ export function Testimonials() {
             onClick={() => page(1)}
             aria-label="More testimonials"
             disabled={!edges.end}
-            className={`${ARROW} -right-[calc((clamp(24px,5vw,64px)_+_32px)/2)] ${
+            className={`${ARROW} right-3 ${
               edges.end ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -1096,7 +1097,6 @@ export function Testimonials() {
             </svg>
           </button>
         </div>
-      </div>
     </section>
   );
 }

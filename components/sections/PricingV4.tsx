@@ -70,9 +70,12 @@ const { pricing } = content;
 /* THE SPLIT — title left, list right, inside Why us's own box: the same 1180
    cap and gutter as `.wrap` in globals.css, so this band's edges line up with
    the Why us band above instead of running out to WRAP's 1520. Stacks below
-   `lap:`. FaqV4 uses the same split — change them together. */
+   `lap:`. FaqV4 uses the same split — change them together.
+
+   THE TWO COLUMNS ARE EQUAL. minmax(0, 1fr) rather than bare 1fr, so a long
+   word in either column cannot widen it past half. */
 export const SPLIT =
-  "wrap grid gap-y-10 lap:grid-cols-[5fr_7fr] lap:items-start lap:gap-x-16";
+  "wrap grid gap-y-10 lap:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lap:items-start lap:gap-x-16";
 
 /* The left column's kicker and title, set to match Why us's `.kicker` and h2
    (globals.css) so the three bands that share this width also share a
@@ -150,15 +153,19 @@ export function PricingV4() {
     >
       <div className={SPLIT}>
         {/* LEFT — the title block, pinned while the list scrolls past it. */}
-        <div className="flex flex-col lap:sticky lap:top-28">
+        {/* `@container` so the title can size itself off this column: from
+            `lap:` it is set at 1/10 of the column's width, which is what puts
+            "Priced to your brief," (~9.8 em wide) on one line that runs the
+            full width of the half. Below `lap:` it keeps SIZE_H2. */}
+        <div className="@container flex flex-col lap:sticky lap:top-28">
           <Reveal>
             <span className={KICKER}>{pricing.kicker}</span>
           </Reveal>
 
-          <SplitTitle text={pricing.heading} className="mt-4" />
+          <SplitTitle text={pricing.heading} className="mt-4 lap:text-[10cqw]" />
 
           <Reveal delay={80}>
-            <p className={`mt-6 max-w-[46ch] text-pretty font-sans ${TEXT_SMALL} leading-6 text-ink-soft`}>
+            <p className={`mt-6 text-pretty font-sans ${TEXT_SMALL} leading-6 text-ink-soft`}>
               {pricing.body}
             </p>
           </Reveal>

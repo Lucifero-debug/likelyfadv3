@@ -102,7 +102,7 @@ export const content = {
 
        No claim about how many. The folder's contents change with every sync and
        a number here would be wrong the first time one ran. */
-    cta: "See the full library on Drive",
+    cta: "See the full library",
     /* Spoken instead of the label, because "opens in a new tab" is the part a
        screen reader user needs BEFORE following the link and the part a sighted
        one can infer from the icon. */
