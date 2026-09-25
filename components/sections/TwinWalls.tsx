@@ -53,11 +53,39 @@ const COLUMNS: Reel[][] = (() => {
 
 const GAP = "gap-[clamp(6px,0.9vw,12px)]";
 
+/* THE TILT — ReelWallV6's, one flat plane per wall, mirrored so the two read
+   as the walls of a corridor: each OUTER edge swings toward the viewer and the
+   seam between them recedes. The right wall is the old wall's own transform,
+   rotateY(-22deg) rotateX(4deg); the left is its mirror image.
+
+   THE OVERHANG IS ReelWallV6's TOO, and for the same reasons. Vertically the
+   stage runs 20% past the box at both ends so nothing bare shows as it tilts
+   away; the lanes never stop, so that crop costs nothing. Horizontally the
+   NEAR (outer) side magnifies and would overshoot the frame, so it is pulled
+   in 6%. The FAR side, at the seam, projects small: left flush it fell ~65px
+   short of the box at 1536 and ~90px at 1920, opening the seam into a wide
+   wedge. So it runs 12% PAST its box and the box's overflow-hidden crops it,
+   which keeps the seam at the boxes' own narrow gap. Measured at 820, 1024,
+   1536 and 1920; retune both numbers together if the angle changes.
+
+   From `tab:` up only, as on the old wall: below it each wall is two columns
+   and the plain grid carries it. Written as literals because Tailwind scans
+   source text. */
+const LEFT_STAGE =
+  "tab:absolute tab:-inset-y-[20%] tab:left-[6%] tab:-right-[12%] tab:h-auto " +
+  "tab:[transform:rotateY(22deg)_rotateX(4deg)]";
+const RIGHT_STAGE =
+  "tab:absolute tab:-inset-y-[20%] tab:-left-[12%] tab:right-[6%] tab:h-auto " +
+  "tab:[transform:rotateY(-22deg)_rotateX(4deg)]";
+
 export function TwinWalls({ running, play }: { running: boolean; play: boolean }) {
   return (
-    <div className="flex h-full w-full gap-[clamp(14px,1.8vw,28px)]">
+    <div className="flex h-full w-full gap-[clamp(24px,4.5vw,88px)]">
       {Array.from({ length: WALLS }, (_, w) => (
-        <div key={w} className={`flex h-full min-w-0 flex-1 ${GAP}`}>
+        /* THE BOX: perspective lives here because the thing that rotates is
+           its direct child, the stage. 900px, as on ReelWallV6. */
+        <div key={w} className="relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px]">
+          <div className={`flex h-full ${GAP} ${w === 0 ? LEFT_STAGE : RIGHT_STAGE}`}>
           {Array.from({ length: COLS }, (_, c) => {
             const ci = w * COLS + c;
             return (
@@ -97,6 +125,7 @@ export function TwinWalls({ running, play }: { running: boolean; play: boolean }
               </div>
             );
           })}
+          </div>
         </div>
       ))}
     </div>
