@@ -1,4 +1,5 @@
 import { Nav } from "@/components/sections/Nav";
+import { LogoWallBoard } from "@/components/sections/LogoWallBoard";
 import { HeroReel } from "@/components/sections/HeroReel";
 import { WhyUs } from "@/components/sections/WhyUs";
 import { WorkCorridor } from "@/components/sections/WorkCorridor";
@@ -27,6 +28,7 @@ export default function Home() {
 
       <main id="main">
         <HeroReel />
+        <LogoWallBoard />
         <WhyUs />
         <Work />
         <PricingV4 />

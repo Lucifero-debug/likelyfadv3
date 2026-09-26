@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
+import { LogoWallScrub } from "@/components/sections/LogoWallScrub";
 import { HeroReel } from "@/components/sections/HeroReel";
 import { WhyUs } from "@/components/sections/WhyUs";
 import { Work } from "@/components/sections/Work";
@@ -28,6 +29,7 @@ export default function V5Page() {
 
       <main id="main">
         <HeroReel blurPx={32} />
+        <LogoWallScrub />
         <WhyUs />
         <Work />
         <PricingV4 />

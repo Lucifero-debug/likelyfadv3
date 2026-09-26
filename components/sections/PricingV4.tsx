@@ -194,7 +194,7 @@ export function PricingV4() {
 
           {/* The footnote is the answer to the number this table does not
               print; see the header note. */}
-          <Reveal delay={100} className="mt-10 flex flex-col items-start gap-3">
+          <Reveal delay={100} className="mt-10 flex flex-col items-start gap-3 max-tab:items-center max-tab:text-center">
             <Button contact variant="grad" withArrow>
               {pricing.cta}
             </Button>

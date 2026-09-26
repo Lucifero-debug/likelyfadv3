@@ -154,11 +154,23 @@ export function TwinWalls({
     <div className="relative flex h-full w-full">
       {Array.from({ length: WALLS }, (_, w) => [
         w === 1 && children ? (
+          /* BELOW `tab:` THE COPY SITS OVER THE WALLS, and a flat 95% white
+             over the whole panel hid the footage entirely. So the scrim is two
+             layers: a light 40% wash over the panel, which lets the wall read
+             through above and below the copy, and a 95% plate behind the copy
+             block alone (the wrapper's ::before), which is what the 12px pink
+             and grey lines need to hold 4.5:1 over moving video — measured, a
+             graded wash that thin under the text drops them to ~3.9.
+             The plate rides on the copy rather than the panel, so it tracks
+             the block at any phone height, runs out to the screen edges
+             through the panel's padding, and fades over 64px top and bottom. */
           <div
             key="middle"
-            className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 px-[clamp(24px,5vw,64px)] tab:static tab:w-auto tab:flex-none tab:bg-transparent tab:px-[clamp(20px,2.5vw,48px)]"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 px-[clamp(24px,5vw,64px)] tab:static tab:w-auto tab:flex-none tab:bg-transparent tab:px-[clamp(20px,2.5vw,48px)]"
           >
-            {children}
+            <div className="relative isolate w-full before:absolute before:-inset-x-[clamp(24px,5vw,64px)] before:-inset-y-16 before:-z-10 before:bg-[linear-gradient(to_bottom,rgb(255_255_255/0)_0%,rgb(255_255_255/0.95)_64px,rgb(255_255_255/0.95)_calc(100%-64px),rgb(255_255_255/0)_100%)] before:content-[''] tab:w-auto tab:before:hidden">
+              {children}
+            </div>
           </div>
         ) : null,
         /* THE BOX: perspective lives here because the thing that rotates is

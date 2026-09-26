@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
+import { LogoWallMarquee } from "@/components/sections/LogoWallMarquee";
 import { HeroTwinWalls } from "@/components/sections/HeroTwinWalls";
 import { WhyUs } from "@/components/sections/WhyUs";
 import { Work } from "@/components/sections/Work";
@@ -29,6 +30,7 @@ export default function V3Page() {
 
       <main id="main">
         <HeroTwinWalls />
+        <LogoWallMarquee />
         <WhyUs />
         <Work />
         <PricingV4 />

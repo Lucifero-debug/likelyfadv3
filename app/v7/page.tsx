@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
+import { LogoWall3D } from "@/components/sections/LogoWall3D";
 import { HeroV7 } from "@/components/v7/HeroV7";
 import { WhyUsV7 } from "@/components/v7/WhyUsV7";
 import { WorkReelV7 } from "@/components/v7/WorkReelV7";
@@ -55,6 +56,7 @@ export default function V7Page() {
 
       <main id="main">
         <HeroV7 />
+        <LogoWall3D />
         <WhyUsV7 />
         <WorkReelV7 />
         <WorkGrid/>

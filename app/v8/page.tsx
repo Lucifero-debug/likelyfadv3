@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
+import { LogoWallOrbit } from "@/components/sections/LogoWallOrbit";
 import { HeroV7 } from "@/components/v7/HeroV7";
 import { WhyUsV7 } from "@/components/v7/WhyUsV7";
 import { WorkReelV7 } from "@/components/v7/WorkReelV7";
@@ -59,6 +60,7 @@ export default function V7Page() {
 
       <main id="main">
         <HeroV7 />
+        <LogoWallOrbit />
         <WhyUsV7 />
         <PricingV7 />
         <WorkSphere3D/>

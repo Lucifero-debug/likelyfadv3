@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
+import { LogoWallGrid } from "@/components/sections/LogoWallGrid";
 import { HeroTwinWalls } from "@/components/sections/HeroTwinWalls";
 import { WhyUs } from "@/components/sections/WhyUs";
 import { Work } from "@/components/sections/Work";
@@ -34,6 +35,7 @@ export default function V4Page() {
 
       <main id="main">
         <HeroTwinWalls edgeBlur topFrost={false} />
+        <LogoWallGrid />
         <WhyUs />
         <Work />
         <PricingV4 />

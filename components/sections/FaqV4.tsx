@@ -200,7 +200,7 @@ export function FaqV4() {
               column heads the list, so the way out is the first thing a
               reader sees before working down it, and it fills what was an empty
               column beside a long one. */}
-          <Reveal delay={100} className="pt-8">
+          <Reveal delay={100} className="flex pt-8 max-tab:justify-center">
             <Button contact variant="light" withArrow>
               {faq.cta}
             </Button>

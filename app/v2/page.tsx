@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
+import { LogoWallLedger } from "@/components/sections/LogoWallLedger";
 import { HeroReel } from "@/components/sections/HeroReel";
 import { WhyUs } from "@/components/sections/WhyUs";
 import { Work } from "@/components/sections/Work";
@@ -28,6 +29,7 @@ export default function V2Page() {
 
       <main id="main">
         <HeroReel blurPx={20} />
+        <LogoWallLedger />
         <WhyUs />
         <Work />
         <PricingV4 />
