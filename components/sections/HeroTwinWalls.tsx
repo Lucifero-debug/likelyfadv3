@@ -57,7 +57,7 @@ export function HeroTwinWalls() {
             the subline (61.7em of it) at ~2.5 measures, so it ends in three. */}
         <div className={`flex w-full max-w-[40rem] flex-col items-center text-center tab:w-[35em] tab:max-w-none ${TEXT_META}`}>
           <span
-            className={`inline-flex items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:w-[1.7rem] before:bg-current before:opacity-55 before:content-[''] after:h-px after:w-[1.7rem] after:bg-current after:opacity-55 after:content-['']`}
+            className={`flex w-full items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:min-w-[1.7rem] before:flex-1 before:bg-current before:opacity-55 before:content-[''] after:h-px after:min-w-[1.7rem] after:flex-1 after:bg-current after:opacity-55 after:content-['']`}
           >
             {hero.eyebrow}
           </span>
