@@ -254,14 +254,14 @@ const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
 /* THE DESKTOP MENU (/v3, from `tab:`). While it is open the bar takes its
    pill shape whether or not the page has scrolled, frosted like the navbar
    — the panel IS that surface: it starts at the bar's top (the header's top
-   padding down), is padded 54px (the slim bar's height) so its rows begin
+   padding down), is padded 67px (the slim bar's height) so its rows begin
    under the bar, and carries the frost, border, radius and shadow for both.
    OPEN_TOP turns the bar itself transparent over it, so there is one blur
    and no seam. */
 const OPEN_TOP = "tab:border-transparent tab:shadow-none tab:backdrop-blur-none";
 const PANEL_DESK_BASE =
   "tab:mx-auto tab:mt-[clamp(8px,4.5px+0.39vw,18px)] tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] " +
-  "tab:max-w-full tab:px-5 tab:pt-[54px] tab:pb-3 " +
+  "tab:max-w-full tab:px-5 tab:pt-[67px] tab:pb-3 " +
   "tab:rounded-t-[24px] tab:rounded-b-2xl tab:border tab:border-line tab:shadow-[var(--shadow-sm)]";
 
 const FLOAT_ON =
@@ -475,7 +475,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
 
               SIZED FROM THE CTA'S FIRST `nav` SIZE (2 x padding + 1.5 x text
               + 2px border), which was then trimmed on its own; the mark was
-              kept at the larger height on purpose, then scaled 1.3x (Sep 2026).
+              kept at the larger height on purpose, then scaled 1.3x twice (Sep 2026).
               -translate-x-[9.3%]: the PNG carries 93px of clear space left of
               the wordmark in its 1000px width, and the image fills the box's
               width, so this puts the visible wordmark on the content edge —
@@ -484,9 +484,9 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           <img
             src="/ls-icon.png"
             alt="Likelyfad Studio"
-            className="aspect-[3/1] h-[calc(1.3*(1.75rem+1.425rem+2px))] w-auto -translate-x-[9.3%] object-contain transition-[height] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] tab:h-[calc(1.3*(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px))]"
-            /* The /v3 bar runs slim at all times: the mark is 44px (34 x 1.3). */
-            style={slim ? { height: 44 } : undefined}
+            className="aspect-[3/1] h-[calc(1.69*(1.75rem+1.425rem+2px))] w-auto -translate-x-[9.3%] object-contain transition-[height] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] tab:h-[calc(1.69*(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px))]"
+            /* The /v3 bar runs slim at all times: the mark is 57px (34 x 1.3 x 1.3). */
+            style={slim ? { height: 57 } : undefined}
           />
         </a>
 
@@ -536,7 +536,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           aria-expanded={open}
           aria-controls="phone-menu"
           onClick={() => setOpen((o) => !o)}
-          className={`relative ml-auto grid flex-none place-items-center rounded-full transition-colors duration-200 ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
+          className={`relative ml-auto grid flex-none cursor-default place-items-center rounded-full transition-colors duration-200 ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
             onDark ? "text-white hover:bg-white/15 active:bg-white/25" : "text-ink hover:bg-ink/[0.07] active:bg-ink/[0.12]"
           }`}
         >
