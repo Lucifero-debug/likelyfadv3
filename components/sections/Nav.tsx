@@ -277,6 +277,21 @@ const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
    OPEN_TOP turns the bar itself transparent over it, so there is one blur
    and no seam. */
 const OPEN_TOP = "tab:border-transparent tab:shadow-none tab:backdrop-blur-none";
+/* THE MENU GROWS OUT OF THE BAR rather than appearing under it. The panel is
+   clipped to exactly the bar's footprint — the header strip on a phone, the
+   67px pill (fully rounded) from `tab:` — and the clip opens downward to the
+   whole panel on the navbar's expo-out, so the bar itself reads as growing.
+   Closing runs it back into the pill, then hides the panel once it is there
+   (visibility waits out the clip). No fade: the growing edge IS the motion. */
+const PANEL_GROW = {
+  open:
+    "visible [clip-path:inset(0)] tab:[clip-path:inset(0_round_24px_24px_16px_16px)] " +
+    "[transition:clip-path_650ms_cubic-bezier(0.16,1,0.3,1),visibility_0s,background-color_300ms]",
+  closed:
+    "invisible [clip-path:inset(0_0_calc(100%-var(--nav-h,62px))_0)] tab:[clip-path:inset(0_0_calc(100%-67px)_0_round_33.5px)] " +
+    "[transition:clip-path_420ms_cubic-bezier(0.4,0,0.2,1),visibility_0s_420ms,background-color_300ms]",
+} as const;
+
 const PANEL_DESK_BASE =
   "tab:mx-auto tab:mt-[clamp(8px,4.5px+0.39vw,18px)] tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] " +
   "tab:max-w-full tab:px-5 tab:pt-[67px] tab:pb-3 " +
@@ -594,7 +609,7 @@ export function Nav({
                 }`
               : "transition-colors duration-200"
           } ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
-            onDark ? "text-white hover:bg-white/15 active:bg-white/25" : "text-ink hover:bg-ink/[0.07] active:bg-ink/[0.12]"
+            onDark ? "text-white" : "text-ink"
           }`}
         >
           {[0, 1].map((i) => (
@@ -621,10 +636,8 @@ export function Nav({
       <div
         id="phone-menu"
         inert={!open}
-        className={`absolute inset-x-0 top-0 origin-top-right px-[clamp(24px,5vw,64px)] pt-[var(--nav-h,62px)] pb-5 backdrop-blur-[16px] ${FROST_TINT[onDark ? "dark" : "paper"]} transition-[opacity,translate,scale,visibility,background-color] ${centered ? PANEL_DESK_BASE : "tab:hidden"} motion-reduce:!transition-none ${
-          open
-            ? "visible translate-y-0 scale-100 opacity-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-            : "invisible opacity-0 duration-[180ms] ease-in"
+        className={`absolute inset-x-0 top-0 origin-top-right px-[clamp(24px,5vw,64px)] pt-[var(--nav-h,62px)] pb-5 backdrop-blur-[16px] ${FROST_TINT[onDark ? "dark" : "paper"]} ${centered ? PANEL_DESK_BASE : "tab:hidden"} motion-reduce:!transition-none ${
+          open ? PANEL_GROW.open : PANEL_GROW.closed
         }`}
       >
         <nav
