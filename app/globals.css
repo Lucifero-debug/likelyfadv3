@@ -816,6 +816,25 @@ html:has([data-site="v3"]) {
   }
 }
 
+/* The /v3 hero's walls arriving (TwinWalls): each slides in from its own
+   side edge and fades up, while the copy rises in the middle (.v3-rise). On
+   `translate`, not `transform`, so it composes with nothing the wall's stage
+   already carries. Reduced motion: a plain fade, no travel. */
+@keyframes twin-wall-in {
+  from {
+    opacity: 0;
+    translate: var(--wall-from, 0) 0;
+  }
+}
+.twin-wall-in {
+  animation: twin-wall-in 1100ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .twin-wall-in {
+    animation: v3-fade 200ms ease both;
+  }
+}
+
 /* ============================================================================
    /v4 — THE MATERIAL 3 PAGE. Colour roles live in @theme (m3-*); this block
    holds what a utility cannot be: the dark scheme, state layers, the ripple,

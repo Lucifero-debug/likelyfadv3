@@ -109,7 +109,9 @@ export function TwinWalls({
         <div
           key={w}
           aria-hidden="true"
-          className="pointer-events-none relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px]"
+          className={`twin-wall-in pointer-events-none relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px] ${
+            w === 0 ? "[--wall-from:-12%]" : "[--wall-from:12%]"
+          }`}
         >
           <div className={`flex h-full ${GAP} ${w === 0 ? LEFT_STAGE : RIGHT_STAGE}`}>
           {Array.from({ length: COLS }, (_, c) => {

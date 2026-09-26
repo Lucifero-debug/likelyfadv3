@@ -25,7 +25,7 @@ export default function V3Page() {
       >
         Skip to content
       </a>
-      <Nav />
+      <Nav centered />
 
       <main id="main">
         <HeroTwinWalls />

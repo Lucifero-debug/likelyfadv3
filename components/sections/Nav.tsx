@@ -83,9 +83,12 @@ const LINK =
 
    THE UNDERLINE IS NOT IN HERE because it does not need to be: it is the page's
    own gradient, which was picked to sit on both grounds and does. */
+/* The links sit at their old HOVER colour all the time (Sep 2026, by request):
+   full ink over paper, full white over a dark band. Hover is now the gradient
+   underline alone. */
 const LINK_TONE = {
-  paper: "text-ink-soft hover:text-ink",
-  dark: "text-white/75 hover:text-white",
+  paper: "text-ink",
+  dark: "text-white",
 } as const;
 
 /* HALF THE HEIGHT OF THE BAND THE OBSERVER WATCHES, in px either side of the
@@ -208,7 +211,36 @@ const MORPH_CLOSE =
 const ROW_IN =
   "transition-[opacity,translate] duration-[260ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:!transition-none";
 
-export function Nav() {
+/* THE CENTRED BAR (/v3). The hero there is a narrow white column between two
+   video walls, so from `tab:` up the bar lives inside that column: just the
+   mark and the menu button, and the menu panel opens under it at the same
+   width. COLUMN is the hero copy's own measure — 35em of TEXT_META, see
+   HeroTwinWalls — so the bar's edges line up with the text under it. Phones
+   are unchanged: the column is the full screen there anyway. */
+const COLUMN = "tab:mx-auto tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))] tab:max-w-full tab:px-0";
+
+/* THE FLOATING BAR (/v3 only). At the top of the page the centred bar sits
+   flat in the column; once the page scrolls it becomes a floating white pill
+   — hairline and a small shadow only (no fill, no blur, by request) —
+   and stays put rather than retracting.
+   The pill is 2.5rem wider than the column and padded 1.25rem a side, so the
+   mark and the button do not move sideways when it forms. The border and
+   radius are on in both states (transparent at rest) so nothing jumps.
+
+   Literal class text throughout (Tailwind scans source, so no interpolated
+   sizes). Written out rather than built on WRAP: WRAP's own `px`/`w` would tie with
+   these at the same breakpoint, and Tailwind does not promise which wins. */
+const FLOAT_BASE =
+  "mx-auto rounded-2xl border transition-[width,padding,border-color,box-shadow] " +
+  "duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] motion-reduce:transition-none";
+const FLOAT_OFF =
+  `${FLOAT_BASE} w-full border-transparent px-[clamp(24px,5vw,64px)] ` +
+  "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))] tab:px-0";
+const FLOAT_ON =
+  `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1.5 shadow-[var(--shadow-sm)] ` +
+  "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:px-5";
+
+export function Nav({ centered = false }: { centered?: boolean } = {}) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   /* Starts false, and the server agrees: the prerendered document is the top of
@@ -224,14 +256,14 @@ export function Nav() {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    const onResize = () => window.innerWidth >= 761 && setOpen(false);
+    const onResize = () => !centered && window.innerWidth >= 761 && setOpen(false);
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
     };
-  }, [open]);
+  }, [open, centered]);
 
   /* The bar's live height as `--nav-h` on the root, so a hero's TopFrost can
      stand exactly as tall as the bar. Observed rather than computed: the bar
@@ -331,7 +363,7 @@ export function Nav() {
         ? "py-[clamp(8px,4.5px+0.39vw,18px)]"
         : "py-[clamp(10px,6px+0.52vw,24px)]"
     }
-    ${hidden && !open ? "-translate-y-[115%]" : "translate-y-0"}`
+    ${hidden && !open && !centered ? "-translate-y-[115%]" : "translate-y-0"}`
   }
 >
       {/* THE STRIP IS EXACTLY THE BAR'S HEIGHT, by request: the frost ends at
@@ -350,6 +382,7 @@ export function Nav() {
           whole stack off for the length of the transition and back on at the
           end. If this ever needs to arrive on scroll, animate the strip's
           HEIGHT under `overflow-hidden`, never its opacity. */}
+      {!(centered && scrolled) && (
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full"
@@ -385,8 +418,13 @@ export function Nav() {
           style={{ maskImage: TINT_MASK, WebkitMaskImage: TINT_MASK }}
         />
       </div>
+      )}
 
-      <div className={`${WRAP} flex items-center justify-between gap-6`}>
+      <div
+        className={`flex items-center justify-between gap-6 ${
+          centered ? (scrolled ? FLOAT_ON : FLOAT_OFF) : WRAP
+        }`}
+      >
         <a href="#top" className="flex items-center" aria-label={`${content.brand} home`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- a mark on a
               ramp now rather than a fixed box, but still one small PNG the
@@ -405,7 +443,7 @@ export function Nav() {
 
         {/* Dropped below the tablet breakpoint, where the wordmark and the CTA
             already fill the bar and the links would wrap it onto two rows. */}
-        <nav className="ml-auto mr-6 hidden gap-8 tab:flex" aria-label="Primary">
+        <nav className={`ml-auto mr-6 hidden gap-8 ${centered ? "" : "tab:flex"}`} aria-label="Primary">
           {content.nav.links.map((l) => (
             <a
               key={l.label}
@@ -427,7 +465,7 @@ export function Nav() {
             has to be told about it. */}
         {/* Wrapped, because Button's own `inline-flex` would beat a `hidden`
             passed to it. On phones the CTA lives in the menu panel instead. */}
-        <div className="hidden shrink-0 tab:block">
+        <div className={`hidden shrink-0 ${centered ? "" : "tab:block"}`}>
           <Button contact variant={onDark ? "light" : "dark"} size="nav">
             {content.nav.cta}
           </Button>
@@ -449,7 +487,7 @@ export function Nav() {
           aria-expanded={open}
           aria-controls="phone-menu"
           onClick={() => setOpen((o) => !o)}
-          className={`relative ml-auto grid size-11 flex-none place-items-center rounded-full tab:hidden ${
+          className={`relative ml-auto grid size-11 flex-none place-items-center rounded-full ${centered ? "" : "tab:hidden"} ${
             onDark && !open ? "text-white" : "text-ink"
           }`}
         >
@@ -477,7 +515,7 @@ export function Nav() {
       <div
         id="phone-menu"
         inert={!open}
-        className={`absolute inset-x-0 top-full origin-top-right px-4 pt-2 transition-[opacity,translate,scale,visibility] tab:hidden motion-reduce:!transition-none ${
+        className={`absolute inset-x-0 top-full origin-top-right px-4 pt-2 transition-[opacity,translate,scale,visibility] ${centered ? COLUMN : "tab:hidden"} motion-reduce:!transition-none ${
           open
             ? "visible translate-y-0 scale-100 opacity-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
             : "invisible -translate-y-2 scale-[0.97] opacity-0 duration-[180ms] ease-in"

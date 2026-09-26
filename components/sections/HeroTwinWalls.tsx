@@ -9,7 +9,13 @@ import { TwinWalls } from "./TwinWalls";
 
 const { hero } = content;
 
-/* THE /v3 HERO — two walls of vertical lanes (TwinWalls) on either side, and
+/* ENTRANCE: the walls slide in from their outer edges (.twin-wall-in, see
+   TwinWalls) while the copy rises piece by piece in the middle (.v3-rise,
+   staggered 250-720ms by inline delay). CSS only, so it plays on first paint
+   without waiting for hydration; both have reduced-motion fades in
+   globals.css.
+
+   THE /v3 HERO — two walls of vertical lanes (TwinWalls) on either side, and
    the whole pitch standing still in the column between them. No scroll track,
    no rise, no blur: the section is one screen tall and the copy is in place
    from the first frame. HeroReel on the home page still carries the scroll
@@ -57,13 +63,15 @@ export function HeroTwinWalls() {
             the subline (61.7em of it) at ~2.5 measures, so it ends in three. */}
         <div className={`flex w-full max-w-[40rem] flex-col items-center text-center tab:w-[35em] tab:max-w-none ${TEXT_META}`}>
           <span
-            className={`flex w-full items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:min-w-[1.7rem] before:flex-1 before:bg-current before:opacity-55 before:content-[''] after:h-px after:min-w-[1.7rem] after:flex-1 after:bg-current after:opacity-55 after:content-['']`}
+            style={{ animationDelay: "250ms" }}
+            className={`v3-rise inline-flex items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:w-[1.7rem] before:bg-current before:opacity-55 before:content-[''] after:h-px after:w-[1.7rem] after:bg-current after:opacity-55 after:content-['']`}
           >
             {hero.eyebrow}
           </span>
 
           <h1
-            className="mt-3 text-balance font-display text-[clamp(1.9rem,8.4vw,2.6rem)] font-bold leading-[1.04] tracking-[-0.022em] tab:text-[3.36em]"
+            style={{ animationDelay: "350ms" }}
+            className="v3-rise mt-3 text-balance font-display text-[clamp(1.9rem,8.4vw,2.6rem)] font-bold leading-[1.04] tracking-[-0.022em] tab:text-[3.36em]"
           >
             {HEAD_PLAIN}
             <span className="bg-[image:var(--grad)] box-decoration-clone bg-clip-text text-transparent">
@@ -72,13 +80,17 @@ export function HeroTwinWalls() {
           </h1>
 
           <p
-            className={`mt-6 max-w-[36ch] text-pretty ${TEXT_LEAD} leading-[1.45] text-ink-soft tab:max-w-none tab:text-[1.4em]`}
+            style={{ animationDelay: "480ms" }}
+            className={`v3-rise mt-6 max-w-[36ch] text-pretty ${TEXT_LEAD} leading-[1.45] text-ink-soft tab:max-w-none tab:text-[1.4em]`}
           >
             {hero.subline}
           </p>
 
           {/* Below `tab:` the two stack, each the full width of the copy. */}
-            <div className="mt-8 flex flex-wrap justify-center gap-2 max-tab:w-full max-tab:flex-col">
+            <div
+              style={{ animationDelay: "600ms" }}
+              className="v3-rise mt-8 flex flex-wrap justify-center gap-2 max-tab:w-full max-tab:flex-col"
+            >
             <Button contact variant="grad" withArrow className="max-tab:w-full">
               {hero.primaryCta}
             </Button>
@@ -91,7 +103,10 @@ export function HeroTwinWalls() {
             </Button>
           </div>
 
-          <p className={`mt-4 font-mono ${TEXT_META} tracking-[0.03em] text-ink-faint tab:whitespace-nowrap`}>
+          <p
+            style={{ animationDelay: "720ms" }}
+            className={`v3-rise mt-4 font-mono ${TEXT_META} tracking-[0.03em] text-ink-faint tab:whitespace-nowrap`}
+          >
             {hero.reassurance}
           </p>
         </div>

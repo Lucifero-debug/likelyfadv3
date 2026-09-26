@@ -258,11 +258,9 @@ export function HeroReel({ blurPx = 14 }: { blurPx?: number } = {}) {
             className="relative isolate flex max-w-[60rem] flex-col items-center text-center opacity-0 will-change-transform [transform:translate3d(0,calc(50svh-8.5rem+50%),0)] before:absolute before:-inset-x-[25%] before:-inset-y-[35%] before:-z-10 before:bg-[radial-gradient(closest-side,rgba(23,20,27,0.72),rgba(23,20,27,0))] before:content-['']"
           >
             <span
-              className={`flex w-full max-w-[48ch] items-center gap-[0.55rem] font-sans ${TEXT_LEAD} font-medium text-pink before:h-px before:min-w-[1.7rem] before:flex-1 before:bg-current before:opacity-55 before:content-[''] after:h-px after:min-w-[1.7rem] after:flex-1 after:bg-current after:opacity-55 after:content-['']`}
+              className={`inline-flex items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink before:h-px before:w-[1.7rem] before:bg-current before:opacity-55 before:content-[''] after:h-px after:w-[1.7rem] after:bg-current after:opacity-55 after:content-['']`}
             >
-              {/* The row takes the subline's measure (48ch of its lead size), so its
-                  rules end where the paragraph does; the label keeps the mono. */}
-              <span className={`font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em]`}>{hero.eyebrow}</span>
+              {hero.eyebrow}
             </span>
 
             <h1
