@@ -8,11 +8,17 @@ import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
 
 /* LOGO WALL 09 — THE TAPE.  (v9)
 
-   TWO BANDS OF TAPE CROSSED OVER THE PAGE. One in ink, one in the site's own
-   flame-to-violet ramp, each tilted a few degrees the opposite way and running
-   the opposite direction, so they form a shallow X that is always moving at
-   the crossing. It is the one wall that is loud on purpose: the marquee on
-   /v3 is a quiet line of ink, this is the same idea as a poster.
+   TWO BANDS OF TAPE ACROSS THE PAGE. One in ink, one in the site's own
+   flame-to-violet ramp, tilted 2° apart each way and running opposite
+   directions, so they open into a shallow wedge. It is the one wall that is
+   loud on purpose: the marquee on /v3 is a quiet line of ink, this is the same
+   idea as a poster.
+
+   A WEDGE, NOT AN X. They used to cross in the middle, and whichever band was
+   on top buried the other one's logos at the crossing — half the ink band's
+   marks were never readable. Now they never meet: the gap between them is
+   solved from the tilt (below), so at every width the bands close to ~20px at
+   the left edge and open to the right.
 
    THE BANDS ARE THE MARQUEE'S MECHANISM, TILTED. Each is a `lane-x` track
    holding the set twice and sliding half its own length; the second band plays
@@ -36,6 +42,7 @@ const COPY = {
 };
 
 const SECONDS = 46;
+const TILT = 2;
 
 function Mark({ logo }: { logo: Logo }) {
   const src = logoSrc(logo);
@@ -74,8 +81,8 @@ function Band({
   return (
     <div
       aria-hidden
-      className={`absolute left-1/2 top-1/2 w-[130%] py-[clamp(12px,1.6vw,22px)] shadow-[0_18px_40px_-18px_rgba(20,18,23,0.45)] ${className}`}
-      style={{ transform: `translate(-50%, -50%) rotate(${tilt}deg)` }}
+      className={`relative -mx-[15%] w-[130%] py-[clamp(12px,1.6vw,22px)] shadow-[0_10px_24px_-14px_rgba(20,18,23,0.35)] ${className}`}
+      style={{ transform: `rotate(${tilt}deg)` }}
     >
       <div
         className="flex w-max animate-lane-x items-center gap-[clamp(28px,4vw,64px)] will-change-transform"
@@ -119,14 +126,16 @@ export function LogoWallTape() {
         ))}
       </ul>
 
-      {/* The crossing. Only the on-screen stretch of each band has to fit: at
-          4.5° that stretch climbs ~76px either side of centre at 1920px wide,
-          plus half the band's own height, which 15vw clears at every width. */}
-      <div ref={ref} className="relative h-[clamp(180px,15vw,290px)]">
-        <Band className="bg-ink" tilt={-4.5} park={park} />
+      {/* THE WEDGE, SOLVED FROM THE TILT. Only the on-screen half-width (50vw)
+          of each band matters, and at TILT° its end moves tan(TILT) x 50vw =
+          ~1.75vw off its box. The bands converge on the left by twice that,
+          so the gap is 3.5vw plus 20px of air; the padding holds the upper
+          band's rising end and the lower band's falling end inside the clip. */}
+      <div ref={ref} className="flex flex-col gap-[calc(3.5vw+20px)] py-[calc(1.75vw+12px)]">
+        <Band className="bg-ink" tilt={-TILT} park={park} />
         <Band
           className="bg-[linear-gradient(90deg,var(--color-rose),var(--color-pink),var(--color-violet))]"
-          tilt={3.5}
+          tilt={TILT}
           reverse
           park={park}
         />

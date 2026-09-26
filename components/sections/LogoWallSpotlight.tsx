@@ -47,14 +47,19 @@ function Mark({ logo, tint }: { logo: Logo; tint?: boolean }) {
   const src = logoSrc(logo);
   const h = Math.round(logo.h * 1.3);
   const w = Math.round(logoWidth(logo) * 1.3);
+  /* BOTH LAYERS SIZE BY ONE RULE — natural width, capped at the column, height
+     from the aspect — or they stop registering. The <img> used to shrink under
+     preflight's `max-width:100%` while the tint span kept its fixed box, so
+     below ~700px the tint sat oversized and offset on the colour mark. */
+  const size = { width: w, maxWidth: "100%", aspectRatio: `${w} / ${h}` };
   return tint ? (
     <span
       aria-hidden
       className="block bg-ink/45 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
-      style={{ width: w, height: h, WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
+      style={{ ...size, WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
     />
   ) : (
-    <img src={src} alt={logo.name} width={w} height={h} loading="lazy" decoding="async" className="block object-contain" />
+    <img src={src} alt={logo.name} width={w} height={h} loading="lazy" decoding="async" className="block object-contain" style={size} />
   );
 }
 

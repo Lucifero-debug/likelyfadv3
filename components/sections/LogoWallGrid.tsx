@@ -39,7 +39,7 @@ const COPY = {
 
 const CELL =
   "group/cell relative flex items-center justify-center " +
-  "min-h-[clamp(112px,13vw,168px)] p-[clamp(20px,2.4vw,36px)] " +
+  "min-h-[clamp(96px,13vw,168px)] p-[clamp(12px,2.4vw,36px)] " +
   "border-r border-b border-line bg-paper text-ink " +
   "transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] " +
   "hover:bg-white hover:-translate-y-0.5 hover:z-[1] " +
@@ -52,7 +52,7 @@ function Mark({ logo }: { logo: Logo }) {
   const h = Math.round(logo.h * 1.25);
   const w = Math.round(logoWidth(logo) * 1.25);
   return (
-    <div className="relative" style={{ width: w, height: h }}>
+    <div className="relative" style={{ width: w, maxWidth: "100%", aspectRatio: `${w} / ${h}` }}>
       <img src={src} alt={logo.name} width={w} height={h} loading="lazy" decoding="async" className="block size-full object-contain" />
       <span
         aria-hidden
@@ -85,7 +85,7 @@ export function LogoWallGrid() {
         <ul className="grid grid-cols-3 overflow-hidden rounded-2xl border border-line" role="list">
           {LOGOS.map((l, i) => (
             <li key={l.slug} className={CELL}>
-              <Reveal delay={(i % 3) * 70}>
+              <Reveal delay={(i % 3) * 70} className="flex w-full justify-center">
                 <Mark logo={l} />
               </Reveal>
             </li>
