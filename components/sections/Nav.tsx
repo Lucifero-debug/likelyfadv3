@@ -239,9 +239,27 @@ const ROW_IN =
    Literal class text throughout (Tailwind scans source, so no interpolated
    sizes). Written out rather than built on WRAP: WRAP's own `px`/`w` would tie with
    these at the same breakpoint, and Tailwind does not promise which wins. */
+/* THE /v3 + /v4 BAR'S ONE MOTION, after brightlifecreations.com: at the top
+   of the page only the mark shows, centred; on scroll the mark glides to the
+   left edge, the menu button fades and scales in on the right, and the bar
+   forms its floating pill — all on the same long expo-out, so nothing snaps.
+   Only width / padding / border / shadow / blur on the bar and translate /
+   opacity / scale on the mark and the button change, so it composites
+   smoothly. Reverses on the way back up. */
+const EASE_NAV = "ease-[cubic-bezier(0.16,1,0.3,1)]";
+
+/* The mark's offset to the column's centre while collapsed: half the content
+   width minus half the VISIBLE wordmark. At 57px tall the box is 171px wide;
+   after the -9.3% nudge the wordmark spans 0.815 of it, so its centre sits
+   0.4075 x 171 = 69.7px in. Content width is the full width less the bar's
+   gutters on a phone, and the copy's 35em measure from `tab:`. */
+const LOGO_CENTRE =
+  "translate-x-[calc((100vw-2*clamp(24px,5vw,64px))/2-69.7px)] " +
+  "tab:translate-x-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)/2-69.7px)]";
+
 const FLOAT_BASE =
-  "mx-auto rounded-full border transition-[width,padding,border-color,box-shadow] " +
-  "duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] motion-reduce:transition-none";
+  "mx-auto rounded-full border transition-[width,padding,border-color,box-shadow,backdrop-filter] " +
+  `duration-[700ms] ${EASE_NAV} motion-reduce:transition-none`;
 const FLOAT_OFF =
   `${FLOAT_BASE} w-full border-transparent px-[clamp(24px,5vw,64px)] py-1 ` +
   "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))] tab:px-0";
@@ -268,7 +286,15 @@ const FLOAT_ON =
   `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1 shadow-[var(--shadow-sm)] backdrop-blur-[16px] ` +
   "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:px-5";
 
-export function Nav({ centered = false }: { centered?: boolean } = {}) {
+export function Nav({
+  centered = false,
+  frost = true,
+}: {
+  centered?: boolean;
+  /** The bar's own frosted band across the top of the page. Off on /v4. The
+      open menu keeps its frost either way. */
+  frost?: boolean;
+} = {}) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   /* Starts false, and the server agrees: the prerendered document is the top of
@@ -284,6 +310,8 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
      top of the page, scrolled and with the menu open: a smaller mark and menu
      button, and the scrolled header padding. */
   const slim = centered;
+  /* The collapsed /v3 + /v4 bar: top of the page, menu shut — mark only. */
+  const collapsed = centered && !scrolled && !open;
 
   useEffect(() => {
     if (!open) return;
@@ -419,7 +447,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           and the bar goes transparent over it. Two blurred layers meeting at
           the bar's bottom edge each blur their own edge, which drew a seam. */}
 
-      {!(centered && (scrolled || open)) && (
+      {frost && !(centered && (scrolled || open)) && (
       <div
         aria-hidden
         className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-full ${open ? "max-tab:hidden" : ""}`}
@@ -468,7 +496,15 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
             : WRAP
         }`}
       >
-        <a href="#top" className="flex items-center" aria-label={`${content.brand} home`}>
+        <a
+          href="#top"
+          className={`flex items-center ${
+            centered
+              ? `transition-[translate] duration-[700ms] ${EASE_NAV} motion-reduce:transition-none ${collapsed ? LOGO_CENTRE : "translate-x-0"}`
+              : ""
+          }`}
+          aria-label={`${content.brand} home`}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element -- a mark on a
               ramp now rather than a fixed box, but still one small PNG the
               optimiser has nothing to do with.
@@ -535,8 +571,17 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           aria-controls="phone-menu"
+          inert={collapsed}
           onClick={() => setOpen((o) => !o)}
-          className={`relative ml-auto grid flex-none cursor-default place-items-center rounded-full transition-colors duration-200 ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
+          className={`relative ml-auto grid flex-none cursor-default place-items-center rounded-full ${
+            centered
+              ? `motion-reduce:transition-none ${
+                  collapsed
+                    ? "pointer-events-none scale-75 opacity-0 [transition:opacity_400ms_cubic-bezier(0.16,1,0.3,1),scale_400ms_cubic-bezier(0.16,1,0.3,1),background-color_200ms]"
+                    : "scale-100 opacity-100 [transition:opacity_700ms_cubic-bezier(0.16,1,0.3,1)_120ms,scale_700ms_cubic-bezier(0.16,1,0.3,1)_120ms,background-color_200ms]"
+                }`
+              : "transition-colors duration-200"
+          } ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
             onDark ? "text-white hover:bg-white/15 active:bg-white/25" : "text-ink hover:bg-ink/[0.07] active:bg-ink/[0.12]"
           }`}
         >

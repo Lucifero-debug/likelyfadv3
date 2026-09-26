@@ -84,14 +84,65 @@ const RIGHT_STAGE =
    `tab:` up. Below it there is no room for a column, so they lie over the
    walls on a dim of their own. Each wall is inert (aria-hidden, no pointer
    events); the middle is not, since it holds the hero's copy and CTAs. */
+/* THE EDGE BLUR (opt-in, /v4). A narrow vertical band (9% of the wall — any
+   wider and it swallows the innermost column, which the tilt foreshortens
+   to ~15% of the wall) on each wall's INNER edge —
+   the side facing the copy column — that blurs progressively harder toward
+   the column and washes to white, so the column reads as a frosted layer
+   lying over the walls with the copy on it. Built like the nav's frost: a
+   stack of backdrop blurs, each masked to fade out away from the seam, so the
+   strength ramps instead of stepping. `to` is the direction of the seam. From
+   `tab:` only; on a phone the copy already sits on its own full overlay. */
+const EDGE_RAMP = [
+  { blur: 1, solid: 55, reach: 100 },
+  { blur: 3, solid: 35, reach: 75 },
+  { blur: 6, solid: 18, reach: 52 },
+  { blur: 12, solid: 0, reach: 32 },
+] as const;
+
+function EdgeBlur({ side }: { side: "left" | "right" }) {
+  const to = side === "right" ? "to left" : "to right";
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-y-0 hidden w-[9%] tab:block ${side === "right" ? "right-0" : "left-0"}`}
+    >
+      {EDGE_RAMP.map(({ blur, solid, reach }) => {
+        const mask = `linear-gradient(${to}, #000 0%, #000 ${solid}%, rgb(0 0 0 / 0) ${reach}%)`;
+        return (
+          <div
+            key={blur}
+            className="absolute inset-0"
+            style={{
+              backdropFilter: `blur(${blur}px)`,
+              WebkitBackdropFilter: `blur(${blur}px)`,
+              maskImage: mask,
+              WebkitMaskImage: mask,
+            }}
+          />
+        );
+      })}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(${to}, #fff 0%, rgb(255 255 255 / 0.6) 25%, rgb(255 255 255 / 0.15) 60%, rgb(255 255 255 / 0) 100%)`,
+        }}
+      />
+    </div>
+  );
+}
+
 export function TwinWalls({
   running,
   play,
   children,
+  edgeBlur = false,
 }: {
   running: boolean;
   play: boolean;
   children?: ReactNode;
+  /** The inner-edge blur band on each wall (see EdgeBlur). /v4 only. */
+  edgeBlur?: boolean;
 }) {
   return (
     <div className="relative flex h-full w-full">
@@ -99,7 +150,7 @@ export function TwinWalls({
         w === 1 && children ? (
           <div
             key="middle"
-            className="absolute inset-0 z-10 flex items-center justify-center bg-white/85 px-[clamp(24px,5vw,64px)] tab:static tab:w-auto tab:flex-none tab:bg-transparent tab:px-[clamp(20px,2.5vw,48px)]"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 px-[clamp(24px,5vw,64px)] tab:static tab:w-auto tab:flex-none tab:bg-transparent tab:px-[clamp(20px,2.5vw,48px)]"
           >
             {children}
           </div>
@@ -154,6 +205,7 @@ export function TwinWalls({
             );
           })}
           </div>
+          {edgeBlur && <EdgeBlur side={w === 0 ? "right" : "left"} />}
         </div>,
       ])}
     </div>

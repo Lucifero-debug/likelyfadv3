@@ -29,7 +29,14 @@ const [HEAD_PLAIN, HEAD_GRAD = ""] = hero.headline.split("*");
 const reduceMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function HeroTwinWalls() {
+export function HeroTwinWalls({
+  edgeBlur = false,
+  topFrost = true,
+}: {
+  edgeBlur?: boolean;
+  /** The frosted white strip across the top (TopFrost). Off on /v4. */
+  topFrost?: boolean;
+} = {}) {
   const ref = useRef<HTMLElement>(null);
   const [play] = useState(() => typeof window !== "undefined" && !reduceMotion());
   const [inView, setInView] = useState(true);
@@ -53,7 +60,7 @@ export function HeroTwinWalls() {
          white, so the nav's links have to stay ink over it. */
       className="relative h-svh overflow-hidden bg-white text-ink"
     >
-      <TwinWalls running={inView} play={play && inView}>
+      <TwinWalls running={inView} play={play && inView} edgeBlur={edgeBlur}>
         {/* ONE MEASURE FOR THE WHOLE BLOCK, from `tab:` up: the block is set in
             the reassurance line's size and is 35em wide — that line's own
             width on one line (34.6em, measured) — and the headline and subline
@@ -125,7 +132,7 @@ export function HeroTwinWalls() {
       </TwinWalls>
 
       {/* THE TOP EDGE: the nav's frosted white band. */}
-      <TopFrost />
+      {topFrost && <TopFrost />}
     </section>
   );
 }
