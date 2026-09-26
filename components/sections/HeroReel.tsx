@@ -100,7 +100,9 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
    entrance, and a word reveal playing on load would be spent off screen. */
 const [HEAD_PLAIN, HEAD_GRAD = ""] = hero.headline.split("*");
 
-export function HeroReel() {
+/* `blurPx` is the scroll blur's radius. 14 is the home page's; the /v2, /v4,
+   /v5, /v6 and /v9 comparison pages pass their own. */
+export function HeroReel({ blurPx = 14 }: { blurPx?: number } = {}) {
   const ref = useRef<HTMLElement>(null);
   const wallRef = useRef<HTMLDivElement>(null);
   const dimRef = useRef<HTMLDivElement>(null);
@@ -127,7 +129,7 @@ export function HeroReel() {
       if (b !== lastB) {
         lastB = b;
         wall.style.transform = b > 0 ? `scale(${1 - b * 0.05})` : "";
-        const blur = b > 0 ? "blur(14px)" : "";
+        const blur = b > 0 ? `blur(${blurPx}px)` : "";
         dim.style.backdropFilter = blur;
         dim.style.setProperty("-webkit-backdrop-filter", blur);
         dim.style.opacity = String(b);
@@ -168,7 +170,7 @@ export function HeroReel() {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, []);
+  }, [blurPx]);
 
   /* The marquees park once the hero has scrolled away, and the tiles leave
      both shared observers with them, so neither competes with the Corridor's

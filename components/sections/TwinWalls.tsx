@@ -99,7 +99,7 @@ export function TwinWalls({
         w === 1 && children ? (
           <div
             key="middle"
-            className="absolute inset-0 z-10 flex items-center justify-center bg-[rgba(23,20,27,0.8)] px-[clamp(24px,5vw,64px)] tab:static tab:w-[clamp(300px,32vw,620px)] tab:flex-none tab:bg-transparent tab:px-[clamp(16px,2vw,40px)]"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-white/85 px-[clamp(24px,5vw,64px)] tab:static tab:w-auto tab:flex-none tab:bg-transparent tab:px-[clamp(20px,2.5vw,48px)]"
           >
             {children}
           </div>

@@ -45,18 +45,25 @@ export function HeroTwinWalls() {
       aria-label="Introduction"
       /* Not marked as a dark band for the nav: the top edge is frosted
          white, so the nav's links have to stay ink over it. */
-      className="relative h-svh overflow-hidden bg-[#17141b] text-[#f5f3f0]"
+      className="relative h-svh overflow-hidden bg-white text-ink"
     >
       <TwinWalls running={inView} play={play && inView}>
-        <div className="flex max-w-[40rem] flex-col items-center text-center">
+        {/* ONE MEASURE FOR THE WHOLE BLOCK, from `tab:` up: the block is set in
+            the reassurance line's size and is 35em wide — that line's own
+            width on one line (34.6em, measured) — and the headline and subline
+            are sized in em off it, so they share its width at every viewport.
+            3.36em puts "Ads so real, nobody" (9.8em of it) just inside the
+            measure, so the headline breaks into exactly two lines; 1.4em sets
+            the subline (61.7em of it) at ~2.5 measures, so it ends in three. */}
+        <div className={`flex w-full max-w-[40rem] flex-col items-center text-center tab:w-[35em] tab:max-w-none ${TEXT_META}`}>
           <span
-            className={`inline-flex items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink before:h-px before:w-[1.7rem] before:bg-current before:opacity-55 before:content-[''] after:h-px after:w-[1.7rem] after:bg-current after:opacity-55 after:content-['']`}
+            className={`inline-flex items-center gap-[0.65em] font-mono ${TEXT_META} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:w-[1.7rem] before:bg-current before:opacity-55 before:content-[''] after:h-px after:w-[1.7rem] after:bg-current after:opacity-55 after:content-['']`}
           >
             {hero.eyebrow}
           </span>
 
           <h1
-            className="mt-3 text-balance font-display text-[clamp(2.4rem,1.4rem+4vw,3.6rem)] font-bold leading-[1.04] tracking-[-0.022em] tab:text-[clamp(1.7rem,0.45rem+2.75vw,3.5rem)]"
+            className="mt-3 text-balance font-display text-[clamp(1.9rem,8.4vw,2.6rem)] font-bold leading-[1.04] tracking-[-0.022em] tab:text-[3.36em]"
           >
             {HEAD_PLAIN}
             <span className="bg-[image:var(--grad)] box-decoration-clone bg-clip-text text-transparent">
@@ -65,7 +72,7 @@ export function HeroTwinWalls() {
           </h1>
 
           <p
-            className={`mt-6 max-w-[36ch] text-pretty ${TEXT_LEAD} leading-[1.45] text-[#f5f3f0]/75`}
+            className={`mt-6 max-w-[36ch] text-pretty ${TEXT_LEAD} leading-[1.45] text-ink-soft tab:max-w-none tab:text-[1.4em]`}
           >
             {hero.subline}
           </p>
@@ -77,13 +84,12 @@ export function HeroTwinWalls() {
             <Button
               href={hero.secondaryHref}
               variant="ghost"
-              className="!border-white/60 !text-white hover:!border-pink hover:!text-pink"
             >
               {hero.secondaryCta}
             </Button>
           </div>
 
-          <p className={`mt-4 font-mono ${TEXT_META} tracking-[0.03em] text-ink-dim`}>
+          <p className={`mt-4 font-mono ${TEXT_META} tracking-[0.03em] text-ink-faint tab:whitespace-nowrap`}>
             {hero.reassurance}
           </p>
         </div>

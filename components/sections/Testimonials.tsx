@@ -4,16 +4,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { content } from "@/lib/content";
 import { reelVideos, type Reel } from "@/lib/reels.generated";
 import { LazyVideo } from "@/components/ui/LazyVideo";
+import { Lightbox } from "@/components/ui/Lightbox";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealText } from "@/components/ui/RevealText";
 import {
   HEAD_GAP,
   SECTION,
   SIZE_16,
-  SIZE_24,
   SIZE_H2,
   TEXT_META,
-  TEXT_SMALL,
   WRAP,
 } from "@/lib/ui";
 
@@ -78,11 +77,10 @@ const { testimonials } = content;
    WHAT THE CARD CLAIMS, WHICH IS THE ONE THING NOT TO GET WRONG HERE. A play
    button over a face with a quote beneath it reads as "this video is the client
    speaking". These clients are unnamed, asked to stay that way, and none of them
-   is on camera — so the caption above every quote says the frame is THE AD THE
-   REACTION WAS ABOUT. It is not decoration: without it this section invents
-   three video testimonials that do not exist. Moving the quote onto paper is
-   what let this stop being a pill floating on the video and become an ordinary
-   line of type, which is a better place for it.
+   is on camera. A caption above every quote used to say the frame was THE AD
+   THE REACTION WAS ABOUT; it was removed by request (Sep 2026). Without it a
+   reader can take the person in the frame for the client quoted under it — if
+   that matters again, that caption is the fix.
 
    NO BRAND LOGOS, which the reference puts on every card. There are none, for
    the same reason there are no names.
@@ -234,11 +232,13 @@ const TRACK =
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-deep";
 
-/* `--card-scale` trims every card to 70% of its whole-count width; what it
+/* ON A PHONE ONE CARD IS 75% OF THE ROW, so one sits in view at a time with the
+   next peeking in (see CARD for its shape there). From `tab:` up,
+   `--card-scale` trims every card to 70% of its whole-count width; what it
    frees goes to the next card, so the peek grows rather than a gap opening. */
 const ITEM =
-  "[--card-scale:0.7] min-w-0 flex-none snap-start " +
-  "basis-[calc((100%_-_var(--track-gap)_-_var(--peek))/2*var(--card-scale))] " +
+  "[--card-scale:0.7] min-w-0 flex-none snap-start basis-[75%] " +
+  "tab:basis-[calc((100%_-_var(--track-gap)_-_var(--peek))/2*var(--card-scale))] " +
   "lap:basis-[calc((100%_-_var(--track-gap)*3_-_var(--peek))/4*var(--card-scale))]";
 
 /* THE ARROWS. Paper pills standing in the gutter, in the same near-solid white
@@ -301,7 +301,21 @@ const ARROW =
    `display: -webkit-box` and the attribution is `display: flex` — it carries
    the gradient rule as a ::before, which only exists as a flex child. Clamping
    the <p> would delete the rule; clamping a span inside it keeps both. */
-const QUOTE_CLAMP = "line-clamp-2";
+/* THE QUOTE IS NO LONGER CLAMPED (Sep 2026): every review shows in full. The
+   frames stay top-aligned and each caption runs only as long as its own text,
+   attribution right under the quote. Pinning the attribution to a shared
+   floor was tried and dropped: it left a band of empty paper under every
+   short quote. With no card chrome, ragged caption ends read as captions. */
+const QUOTE_CLAMP = "";
+
+/* Sized off the CARD (the figcaption is the container), not the viewport:
+   the cards were trimmed to 70% and a viewport-sized 23px left ~16 characters
+   a line, which put the longest quote at seven lines. 8.6cqw is ~16.5px on a
+   191px card. The floor is 14px on a phone, where two lines would need
+   unreadable type, and 13px from `lap:`, which is what holds every (trimmed)
+   quote to two lines at 1024, the narrowest card on a four-up row. */
+const QUOTE_SIZE =
+  "text-[clamp(0.875rem,8.6cqw,1.375rem)] lap:text-[clamp(0.8125rem,8.6cqw,1.375rem)]";
 const WHO_CLAMP = "line-clamp-2";
 
 /* THERE IS NO CARD ANY MORE — the frame and its caption stand on the paper.
@@ -328,60 +342,18 @@ const WHO_CLAMP = "line-clamp-2";
    reason. The frame already answers a pointer by playing, which is a better
    answer than moving. `group` goes with it: nothing in the card was ever
    keyed to it. */
-const CARD = "flex h-full flex-col";
+/* ON A PHONE THE CARD IS A WHY US PILLAR: white, a hairline, 18px corners,
+   with the review and its attribution on the left and the frame on the right
+   (row-reverse, so the DOM keeps frame-then-caption for every width). From
+   `tab:` up it goes back to frame over caption on bare paper. */
+const CARD =
+  "flex h-full flex-row-reverse items-stretch gap-4 rounded-[18px] border border-line bg-white p-3.5 " +
+  "tab:flex-col tab:gap-0 tab:rounded-none tab:border-0 tab:bg-transparent tab:p-0";
 
 /* The frame. `isolate` keeps every overlay inside stacked against this box, so
    a card can never lift a control over its neighbour. */
 const MEDIA =
-  "relative isolate aspect-[9/16] w-full overflow-hidden rounded-2xl bg-poster";
-
-/* The format badge, and the light counterpart to the reference's glass pill:
-   near-solid paper rather than a tinted blur, so it holds ink type over any
-   frame without needing backdrop-filter to be supported. */
-const BADGE =
-  `pointer-events-none absolute right-3 top-3 rounded-full bg-white/92 px-2.5 py-1 font-mono ${TEXT_META} uppercase leading-none tracking-[0.08em] text-ink backdrop-blur-[2px]`;
-
-/* THE CONTROL BAR, LIGHT. Same idea as the reference's glass, in this page's
-   palette: the fill carries the contrast and the blur is the finish, not the
-   other way round. 92% paper rather than a 45% tint means it stays readable
-   where backdrop-filter is unsupported or switched off — which is the failure
-   mode a dark glass bar has no answer to, since 45% black over a bright frame
-   is ink on grey. */
-const BAR =
-  "flex items-center gap-2.5 rounded-2xl border border-line bg-paper/92 px-2.5 py-2 text-ink backdrop-blur-md";
-
-/* The seek bar. A real <input type="range"> rather than a div with pointer
-   handlers, because the div version cannot be operated from a keyboard and this
-   is a control, not a progress meter — arrow keys seek, and that comes free.
-   Everything below is the appearance stripped back and rebuilt; the FILL is an
-   inline gradient rather than a class, since it changes on every frame of
-   playback and Tailwind cannot emit a class per percentage. */
-const SEEK =
-  "h-1 w-full cursor-pointer appearance-none rounded-full bg-transparent outline-none " +
-  "[&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full " +
-  "[&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none " +
-  "[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-pink-deep " +
-  "[&::-webkit-slider-thumb]:shadow-[0_1px_4px_rgba(0,0,0,0.35)] " +
-  "[&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-line " +
-  "[&::-moz-range-thumb]:size-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 " +
-  "[&::-moz-range-thumb]:bg-pink-deep " +
-  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pink-deep";
-
-/* Control buttons in the bar. 32px is under the 44px touch guidance and
-   deliberately so: they sit inside a bar that is itself the target on a phone,
-   and a 44px play button in a 9:16 card at one-column width is a fifth of the
-   frame's width. The bar's own padding brings the effective target back up. */
-const CTRL =
-  "grid size-8 flex-none place-items-center rounded-full text-ink transition-colors duration-200 " +
-  "hover:bg-ink/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-deep";
-
-/* mm:ss. NaN until metadata lands, which is a real state rather than an edge
-   case — the bar renders before the file has said how long it is. */
-function clock(seconds: number): string {
-  if (!Number.isFinite(seconds)) return "0:00";
-  const whole = Math.floor(seconds);
-  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}`;
-}
+  "relative isolate aspect-[9/16] w-[38%] flex-none self-start overflow-hidden rounded-xl bg-poster tab:w-full tab:rounded-2xl";
 
 /* Resolve a content id against the generated library. The ids are stable across
    a sync and the URLs are not, which is why content.ts stores the id. A miss
@@ -431,241 +403,10 @@ function wantsHoverPreview(pointerType: string): boolean {
 const IN_VIEW_BAND = "-30% 0px -30% 0px";
 
 /* ---------------------------------------------------------------------------
-   THE PLAYER. Mounted only while its card is the open one, so every piece of
-   state below is scoped to one playback session and none of it needs resetting.
-   The <video> is created here too, which is why a card at rest costs nothing. */
-function Player({ reel, label }: { reel: Reel; label: string }) {
-  const video = useRef<HTMLVideoElement>(null);
-  const hide = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  /* True between pointerdown and pointerup on the seek bar. While it is set,
-     timeupdate stops writing `at` — otherwise the thumb fights the playhead and
-     jumps back under the finger on every frame. */
-  const scrubbing = useRef(false);
-
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [buffering, setBuffering] = useState(true);
-  const [ended, setEnded] = useState(false);
-  const [at, setAt] = useState(0);
-  const [length, setLength] = useState(NaN);
-  /* Controls are visible whenever the video is not playing, and auto-hide two
-     seconds after the last pointer while it is. Kept as state rather than a
-     class toggle because the Watch Again screen reads it too. */
-  const [showing, setShowing] = useState(true);
-
-  /* AUTOPLAY WITH SOUND IS THE POINT — the card was clicked, so the gesture is
-     there and the policy allows it. The fallback matters anyway: a browser with
-     a stricter setting rejects the promise, and silently leaving a dead frame
-     would look like a broken card. Muting and retrying gets the video running,
-     and the mute control then says what happened. */
-  useEffect(() => {
-    const el = video.current;
-    if (!el) return;
-    el.play().catch(() => {
-      el.muted = true;
-      setMuted(true);
-      void el.play().catch(() => {});
-    });
-  }, []);
-
-  useEffect(() => () => clearTimeout(hide.current), []);
-
-  /* Show the bar, and say whether it should go away again.
-
-     THE CALLER PASSES THE INTENT RATHER THAN THIS READING `playing`, and that
-     is not a style choice. Every caller is an event handler that is itself
-     about to change `playing` — onPlay fires before the state it sets has
-     landed — so a version of this that read the state variable would arm the
-     countdown against the value from BEFORE the event, and the bar would hang
-     around for one whole transition after playback started. */
-  const arm = useCallback((autoHide: boolean) => {
-    setShowing(true);
-    clearTimeout(hide.current);
-    if (autoHide) hide.current = setTimeout(() => setShowing(false), 2200);
-  }, []);
-
-  const toggle = () => {
-    const el = video.current;
-    if (!el) return;
-    if (el.ended) {
-      el.currentTime = 0;
-      setEnded(false);
-    }
-    if (el.paused) void el.play().catch(() => {});
-    else el.pause();
-  };
-
-  const pct = Number.isFinite(length) && length > 0 ? (at / length) * 100 : 0;
-
-  return (
-    <div
-      className="absolute inset-0"
-      onPointerMove={() => arm(playing && !ended)}
-      onPointerLeave={() => playing && !ended && setShowing(false)}
-    >
-      <video
-        ref={video}
-        /* The HQ cut, with audio — the tile cut the walls and the hover preview
-           play is silent and small. `?? src` covers a sync run without ffmpeg. */
-        src={reel.hq ?? reel.src}
-        poster={reel.poster ?? undefined}
-        playsInline
-        preload="auto"
-        onClick={toggle}
-        onPlay={() => {
-          setPlaying(true);
-          setEnded(false);
-          arm(true);
-        }}
-        onPause={() => {
-          setPlaying(false);
-          arm(false);
-        }}
-        onPlaying={() => setBuffering(false)}
-        onWaiting={() => setBuffering(true)}
-        onLoadedMetadata={(e) => setLength(e.currentTarget.duration)}
-        onTimeUpdate={(e) => {
-          if (!scrubbing.current) setAt(e.currentTarget.currentTime);
-        }}
-        onEnded={() => {
-          setEnded(true);
-          setPlaying(false);
-          arm(false);
-        }}
-        /* object-contain, NOT cover. The frame is 9:16 and so is the footage, so
-           there is nothing to crop — and `contain` is the setting that keeps it
-           that way if a non-vertical clip is ever pointed at from content.ts:
-           it letterboxes onto the poster ground instead of silently cutting the
-           sides off. */
-        className="size-full cursor-pointer object-contain"
-      />
-
-      {/* BUFFERING. Shown only while actually stalled AND still playing — a
-          spinner over a paused video says the wrong thing entirely. */}
-      {buffering && !ended && (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 size-9 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-2 border-white/30 border-t-white"
-        />
-      )}
-
-      {/* WATCH AGAIN. The reference's replay screen: the card goes back to
-          something you can act on rather than holding a black last frame. A
-          PAPER wash rather than the reference's black one — the same decision
-          as the bar, and it keeps the ended state looking like part of this
-          page rather than like a video player that has taken the card over. */}
-      {ended && (
-        <div className="absolute inset-0 grid place-items-center bg-paper/80 backdrop-blur-[2px]">
-          <button
-            type="button"
-            onClick={toggle}
-            className={`flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 font-sans ${TEXT_SMALL} font-medium text-ink shadow-[var(--shadow-sm)] transition-transform duration-200 hover:scale-105`}
-          >
-            <svg
-              viewBox="0 0 12 12"
-              width="12"
-              height="12"
-              fill="currentColor"
-              aria-hidden="true"
-              className="text-pink-deep"
-            >
-              <path d="M6 1.5V0L3.5 2 6 4V2.5a3.5 3.5 0 1 1-3.5 3.5H1a5 5 0 1 0 5-4.5z" />
-            </svg>
-            Watch again
-          </button>
-        </div>
-      )}
-
-      {/* THE BAR. `pointer-events-none` travels with the opacity so a hidden bar
-          cannot swallow a click meant for the video underneath it. */}
-      <div
-        className={`absolute inset-x-0 bottom-0 p-2.5 transition-opacity duration-[280ms] ${
-          showing ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      >
-        <div className={BAR}>
-          <button
-            type="button"
-            onClick={toggle}
-            aria-label={playing ? "Pause" : "Play"}
-            className={CTRL}
-          >
-            {playing ? (
-              <svg viewBox="0 0 10 12" width="10" height="12" fill="currentColor" aria-hidden="true">
-                <rect x="0" y="0" width="3.5" height="12" rx="1" />
-                <rect x="6.5" y="0" width="3.5" height="12" rx="1" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 10 12" width="10" height="12" fill="currentColor" aria-hidden="true">
-                <path d="M0 0l10 6-10 6z" />
-              </svg>
-            )}
-          </button>
-
-          <input
-            type="range"
-            min={0}
-            max={Number.isFinite(length) && length > 0 ? length : 0}
-            step={0.01}
-            value={at}
-            aria-label="Seek"
-            onPointerDown={() => (scrubbing.current = true)}
-            onPointerUp={() => (scrubbing.current = false)}
-            onChange={(e) => {
-              const to = Number(e.currentTarget.value);
-              setAt(to);
-              if (video.current) video.current.currentTime = to;
-            }}
-            /* The fill is the value, so it cannot be a class — see SEEK. Both
-               stops are tokens rather than literals, so the played portion is
-               the page's pink and the rest is its hairline. */
-            style={{
-              background: `linear-gradient(to right, var(--color-pink-deep) ${pct}%, var(--color-line) ${pct}%)`,
-            }}
-            className={SEEK}
-          />
-
-          <span className={`flex-none font-mono ${TEXT_META} tabular-nums leading-none text-ink-soft`}>
-            {clock(at)} / {clock(length)}
-          </span>
-
-          <button
-            type="button"
-            onClick={() => {
-              const el = video.current;
-              if (!el) return;
-              el.muted = !el.muted;
-              setMuted(el.muted);
-            }}
-            aria-label={muted ? `Unmute ${label}` : `Mute ${label}`}
-            className={CTRL}
-          >
-            {muted ? (
-              <svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true">
-                <path d="M0 4h3l3-3v10L3 8H0z" />
-                <path d="M9 4l4 4M13 4l-4 4" stroke="currentColor" strokeWidth="1.4" fill="none" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 14 12" width="14" height="12" fill="currentColor" aria-hidden="true">
-                <path d="M0 4h3l3-3v10L3 8H0z" />
-                <path
-                  d="M9 3.5a4 4 0 0 1 0 5M11 2a6.5 6.5 0 0 1 0 8"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  fill="none"
-                />
-              </svg>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------------------------------------------------------------------------
-   ONE CARD. The frame is a button until it is opened, and the quote lives under
-   it on paper. */
+   ONE CARD. The frame is a button that opens the clip in the shared Lightbox
+   — the same full-screen viewer the Work wall uses — and the quote lives
+   beside or under it. There is no inline player and no playback bar any more
+   (removed Sep 2026): the Lightbox carries sound and a mute control. */
 function Card({
   item,
   reel,
@@ -732,10 +473,7 @@ function Card({
   return (
     <figure className={CARD}>
       <div ref={frameRef} className={MEDIA}>
-        {reel && open ? (
-          <Player reel={reel} label={item.label} />
-        ) : (
-          reel && (
+        {reel && (
             <button
               type="button"
               onClick={onOpen}
@@ -831,10 +569,7 @@ function Card({
                    snaps back reads as the clip having restarted. */
                 style={{ transform: "scaleX(0)" }}
               />
-
-              <span className={BADGE}>{item.label}</span>
             </button>
-          )
         )}
       </div>
 
@@ -846,28 +581,9 @@ function Card({
           edge IS the frame's left edge, and any px here would set the type in
           from the picture it belongs to. pt-5 is the only gap left in the
           card, and it is the one that does the grouping. */}
-      <figcaption className="pt-5">
-        {/* THE LINE THAT KEEPS THIS HONEST — see the note at the top of the file
-            before removing it. It comes BEFORE the quote because that is the
-            order the eye takes them in: the frame above is the claim, so the
-            correction has to arrive before the quote, not after it. */}
-        {reel && (
-          /* TRACKING COMES OFF ON A PHONE AND NOTHING ELSE DOES. This line is
-             the one thing in the card that cannot be shortened or clamped —
-             see the top of the file: without it the section invents three
-             video testimonials that do not exist — so the only room left in it
-             is between the letters. At 0.1em a 360px Android wraps it to THREE
-             lines, which is a whole line of height spent on a caption; 0.04em
-             holds it at two from 360 up and still reads as the page's mono
-             caption. The full 0.1em returns from `tab:`, where the measure can
-             carry it. */
-          <p className={`font-mono ${TEXT_META} uppercase tracking-[0.04em] tab:tracking-[0.1em] text-ink-faint`}>
-            The ad this reaction was about
-          </p>
-        )}
-
+      <figcaption className="@container flex min-w-0 flex-1 flex-col justify-center pl-1.5 tab:block tab:pl-0 tab:pt-5">
         <blockquote
-          className={`${reel ? "mt-2" : ""} ${QUOTE_CLAMP} text-pretty font-sans ${SIZE_24} leading-[1.4] tracking-[-0.01em]`}
+          className={`${QUOTE_CLAMP} text-pretty font-sans ${QUOTE_SIZE} leading-[1.4] tracking-[-0.01em]`}
         >
           &ldquo;{item.quote}&rdquo;
         </blockquote>
@@ -890,6 +606,9 @@ export function Testimonials() {
   /* The open card's index, or null. Held here rather than in Card because only
      one may play at a time — see the note at the top. */
   const [open, setOpen] = useState<number | null>(null);
+  const openReel = open !== null ? reelById(testimonials.items[open].reel) : undefined;
+  /* Stable, because Lightbox re-binds its keydown and scroll lock on it. */
+  const closeLightbox = useCallback(() => setOpen(null), []);
 
   /* WHICH CARDS A TOUCH DEVICE IS LOOKING AT, AS A BITMASK — bit i is card i.
      Held here rather than in Card for a stronger reason than `open`: "am I
@@ -1100,6 +819,8 @@ export function Testimonials() {
             </svg>
           </button>
         </div>
+
+      {open !== null && openReel && <Lightbox reel={openReel} onClose={closeLightbox} />}
     </section>
   );
 }

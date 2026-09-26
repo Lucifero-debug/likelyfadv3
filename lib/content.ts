@@ -173,7 +173,7 @@ export const content = {
         label: "Fashion · UGC",
       },
       {
-        quote: "You cooked on this edit. The AI looks so realistic. Very convincing.",
+        quote: "You cooked on this edit. Very convincing.",
         who: "DTC brand owner · on a podcast-style ad",
         reel: "ai-podcast",
         label: "Podcast-style",
@@ -193,19 +193,19 @@ export const content = {
          section has to change either way — the grid is auto-fit, so it takes
          three, six or any other count without edits. */
       {
-        quote: "Ran it as-is. Cheapest CPA we've had this quarter.",
+        quote: "Cheapest CPA we've had this quarter.",
         who: "Growth lead, apparel brand · on a podcast-style cut",
         reel: "hoodie-ad-podcast-style",
         label: "Podcast-style",
       },
       {
-        quote: "My team argued about which parts were shot. None of it was.",
+        quote: "My team argued about which parts were shot.",
         who: "Founder, fragrance brand",
         reel: "ai-ugc-gym-perfume-ad",
         label: "Fragrance · UGC",
       },
       {
-        quote: "Turnaround is the part I can't get anywhere else. Two days, done.",
+        quote: "Turnaround is the part I can't get anywhere else.",
         who: "Marketing manager, supplements brand · after the second batch",
         reel: "expert-doctor-review-ai-ugc",
         label: "Health · Expert",
@@ -217,7 +217,7 @@ export const content = {
         label: "Beauty · Test",
       },
       {
-        quote: "Our best-performing creative this month, and nobody in comments clocked it.",
+        quote: "Our best-performing creative this month.",
         who: "Performance marketer, supplements brand",
         reel: "doctor-and-specialist-podcast-viral-ai-ugc",
         label: "Health · Panel",

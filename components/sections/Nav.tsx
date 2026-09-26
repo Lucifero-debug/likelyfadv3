@@ -196,6 +196,18 @@ export const maskFor = (solid: number, reach: number) =>
 export const TINT_MASK =
   "linear-gradient(to bottom, rgb(0 0 0) 0%, rgb(0 0 0 / 0.85) 40%, rgb(0 0 0 / 0.45) 75%, rgb(0 0 0 / 0) 100%)";
 
+/* The menu icon's two-step morph (see the button). Each state carries the
+   timing for travelling INTO it: open = slide (140ms) then swing (260ms,
+   overshoot) after it; close = unswing (140ms) then part (220ms) after it. */
+const MORPH_OPEN =
+  "[transition:translate_140ms_cubic-bezier(0.4,0,1,1),rotate_260ms_cubic-bezier(0.34,1.56,0.64,1)_140ms]";
+const MORPH_CLOSE =
+  "[transition:rotate_140ms_cubic-bezier(0.4,0,1,1),translate_220ms_cubic-bezier(0.16,1,0.3,1)_140ms]";
+
+/* One panel row's entrance; the stagger is its inline transition-delay. */
+const ROW_IN =
+  "transition-[opacity,translate] duration-[260ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:!transition-none";
+
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -205,6 +217,21 @@ export function Nav() {
   const [onDark, setOnDark] = useState(false);
   const lastY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
+  /* The phone menu. Below `tab:` the links and the CTA live in a panel under
+     the bar, opened by the two-line button. */
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onResize = () => window.innerWidth >= 761 && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [open]);
 
   /* The bar's live height as `--nav-h` on the root, so a hero's TopFrost can
      stand exactly as tall as the bar. Observed rather than computed: the bar
@@ -304,7 +331,7 @@ export function Nav() {
         ? "py-[clamp(8px,4.5px+0.39vw,18px)]"
         : "py-[clamp(10px,6px+0.52vw,24px)]"
     }
-    ${hidden ? "-translate-y-[115%]" : "translate-y-0"}`
+    ${hidden && !open ? "-translate-y-[115%]" : "translate-y-0"}`
   }
 >
       {/* THE STRIP IS EXACTLY THE BAR'S HEIGHT, by request: the frost ends at
@@ -398,14 +425,91 @@ export function Nav() {
             put on a dark ground and keeps the CTA reading as the one control up
             there. Both variants carry their own text colour, so nothing here
             has to be told about it. */}
-        <Button
-          contact
-          variant={onDark ? "light" : "dark"}
-          size="nav"
-          className="shrink-0"
+        {/* Wrapped, because Button's own `inline-flex` would beat a `hidden`
+            passed to it. On phones the CTA lives in the menu panel instead. */}
+        <div className="hidden shrink-0 tab:block">
+          <Button contact variant={onDark ? "light" : "dark"} size="nav">
+            {content.nav.cta}
+          </Button>
+        </div>
+
+        {/* THE PHONE MENU BUTTON: two thick rounded bars. 44px square for the
+            tap target.
+
+            THE MORPH IS TWO STEPS, and Tailwind v4 is what makes that cheap:
+            `translate-*` and `rotate-*` write the separate `translate` and
+            `rotate` properties, so each gets its own duration and delay.
+            Opening, the bars first slide together to the centre line, then
+            swing to 45deg with a small overshoot; closing runs it backwards —
+            unswing, then part. Rotating before they meet would make the X
+            pivot off-centre, which is the wobble a one-step morph has. */}
+        <button
+          type="button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="phone-menu"
+          onClick={() => setOpen((o) => !o)}
+          className={`relative ml-auto grid size-11 flex-none place-items-center rounded-full tab:hidden ${
+            onDark && !open ? "text-white" : "text-ink"
+          }`}
         >
-          {content.nav.cta}
-        </Button>
+          {[0, 1].map((i) => (
+            <span
+              key={i}
+              aria-hidden
+              className={`absolute h-[3px] w-6 rounded-full bg-current motion-reduce:!transition-none ${
+                open
+                  ? `translate-y-0 ${i ? "-rotate-45" : "rotate-45"} ${MORPH_OPEN}`
+                  : `${i ? "translate-y-[4px]" : "-translate-y-[4px]"} rotate-0 ${MORPH_CLOSE}`
+              }`}
+            />
+          ))}
+        </button>
+      </div>
+
+      {/* THE PANEL. Below the bar, phones only; any link closes it.
+
+          It drops in from the icon's corner — origin top right, a few px of
+          travel and a hair of scale — timed to land as the X finishes, and its
+          rows follow one after another. `inert` + `invisible` rather than
+          `hidden`, so there is something left to transition; visibility waits
+          out the fade on the way out and flips at once on the way in. */}
+      <div
+        id="phone-menu"
+        inert={!open}
+        className={`absolute inset-x-0 top-full origin-top-right px-4 pt-2 transition-[opacity,translate,scale,visibility] tab:hidden motion-reduce:!transition-none ${
+          open
+            ? "visible translate-y-0 scale-100 opacity-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+            : "invisible -translate-y-2 scale-[0.97] opacity-0 duration-[180ms] ease-in"
+        }`}
+      >
+        <nav
+          aria-label="Primary"
+          className="flex flex-col rounded-2xl border border-line bg-white p-2 shadow-[var(--shadow-sm)]"
+        >
+          {content.nav.links.map((l, i) => (
+            <a
+              key={l.label}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              style={{ transitionDelay: open ? `${120 + i * 45}ms` : "0ms" }}
+              className={`${ROW_IN} rounded-xl px-4 py-3.5 text-[1.05rem] text-ink active:bg-paper ${
+                open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
+              }`}
+            >
+              {l.label}
+            </a>
+          ))}
+          <div
+            style={{ transitionDelay: open ? `${120 + content.nav.links.length * 45}ms` : "0ms" }}
+            className={`${ROW_IN} p-2 pt-3 ${open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"}`}
+            onClick={() => setOpen(false)}
+          >
+            <Button contact variant="dark" className="w-full">
+              {content.nav.cta}
+            </Button>
+          </div>
+        </nav>
       </div>
     </header>
   );

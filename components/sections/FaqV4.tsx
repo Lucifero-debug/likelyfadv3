@@ -188,7 +188,13 @@ export function FaqV4() {
             <span className={KICKER}>{faq.kicker}</span>
           </Reveal>
 
-          <SplitTitle text={faq.heading} className="mt-4 lap:text-[8.7cqw]" />
+          {/* On phones, below `tab:`, it runs the column's full width in two lines:
+              "The stuff founders ask" is 11.19em, so 8.85cqw puts it edge to
+              edge with ~1% to spare, and nowrap holds each half to one line. */}
+          <SplitTitle
+            text={faq.heading}
+            className="mt-4 max-tab:text-[8.85cqw] max-tab:[&>span]:whitespace-nowrap lap:text-[8.7cqw]"
+          />
 
           {/* THE CTA SITS UNDER THE TITLE, not after the eighth question: the
               column heads the list, so the way out is the first thing a

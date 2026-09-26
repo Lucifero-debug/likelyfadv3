@@ -79,7 +79,7 @@ const SIZES: Record<Size, string> = {
 
 const VARIANTS: Record<Variant, string> = {
   grad:
-    "border-transparent bg-[image:var(--grad)] text-white " +
+    "border-transparent bg-[image:var(--grad)] bg-origin-border text-white " +
     "shadow-[0_12px_30px_-12px_rgba(236,72,153,0.6)] hover:shadow-[var(--shadow-pink)]",
   dark: "border-transparent bg-ink text-paper hover:shadow-[var(--shadow-pink)]",
   /* THE DM COLOUR. Pink on the page means "message us", so the DM buttons on
