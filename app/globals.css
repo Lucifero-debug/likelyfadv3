@@ -1641,3 +1641,57 @@ html:has([data-site="v6"]) body {
   background-color: var(--color-pink);
   border-color: transparent;
 }
+
+/* ============================================================================
+   BUTTON HOVER — after brightlifecreations.com: a streak of light that runs
+   round the button's border while it is hovered (this file), plus a magnetic
+   pull toward the pointer (Button.tsx). The ring is a conic gradient spun by
+   an animated custom angle and masked down to a 1.5px band, so it paints
+   over the border and never over the label. `--beam-a` / `--beam-b` (tail /
+   head) are set per variant so the streak always contrasts with its fill.
+   ========================================================================== */
+@property --beam {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes btn-beam {
+  to {
+    --beam: 360deg;
+  }
+}
+.btn-beam::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam),
+    transparent 0turn,
+    transparent 0.55turn,
+    var(--beam-a, #ff6a3d) 0.8turn,
+    var(--beam-b, #8a4fe0) 1turn
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+  animation: btn-beam 2.2s linear infinite paused;
+}
+.btn-beam:hover::after,
+.btn-beam:focus-visible::after {
+  opacity: 1;
+  animation-play-state: running;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-beam::after {
+    animation: none;
+  }
+}

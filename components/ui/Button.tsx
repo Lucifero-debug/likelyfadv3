@@ -1,11 +1,15 @@
-import type { ReactNode } from "react";
+"use client";
+
+import type { PointerEvent, ReactNode } from "react";
 import { contactUrl } from "@/lib/site";
 
 type Variant = "grad" | "dark" | "ghost" | "light" | "pink";
 type Size = "default" | "compact" | "nav";
 
-/* Buttons hold still. Hover changes colour, border and shadow only — nothing
-   moves, slides or wipes, so the CTA reads as a control rather than a toy.
+/* HOVER, after brightlifecreations.com (Sep 2026, by request): each variant's
+   colour / border / shadow change, PLUS a streak of light running round the
+   border (.btn-beam in globals.css) and a small magnetic pull toward the
+   pointer (MAX_PULL, mouse only). Both are off under reduced motion.
    `active:opacity` is the press state, and the only one a touch device ever
    reaches. It runs faster than the rest: press feedback has to feel immediate.
 
@@ -21,7 +25,7 @@ type Size = "default" | "compact" | "nav";
 const BASE =
   "relative inline-flex min-h-[44px] items-center justify-center gap-2 overflow-hidden rounded-full " +
   "border font-sans font-bold tracking-[-0.01em] active:opacity-[0.88] " +
-  "transition-[color,background-color,border-color,box-shadow] duration-[280ms] " +
+  "transition-[color,background-color,border-color,box-shadow,translate] duration-[280ms] " +
   "ease-[cubic-bezier(0.22,0.7,0.2,1)]";
 
 /* Padding and type size travel together in one table rather than being merged
@@ -77,6 +81,17 @@ const SIZES: Record<Size, string> = {
     "tab:text-[clamp(0.9rem,0.84rem+0.1vw,1.05rem)]",
 };
 
+/* The border streak's colours (tail, head), per fill: white on the gradient,
+   the brand's orange-to-purple on ink / white / outline (where a pink hover
+   border would swallow a pink streak), ink on the pink fill. */
+const BEAM: Record<Variant, string> = {
+  grad: "[--beam-a:#ffffff] [--beam-b:#ffffff]",
+  dark: "[--beam-a:#ff6a3d] [--beam-b:#8a4fe0]",
+  ghost: "[--beam-a:#ff6a3d] [--beam-b:#8a4fe0]",
+  light: "[--beam-a:#ff6a3d] [--beam-b:#8a4fe0]",
+  pink: "[--beam-a:#16141a] [--beam-b:#16141a]",
+};
+
 const VARIANTS: Record<Variant, string> = {
   grad:
     "border-transparent bg-[image:var(--grad)] bg-origin-border text-white " +
@@ -130,6 +145,24 @@ type ButtonProps = ButtonBase &
     | { contact?: false; /** Destination, or an in-page anchor (#id). */ href: string }
   );
 
+/* The magnetic pull's reach, px, at the button's edge; it scales linearly to
+   zero at the centre. Small on purpose — a nudge, not a chase. */
+const MAX_PULL = { x: 6, y: 4 };
+
+function pull(e: PointerEvent<HTMLAnchorElement>) {
+  if (e.pointerType !== "mouse") return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const el = e.currentTarget;
+  const r = el.getBoundingClientRect();
+  const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+  const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+  el.style.translate = `${(dx * MAX_PULL.x).toFixed(2)}px ${(dy * MAX_PULL.y).toFixed(2)}px`;
+}
+
+function release(e: PointerEvent<HTMLAnchorElement>) {
+  e.currentTarget.style.translate = "";
+}
+
 export function Button({
   children,
   href,
@@ -150,7 +183,9 @@ export function Button({
   return (
     <a
       href={finalHref}
-      className={`${BASE} ${SIZES[size]} ${VARIANTS[variant]} ${className}`}
+      className={`btn-beam ${BASE} ${SIZES[size]} ${VARIANTS[variant]} ${BEAM[variant]} ${className}`}
+      onPointerMove={pull}
+      onPointerLeave={release}
       target={newTab ? "_blank" : undefined}
       rel={newTab ? "noopener noreferrer" : undefined}
       aria-label={ariaLabel ?? (contact ? "Send us a DM on X" : undefined)}

@@ -207,6 +207,16 @@ const MORPH_OPEN =
 const MORPH_CLOSE =
   "[transition:rotate_140ms_cubic-bezier(0.4,0,1,1),translate_220ms_cubic-bezier(0.16,1,0.3,1)_140ms]";
 
+/* A menu row's hover: a soft rounded wash in the text's own colour (so it
+   reads on the light and the dark frost alike), reaching 12px past the text
+   on each side so the words stay aligned with the mark. On a ::before, not
+   the row, because the row's inline transition-delay (the stagger) would
+   otherwise hold the hover back by up to 300ms. */
+const MENU_ROW_HOVER =
+  "before:pointer-events-none before:absolute before:inset-y-0 before:-inset-x-3 before:-z-10 before:rounded-xl " +
+  "before:bg-current before:opacity-0 before:transition-opacity before:duration-200 before:content-[''] " +
+  "hover:before:opacity-[0.08] active:before:opacity-[0.14] focus-visible:before:opacity-[0.08]";
+
 /* One panel row's entrance; the stagger is its inline transition-delay. */
 const ROW_IN =
   "transition-[opacity,translate] duration-[260ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:!transition-none";
@@ -243,22 +253,16 @@ const FLOAT_FLAT_PHONE =
 const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
 /* THE DESKTOP MENU (/v3, from `tab:`). While it is open the bar takes its
    pill shape whether or not the page has scrolled, frosted like the navbar
-   (blur + FROST_TINT), square along its bottom edge; the panel hangs flush
-   from it at the same width, frosted the same, rounded at the bottom — one
-   surface. OPEN_TOP is written per tone because Tailwind needs literal
-   class text. PANEL_DESK pulls the panel up by the header's own bottom
-   padding (scrolled / not), so it meets the pill with no gap. */
-const OPEN_TOP = {
-  paper: "tab:rounded-t-[24px] tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-white/45",
-  dark: "tab:rounded-t-[24px] tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-black/25",
-} as const;
+   — the panel IS that surface: it starts at the bar's top (the header's top
+   padding down), is padded 54px (the slim bar's height) so its rows begin
+   under the bar, and carries the frost, border, radius and shadow for both.
+   OPEN_TOP turns the bar itself transparent over it, so there is one blur
+   and no seam. */
+const OPEN_TOP = "tab:border-transparent tab:shadow-none tab:backdrop-blur-none";
 const PANEL_DESK_BASE =
-  "tab:mx-auto tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:max-w-full tab:px-5 tab:pt-0 tab:pb-3 " +
-  "tab:rounded-b-2xl tab:border tab:border-t-0 tab:border-line tab:shadow-[var(--shadow-sm)]";
-const PANEL_DESK_PULL = {
-  scrolled: "tab:-mt-[clamp(8px,4.5px+0.39vw,18px)]",
-  top: "tab:-mt-[clamp(8px,4.5px+0.39vw,18px)]",
-} as const;
+  "tab:mx-auto tab:mt-[clamp(8px,4.5px+0.39vw,18px)] tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] " +
+  "tab:max-w-full tab:px-5 tab:pt-[54px] tab:pb-3 " +
+  "tab:rounded-t-[24px] tab:rounded-b-2xl tab:border tab:border-line tab:shadow-[var(--shadow-sm)]";
 
 const FLOAT_ON =
   `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1 shadow-[var(--shadow-sm)] backdrop-blur-[16px] ` +
@@ -410,15 +414,10 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           whole stack off for the length of the transition and back on at the
           end. If this ever needs to arrive on scroll, animate the strip's
           HEIGHT under `overflow-hidden`, never its opacity. */}
-      {/* WHILE THE PHONE MENU IS OPEN the bar's frost stops fading out and
-          goes flat — the same blur and tint the panel below it carries — so
-          bar and panel read as one surface with no seam between them. */}
-      {open && (
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute inset-0 -z-10 backdrop-blur-[16px] tab:hidden ${FROST_TINT[onDark ? "dark" : "paper"]}`}
-        />
-      )}
+      {/* WHILE THE MENU IS OPEN there is ONE frosted surface: the panel
+          below starts at the top of the header and runs up behind the bar,
+          and the bar goes transparent over it. Two blurred layers meeting at
+          the bar's bottom edge each blur their own edge, which drew a seam. */}
 
       {!(centered && (scrolled || open)) && (
       <div
@@ -459,10 +458,10 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
       )}
 
       <div
-        className={`flex items-center justify-between gap-6 ${
+        className={`relative z-10 flex items-center justify-between gap-6 ${
           centered
             ? open
-              ? `${FLOAT_ON} ${FLOAT_FLAT_PHONE} ${OPEN_TOP[onDark ? "dark" : "paper"]}`
+              ? `${FLOAT_ON} ${FLOAT_FLAT_PHONE} ${OPEN_TOP}`
               : scrolled
                 ? FLOAT_ON
                 : FLOAT_OFF
@@ -476,14 +475,18 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
 
               SIZED FROM THE CTA'S FIRST `nav` SIZE (2 x padding + 1.5 x text
               + 2px border), which was then trimmed on its own; the mark was
-              kept at the larger height on purpose. `aspect-[3/1]` keeps the 3:1 box, so
+              kept at the larger height on purpose, then scaled 1.3x (Sep 2026).
+              -translate-x-[9.3%]: the PNG carries 93px of clear space left of
+              the wordmark in its 1000px width, and the image fills the box's
+              width, so this puts the visible wordmark on the content edge —
+              in line with the menu's links. `aspect-[3/1]` keeps the 3:1 box, so
               `object-contain` letterboxes by the same amount at every width. */}
           <img
             src="/ls-icon.png"
             alt="Likelyfad Studio"
-            className="aspect-[3/1] h-[calc(1.75rem+1.425rem+2px)] w-auto object-contain transition-[height] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] tab:h-[calc(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px)]"
-            /* The /v3 bar runs slim at all times: the mark is 34px. */
-            style={slim ? { height: 34 } : undefined}
+            className="aspect-[3/1] h-[calc(1.3*(1.75rem+1.425rem+2px))] w-auto -translate-x-[9.3%] object-contain transition-[height] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] tab:h-[calc(1.3*(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px))]"
+            /* The /v3 bar runs slim at all times: the mark is 44px (34 x 1.3). */
+            style={slim ? { height: 44 } : undefined}
           />
         </a>
 
@@ -533,8 +536,8 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           aria-expanded={open}
           aria-controls="phone-menu"
           onClick={() => setOpen((o) => !o)}
-          className={`relative ml-auto grid flex-none place-items-center rounded-full ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
-            onDark ? "text-white" : "text-ink"
+          className={`relative ml-auto grid flex-none place-items-center rounded-full transition-colors duration-200 ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
+            onDark ? "text-white hover:bg-white/15 active:bg-white/25" : "text-ink hover:bg-ink/[0.07] active:bg-ink/[0.12]"
           }`}
         >
           {[0, 1].map((i) => (
@@ -561,7 +564,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
       <div
         id="phone-menu"
         inert={!open}
-        className={`absolute inset-x-0 top-full origin-top-right px-[clamp(24px,5vw,64px)] pb-5 backdrop-blur-[16px] ${FROST_TINT[onDark ? "dark" : "paper"]} transition-[opacity,translate,scale,visibility,background-color] ${centered ? `${PANEL_DESK_BASE} ${PANEL_DESK_PULL[scrolled ? "scrolled" : "top"]}` : "tab:hidden"} motion-reduce:!transition-none ${
+        className={`absolute inset-x-0 top-0 origin-top-right px-[clamp(24px,5vw,64px)] pt-[var(--nav-h,62px)] pb-5 backdrop-blur-[16px] ${FROST_TINT[onDark ? "dark" : "paper"]} transition-[opacity,translate,scale,visibility,background-color] ${centered ? PANEL_DESK_BASE : "tab:hidden"} motion-reduce:!transition-none ${
           open
             ? "visible translate-y-0 scale-100 opacity-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
             : "invisible opacity-0 duration-[180ms] ease-in"
@@ -579,7 +582,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
               href={l.href}
               onClick={() => setOpen(false)}
               style={{ transitionDelay: open ? `${120 + i * 45}ms` : "0ms" }}
-              className={`${ROW_IN} rounded-xl py-3.5 text-[1.05rem] ${
+              className={`${ROW_IN} ${MENU_ROW_HOVER} relative rounded-xl py-3.5 text-[1.05rem] ${
                 onDark ? "text-white" : "text-ink"
               } ${
                 open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
