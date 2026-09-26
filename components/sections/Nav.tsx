@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { content } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { WRAP } from "@/lib/ui";
@@ -269,6 +269,7 @@ const FLOAT_FLAT_PHONE =
   "max-tab:w-full max-tab:border-transparent max-tab:shadow-none max-tab:backdrop-blur-none " +
   "max-tab:px-[clamp(24px,5vw,64px)]";
 const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
+const FROST_TINT_TAB = { paper: "tab:bg-white/45", dark: "tab:bg-black/25" } as const;
 /* THE DESKTOP MENU (/v3, from `tab:`). While it is open the bar takes its
    pill shape whether or not the page has scrolled, frosted like the navbar
    — the panel IS that surface: it starts at the bar's top (the header's top
@@ -278,24 +279,28 @@ const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
    and no seam. */
 const OPEN_TOP = "tab:border-transparent tab:shadow-none tab:backdrop-blur-none";
 /* THE MENU GROWS OUT OF THE BAR rather than appearing under it. The panel is
-   clipped to exactly the bar's footprint — the header strip on a phone, the
-   67px pill (fully rounded) from `tab:` — and the clip opens downward to the
-   whole panel on the navbar's expo-out, so the bar itself reads as growing.
-   Closing runs it back into the pill, then hides the panel once it is there
-   (visibility waits out the clip). No fade: the growing edge IS the motion. */
+   a real box — frost, hairline, radius, shadow — whose HEIGHT animates from
+   the bar's own footprint (the header strip on a phone, the 67px fully round
+   pill from `tab:`) to the menu's measured height, with the corners easing
+   from pill-round to the menu's shape. Its edges and shadow are there on every
+   frame, so it reads as the bar growing; overflow-hidden reveals the rows as
+   it does. Closing shrinks it back into the pill, then hides it.
+
+   THE CURVE IS AN EASE-IN-OUT, not the bar's expo-out: expo-out put 70% of
+   the growth in the first 100ms and then crawled, which read as a lurch.
+   This one starts soft, carries speed through the middle and lands gently. */
 const PANEL_GROW = {
   open:
-    "visible [clip-path:inset(0)] tab:[clip-path:inset(0_round_24px_24px_16px_16px)] " +
-    "[transition:clip-path_650ms_cubic-bezier(0.16,1,0.3,1),visibility_0s,background-color_300ms]",
+    "visible isolate tab:rounded-t-[24px] tab:rounded-b-2xl " +
+    "[transition:height_600ms_cubic-bezier(0.45,0,0.15,1),border-radius_600ms_cubic-bezier(0.45,0,0.15,1),visibility_0s,background-color_300ms]",
   closed:
-    "invisible [clip-path:inset(0_0_calc(100%-var(--nav-h,62px))_0)] tab:[clip-path:inset(0_0_calc(100%-67px)_0_round_33.5px)] " +
-    "[transition:clip-path_420ms_cubic-bezier(0.4,0,0.2,1),visibility_0s_420ms,background-color_300ms]",
+    "invisible isolate tab:rounded-[33.5px] " +
+    "[transition:height_450ms_cubic-bezier(0.45,0,0.15,1),border-radius_450ms_cubic-bezier(0.45,0,0.15,1),visibility_0s_450ms,background-color_300ms]",
 } as const;
 
 const PANEL_DESK_BASE =
   "tab:mx-auto tab:mt-[clamp(8px,4.5px+0.39vw,18px)] tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] " +
-  "tab:max-w-full tab:px-5 tab:pt-[67px] tab:pb-3 " +
-  "tab:rounded-t-[24px] tab:rounded-b-2xl tab:border tab:border-line tab:shadow-[var(--shadow-sm)]";
+  "tab:max-w-full tab:border tab:border-line tab:shadow-[var(--shadow-sm)]";
 
 const FLOAT_ON =
   `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1 shadow-[var(--shadow-sm)] backdrop-blur-[16px] ` +
@@ -321,6 +326,21 @@ export function Nav({
   /* The phone menu. Below `tab:` the links and the CTA live in a panel under
      the bar, opened by the two-line button. */
   const [open, setOpen] = useState(false);
+  /* The open menu's full height, measured (see PANEL_GROW). */
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [panelH, setPanelH] = useState(0);
+  const [navH, setNavH] = useState(62);
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    const measure = () => {
+      setPanelH(el.scrollHeight);
+      if (el.parentElement) setNavH(el.parentElement.offsetHeight);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [open]);
   /* The /v3 bar is one size throughout — the slim floating-pill size, at the
      top of the page, scrolled and with the menu open: a smaller mark and menu
      button, and the scrolled header padding. */
@@ -635,16 +655,34 @@ export function Nav({
           out the fade on the way out and flips at once on the way in. */}
       <div
         id="phone-menu"
+        ref={panelRef}
         inert={!open}
-        className={`absolute inset-x-0 top-0 origin-top-right px-[clamp(24px,5vw,64px)] pt-[var(--nav-h,62px)] pb-5 backdrop-blur-[16px] ${FROST_TINT[onDark ? "dark" : "paper"]} ${centered ? PANEL_DESK_BASE : "tab:hidden"} motion-reduce:!transition-none ${
-          open ? PANEL_GROW.open : PANEL_GROW.closed
+        style={{ "--panel-open": panelH ? `${panelH}px` : "auto" } as CSSProperties}
+        className={`absolute inset-x-0 top-0 overflow-hidden [contain:layout_paint] tab:backdrop-blur-[16px] ${FROST_TINT_TAB[onDark ? "dark" : "paper"]} ${centered ? PANEL_DESK_BASE : "tab:hidden"} motion-reduce:!transition-none ${
+          open ? `${PANEL_GROW.open} tab:h-[var(--panel-open)]` : `${PANEL_GROW.closed} tab:h-[67px]`
         }`}
       >
+        {/* PHONE: the frost is its own layer that STRETCHES down from the bar
+            (scaleY from the header's height to the menu's, origin top), after
+            brightlifecreations.com's mobile menu — the whole header background
+            grows, on a transform, so it runs on the compositor. No radius or
+            border on a phone, so the stretch distorts nothing. */}
+        <div
+          aria-hidden
+          style={{ scale: open ? "1 1" : `1 ${panelH ? Math.min(1, navH / panelH) : 0.2}` }}
+          className={`pointer-events-none absolute inset-0 -z-10 origin-top backdrop-blur-[16px] tab:hidden motion-reduce:!transition-none ${FROST_TINT[onDark ? "dark" : "paper"]} ${
+            open
+              ? "[transition:scale_620ms_cubic-bezier(0.25,1,0.5,1),background-color_300ms]"
+              : "[transition:scale_420ms_cubic-bezier(0.45,0,0.15,1),background-color_300ms]"
+          }`}
+        />
         <nav
           aria-label="Primary"
           /* No card at any width — the rows stand on the panel's frost, which
              hangs flush from the bar. */
-          className="flex flex-col"
+          /* The padding lives here, not on the panel, so the panel can shrink
+             to exactly the bar's height (padding would set a floor). */
+          className="flex flex-col px-[clamp(24px,5vw,64px)] pt-[var(--nav-h,62px)] pb-5 tab:px-5 tab:pt-[66px] tab:pb-3"
         >
           {content.nav.links.map((l, i) => (
             <a
