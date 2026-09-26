@@ -308,14 +308,25 @@ const ARROW =
    short quote. With no card chrome, ragged caption ends read as captions. */
 const QUOTE_CLAMP = "";
 
+/* The phone quote's fit range, px — see the fit effect in Testimonials. */
+const FIT_MIN = 14;
+const FIT_MAX = 28;
+
 /* Sized off the CARD (the figcaption is the container), not the viewport:
    the cards were trimmed to 70% and a viewport-sized 23px left ~16 characters
    a line, which put the longest quote at seven lines. 8.6cqw is ~16.5px on a
    191px card. The floor is 14px on a phone, where two lines would need
    unreadable type, and 13px from `lap:`, which is what holds every (trimmed)
    quote to two lines at 1024, the narrowest card on a four-up row. */
+/* On a phone the quote is the card's headline — semibold, tight leading, 17px
+   on a 390 phone and scaled to the text column below that (15px floor) so the
+   longest quote plus its role still fit the fixed 212px card at 360
+   — since it sits beside the frame rather than under it. Semibold at every
+   width; from `tab:` it takes the card-relative size. */
 const QUOTE_SIZE =
-  "text-[clamp(0.875rem,8.6cqw,1.375rem)] lap:text-[clamp(0.8125rem,8.6cqw,1.375rem)]";
+  "text-[length:var(--quote-px,clamp(0.9375rem,13.4cqw,1.0625rem))] font-semibold leading-[1.3] " +
+  "tab:text-[clamp(0.875rem,8.6cqw,1.375rem)] tab:leading-[1.4] " +
+  "lap:text-[clamp(0.8125rem,8.6cqw,1.375rem)]";
 const WHO_CLAMP = "line-clamp-2";
 
 /* THERE IS NO CARD ANY MORE — the frame and its caption stand on the paper.
@@ -457,6 +468,7 @@ function Card({
      `transform` on this element, so nothing reconciles it away. */
   const bar = useRef<HTMLSpanElement>(null);
 
+
   /* THE OPEN PLAYER SILENCES THE OTHER CARDS' PICTURE, NOT JUST THEIR SOUND —
      but only on the touch route, which is the only one that can have several
      previews running in the first place.
@@ -585,9 +597,11 @@ function Card({
           edge IS the frame's left edge, and any px here would set the type in
           from the picture it belongs to. pt-5 is the only gap left in the
           card, and it is the one that does the grouping. */}
-      <figcaption className="@container flex min-w-0 flex-1 flex-col justify-center pl-1.5 tab:block tab:pl-0 tab:pt-5">
+      <figcaption
+        className="@container flex min-w-0 flex-1 flex-col justify-between gap-2 pl-1.5 tab:block tab:pl-0 tab:pt-5"
+      >
         <blockquote
-          className={`${QUOTE_CLAMP} text-pretty font-sans ${QUOTE_SIZE} leading-[1.4] tracking-[-0.01em]`}
+          className={`${QUOTE_CLAMP} text-pretty font-sans ${QUOTE_SIZE} tracking-[-0.01em]`}
         >
           &ldquo;{item.quote}&rdquo;
         </blockquote>
@@ -597,9 +611,13 @@ function Card({
             anyone. These clients asked to stay unnamed. --grad-ink, not --grad:
             this rule is back on paper, where the bright cut drops to ~2.4:1. */}
         <p
-          className={`mt-3 flex items-center gap-[0.65em] font-sans ${TEXT_META} uppercase tracking-[0.09em] text-ink-faint before:h-0.5 before:w-5 before:flex-none before:rounded-sm before:bg-[image:var(--grad-ink)] before:content-['']`}
+          className={`mt-2 flex items-center gap-[0.65em] leading-[1.3] max-tab:w-fit max-tab:flex-col max-tab:items-stretch max-tab:gap-[5px] max-tab:before:w-1/2 max-tab:before:h-px max-tab:before:rounded-none tab:mt-3 tab:leading-normal font-sans ${TEXT_META} uppercase tracking-[0.04em] tab:tracking-[0.09em] text-ink-faint before:h-0.5 before:w-5 before:flex-none before:rounded-sm before:bg-[image:var(--grad-ink)] before:content-['']`}
         >
-          <span className={`${WHO_CLAMP} min-w-0 break-words`}>{item.who}</span>
+          {/* Phone: the role alone — the context after " · " is dropped — in
+              a smaller size, never clamped. From `tab:` the full line at the
+              same 11px, clamped as before. */}
+          <span className="min-w-0 break-words text-[0.5rem] tab:hidden">{item.who.split(" · ")[0]}</span>
+          <span className={`hidden min-w-0 break-words text-[0.6875rem] ${WHO_CLAMP} tab:[display:-webkit-box]`}>{item.who}</span>
         </p>
       </figcaption>
     </figure>
@@ -613,6 +631,51 @@ export function Testimonials() {
   const openReel = open !== null ? reelById(testimonials.items[open].reel) : undefined;
   /* Stable, because Lightbox re-binds its keydown and scroll lock on it. */
   const closeLightbox = useCallback(() => setOpen(null), []);
+
+  /* PHONE ONLY: ONE QUOTE SIZE FOR EVERY CARD, as large as the tightest card
+     allows. Each phone card is a fixed 212px with its caption spanning the
+     frame (quote at the top, role at the bottom); this finds the largest
+     size between FIT_MIN and FIT_MAX at which EVERY quote + role still fits,
+     by binary search on one custom property, and re-runs when the row
+     resizes and once the webfont lands. From `tab:` the property is cleared
+     and QUOTE_SIZE takes over. */
+  const sectionRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const root = sectionRef.current;
+    if (!root) return;
+    const phone = window.matchMedia("(max-width: 760.98px)");
+    const caps = () => [...root.querySelectorAll<HTMLElement>("figcaption")];
+    const fit = () => {
+      if (!phone.matches) {
+        root.style.removeProperty("--quote-px");
+        return;
+      }
+      const all = caps();
+      const fits = (px: number) => {
+        root.style.setProperty("--quote-px", `${px}px`);
+        return all.every((c) => c.scrollHeight <= c.clientHeight);
+      };
+      let lo = FIT_MIN;
+      let hi = FIT_MAX;
+      if (!fits(lo)) return;
+      while (hi - lo > 0.25) {
+        const mid = (lo + hi) / 2;
+        if (fits(mid)) lo = mid;
+        else hi = mid;
+      }
+      root.style.setProperty("--quote-px", `${lo}px`);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    const row = root.querySelector("figure")?.parentElement?.parentElement;
+    if (row) ro.observe(row);
+    phone.addEventListener("change", fit);
+    void document.fonts?.ready.then(fit);
+    return () => {
+      ro.disconnect();
+      phone.removeEventListener("change", fit);
+    };
+  }, []);
 
   /* WHICH CARDS A TOUCH DEVICE IS LOOKING AT, AS A BITMASK — bit i is card i.
      Held here rather than in Card for a stronger reason than `open`: "am I
@@ -723,7 +786,7 @@ export function Testimonials() {
        these cards ran to the viewport, so on a wide monitor a one-line quote was
        set across ~600px while the hero's own copy above it was capped at 42ch —
        the quotes read as a different page rather than as a section of this one. */
-    <section className={SECTION} aria-label={testimonials.kicker}>
+    <section ref={sectionRef} className={SECTION} aria-label={testimonials.kicker}>
       <div className={WRAP}>
         {/* 832px is 13 × the 64px the title reaches on a desktop — the same
             13-title-em measure SectionHeading gives its other four. It is in px

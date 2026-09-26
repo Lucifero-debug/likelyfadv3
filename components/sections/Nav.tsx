@@ -213,15 +213,14 @@ const ROW_IN =
 
 /* THE CENTRED BAR (/v3). The hero there is a narrow white column between two
    video walls, so from `tab:` up the bar lives inside that column: just the
-   mark and the menu button, and the menu panel opens under it at the same
-   width. COLUMN is the hero copy's own measure — 35em of TEXT_META, see
-   HeroTwinWalls — so the bar's edges line up with the text under it. Phones
-   are unchanged: the column is the full screen there anyway. */
-const COLUMN = "tab:mx-auto tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))] tab:max-w-full tab:px-0";
+   mark and the menu button, and the menu panel opens under it. The width is
+   the hero copy's own measure — 35em of TEXT_META, see HeroTwinWalls — so
+   the bar's edges line up with the text under it (FLOAT_OFF, PANEL_DESK).
+   Phones are unchanged: the column is the full screen there anyway. */
 
 /* THE FLOATING BAR (/v3 only). At the top of the page the centred bar sits
    flat in the column; once the page scrolls it becomes a floating white pill
-   — hairline and a small shadow only (no fill, no blur, by request) —
+   — hairline, a small shadow and a 16px backdrop blur (no fill colour) —
    and stays put rather than retracting.
    The pill is 2.5rem wider than the column and padded 1.25rem a side, so the
    mark and the button do not move sideways when it forms. The border and
@@ -236,8 +235,33 @@ const FLOAT_BASE =
 const FLOAT_OFF =
   `${FLOAT_BASE} w-full border-transparent px-[clamp(24px,5vw,64px)] ` +
   "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))] tab:px-0";
+/* On a phone with the menu open, the pill lays flat into the full-width
+   frosted bar the panel hangs from (see the frost note in the render). */
+const FLOAT_FLAT_PHONE =
+  "max-tab:w-full max-tab:border-transparent max-tab:shadow-none max-tab:backdrop-blur-none " +
+  "max-tab:px-[clamp(24px,5vw,64px)] max-tab:py-0";
+const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
+/* THE DESKTOP MENU (/v3, from `tab:`). While it is open the bar takes its
+   pill shape whether or not the page has scrolled, frosted like the navbar
+   (blur + FROST_TINT), square along its bottom edge; the panel hangs flush
+   from it at the same width, frosted the same, rounded at the bottom — one
+   surface. OPEN_TOP is written per tone because Tailwind needs literal
+   class text. PANEL_DESK pulls the panel up by the header's own bottom
+   padding (scrolled / not), so it meets the pill with no gap. */
+const OPEN_TOP = {
+  paper: "tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-white/45",
+  dark: "tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-black/25",
+} as const;
+const PANEL_DESK_BASE =
+  "tab:mx-auto tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:max-w-full tab:px-5 tab:pt-0 tab:pb-3 " +
+  "tab:rounded-b-2xl tab:border tab:border-t-0 tab:border-line tab:shadow-[var(--shadow-sm)]";
+const PANEL_DESK_PULL = {
+  scrolled: "tab:-mt-[clamp(8px,4.5px+0.39vw,18px)]",
+  top: "tab:-mt-[clamp(10px,6px+0.52vw,24px)]",
+} as const;
+
 const FLOAT_ON =
-  `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1.5 shadow-[var(--shadow-sm)] ` +
+  `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1.5 shadow-[var(--shadow-sm)] backdrop-blur-[16px] ` +
   "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:px-5";
 
 export function Nav({ centered = false }: { centered?: boolean } = {}) {
@@ -382,10 +406,20 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           whole stack off for the length of the transition and back on at the
           end. If this ever needs to arrive on scroll, animate the strip's
           HEIGHT under `overflow-hidden`, never its opacity. */}
-      {!(centered && scrolled) && (
+      {/* WHILE THE PHONE MENU IS OPEN the bar's frost stops fading out and
+          goes flat — the same blur and tint the panel below it carries — so
+          bar and panel read as one surface with no seam between them. */}
+      {open && (
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 -z-10 backdrop-blur-[16px] tab:hidden ${FROST_TINT[onDark ? "dark" : "paper"]}`}
+        />
+      )}
+
+      {!(centered && (scrolled || open)) && (
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full"
+        className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-full ${open ? "max-tab:hidden" : ""}`}
       >
         {BLUR_RAMP.map(({ blur, solid, reach }) => {
           const mask = maskFor(solid, reach);
@@ -422,7 +456,13 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
 
       <div
         className={`flex items-center justify-between gap-6 ${
-          centered ? (scrolled ? FLOAT_ON : FLOAT_OFF) : WRAP
+          centered
+            ? open
+              ? `${FLOAT_ON} ${FLOAT_FLAT_PHONE} ${OPEN_TOP[onDark ? "dark" : "paper"]}`
+              : scrolled
+                ? FLOAT_ON
+                : FLOAT_OFF
+            : WRAP
         }`}
       >
         <a href="#top" className="flex items-center" aria-label={`${content.brand} home`}>
@@ -488,7 +528,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           aria-controls="phone-menu"
           onClick={() => setOpen((o) => !o)}
           className={`relative ml-auto grid size-11 flex-none place-items-center rounded-full ${centered ? "" : "tab:hidden"} ${
-            onDark && !open ? "text-white" : "text-ink"
+            onDark ? "text-white" : "text-ink"
           }`}
         >
           {[0, 1].map((i) => (
@@ -515,15 +555,17 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
       <div
         id="phone-menu"
         inert={!open}
-        className={`absolute inset-x-0 top-full origin-top-right px-4 pt-2 transition-[opacity,translate,scale,visibility] ${centered ? COLUMN : "tab:hidden"} motion-reduce:!transition-none ${
+        className={`absolute inset-x-0 top-full origin-top-right px-[clamp(24px,5vw,64px)] pb-5 backdrop-blur-[16px] ${FROST_TINT[onDark ? "dark" : "paper"]} transition-[opacity,translate,scale,visibility,background-color] ${centered ? `${PANEL_DESK_BASE} ${PANEL_DESK_PULL[scrolled ? "scrolled" : "top"]}` : "tab:hidden"} motion-reduce:!transition-none ${
           open
             ? "visible translate-y-0 scale-100 opacity-100 duration-[320ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-            : "invisible -translate-y-2 scale-[0.97] opacity-0 duration-[180ms] ease-in"
+            : "invisible opacity-0 duration-[180ms] ease-in"
         }`}
       >
         <nav
           aria-label="Primary"
-          className="flex flex-col rounded-2xl border border-line bg-white p-2 shadow-[var(--shadow-sm)]"
+          /* No card at any width — the rows stand on the panel's frost, which
+             hangs flush from the bar. */
+          className="flex flex-col"
         >
           {content.nav.links.map((l, i) => (
             <a
@@ -531,7 +573,9 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
               href={l.href}
               onClick={() => setOpen(false)}
               style={{ transitionDelay: open ? `${120 + i * 45}ms` : "0ms" }}
-              className={`${ROW_IN} rounded-xl px-4 py-3.5 text-[1.05rem] text-ink active:bg-paper ${
+              className={`${ROW_IN} rounded-xl py-3.5 text-[1.05rem] ${
+                onDark ? "text-white" : "text-ink"
+              } ${
                 open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
               }`}
             >
@@ -540,10 +584,10 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           ))}
           <div
             style={{ transitionDelay: open ? `${120 + content.nav.links.length * 45}ms` : "0ms" }}
-            className={`${ROW_IN} p-2 pt-3 ${open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"}`}
+            className={`${ROW_IN} pt-3 ${open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"}`}
             onClick={() => setOpen(false)}
           >
-            <Button contact variant="dark" className="w-full">
+            <Button contact variant={onDark ? "light" : "dark"} className="w-full">
               {content.nav.cta}
             </Button>
           </div>
