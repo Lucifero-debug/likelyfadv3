@@ -816,6 +816,42 @@ html:has([data-site="v3"]) {
   }
 }
 
+/* The /v3 hero's supporting lines (label, subline, CTAs, small print): a
+   longer rise than .v3-rise, with a touch of blur clearing as it lands, so the
+   copy visibly arrives rather than just fading. The headline is RevealText. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(6px);
+  }
+}
+.hero-rise {
+  animation: hero-rise 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise {
+    animation: v3-fade 200ms ease both;
+    animation-delay: 0s !important;
+  }
+}
+
+/* The /v3 headline: each line slides up from behind its own overflow mask. */
+@keyframes hero-line {
+  from {
+    transform: translateY(110%);
+  }
+}
+.hero-line {
+  animation: hero-line 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-line {
+    animation: v3-fade 200ms ease both;
+    animation-delay: 0s !important;
+  }
+}
+
 /* The /v3 hero's walls arriving (TwinWalls): each slides in from its own
    side edge and fades up, while the copy rises in the middle (.v3-rise). On
    `translate`, not `transform`, so it composes with nothing the wall's stage
