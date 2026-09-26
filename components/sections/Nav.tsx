@@ -230,16 +230,16 @@ const ROW_IN =
    sizes). Written out rather than built on WRAP: WRAP's own `px`/`w` would tie with
    these at the same breakpoint, and Tailwind does not promise which wins. */
 const FLOAT_BASE =
-  "mx-auto rounded-2xl border transition-[width,padding,border-color,box-shadow] " +
+  "mx-auto rounded-full border transition-[width,padding,border-color,box-shadow] " +
   "duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] motion-reduce:transition-none";
 const FLOAT_OFF =
-  `${FLOAT_BASE} w-full border-transparent px-[clamp(24px,5vw,64px)] ` +
+  `${FLOAT_BASE} w-full border-transparent px-[clamp(24px,5vw,64px)] py-1 ` +
   "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))] tab:px-0";
 /* On a phone with the menu open, the pill lays flat into the full-width
    frosted bar the panel hangs from (see the frost note in the render). */
 const FLOAT_FLAT_PHONE =
   "max-tab:w-full max-tab:border-transparent max-tab:shadow-none max-tab:backdrop-blur-none " +
-  "max-tab:px-[clamp(24px,5vw,64px)] max-tab:py-0";
+  "max-tab:px-[clamp(24px,5vw,64px)]";
 const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
 /* THE DESKTOP MENU (/v3, from `tab:`). While it is open the bar takes its
    pill shape whether or not the page has scrolled, frosted like the navbar
@@ -249,19 +249,19 @@ const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
    class text. PANEL_DESK pulls the panel up by the header's own bottom
    padding (scrolled / not), so it meets the pill with no gap. */
 const OPEN_TOP = {
-  paper: "tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-white/45",
-  dark: "tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-black/25",
+  paper: "tab:rounded-t-[24px] tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-white/45",
+  dark: "tab:rounded-t-[24px] tab:rounded-b-none tab:border-b-transparent tab:shadow-none tab:backdrop-blur-[16px] tab:bg-black/25",
 } as const;
 const PANEL_DESK_BASE =
   "tab:mx-auto tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:max-w-full tab:px-5 tab:pt-0 tab:pb-3 " +
   "tab:rounded-b-2xl tab:border tab:border-t-0 tab:border-line tab:shadow-[var(--shadow-sm)]";
 const PANEL_DESK_PULL = {
   scrolled: "tab:-mt-[clamp(8px,4.5px+0.39vw,18px)]",
-  top: "tab:-mt-[clamp(10px,6px+0.52vw,24px)]",
+  top: "tab:-mt-[clamp(8px,4.5px+0.39vw,18px)]",
 } as const;
 
 const FLOAT_ON =
-  `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1.5 shadow-[var(--shadow-sm)] backdrop-blur-[16px] ` +
+  `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1 shadow-[var(--shadow-sm)] backdrop-blur-[16px] ` +
   "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:px-5";
 
 export function Nav({ centered = false }: { centered?: boolean } = {}) {
@@ -276,6 +276,10 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
   /* The phone menu. Below `tab:` the links and the CTA live in a panel under
      the bar, opened by the two-line button. */
   const [open, setOpen] = useState(false);
+  /* The /v3 bar is one size throughout — the slim floating-pill size, at the
+     top of the page, scrolled and with the menu open: a smaller mark and menu
+     button, and the scrolled header padding. */
+  const slim = centered;
 
   useEffect(() => {
     if (!open) return;
@@ -383,7 +387,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
     duration-[280ms]
     ease-[cubic-bezier(0.22,0.7,0.2,1)]
     ${
-      scrolled
+      scrolled || centered
         ? "py-[clamp(8px,4.5px+0.39vw,18px)]"
         : "py-[clamp(10px,6px+0.52vw,24px)]"
     }
@@ -477,7 +481,9 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           <img
             src="/ls-icon.png"
             alt="Likelyfad Studio"
-            className="aspect-[3/1] h-[calc(1.75rem+1.425rem+2px)] w-auto object-contain tab:h-[calc(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px)]"
+            className="aspect-[3/1] h-[calc(1.75rem+1.425rem+2px)] w-auto object-contain transition-[height] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] tab:h-[calc(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px)]"
+            /* The /v3 bar runs slim at all times: the mark is 34px. */
+            style={slim ? { height: 34 } : undefined}
           />
         </a>
 
@@ -527,7 +533,7 @@ export function Nav({ centered = false }: { centered?: boolean } = {}) {
           aria-expanded={open}
           aria-controls="phone-menu"
           onClick={() => setOpen((o) => !o)}
-          className={`relative ml-auto grid size-11 flex-none place-items-center rounded-full ${centered ? "" : "tab:hidden"} ${
+          className={`relative ml-auto grid flex-none place-items-center rounded-full ${slim ? "size-9" : "size-11"} ${centered ? "" : "tab:hidden"} ${
             onDark ? "text-white" : "text-ink"
           }`}
         >
