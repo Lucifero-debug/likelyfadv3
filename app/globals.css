@@ -1695,3 +1695,14 @@ html:has([data-site="v6"]) body {
     animation: none;
   }
 }
+
+/* Tailwind v4's preflight leaves <button> on the default arrow. Every enabled
+   button here is clickable — the phone menu toggle, the row arrows, the
+   lightbox controls — so they take the pointer, as links already do. In the
+   base layer so any utility (e.g. `cursor-default`) still wins. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+}
