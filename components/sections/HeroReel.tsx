@@ -278,14 +278,15 @@ export function HeroReel({ blurPx = 14 }: { blurPx?: number } = {}) {
               {hero.subline}
             </p>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-2">
-              <Button contact variant="grad" withArrow>
+            {/* Below `tab:` the two stack, each the full width of the copy. */}
+            <div className="mt-8 flex flex-wrap justify-center gap-2 max-tab:w-full max-tab:flex-col">
+              <Button contact variant="grad" withArrow className="max-tab:w-full">
                 {hero.primaryCta}
               </Button>
               <Button
                 href={hero.secondaryHref}
                 variant="ghost"
-                className="!border-white/60 !text-white hover:!border-pink hover:!text-pink"
+                className="max-tab:w-full !border-white/60 !text-white hover:!border-pink hover:!text-pink"
               >
                 {hero.secondaryCta}
               </Button>
