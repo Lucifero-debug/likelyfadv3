@@ -58,7 +58,7 @@ import { WRAP } from "@/lib/ui";
    the tap target, not the bar's height, and it is what puts each link at ~48px
    against the 44px floor. See the note on the underline offset below. */
 const LINK =
-  "relative -my-3 py-3 text-[clamp(0.875rem,0.8rem+0.125vw,1.05rem)] font-normal " +
+  "relative -my-3 py-3 text-[clamp(0.98rem,0.9rem+0.14vw,1.18rem)] font-normal " +
   "transition-[color,opacity] duration-150 active:opacity-60 " +
   // Gradient underline growing from the left. Offset back out of the padded
   // box so it still sits 3px under the TEXT, not under the tap target — the
@@ -139,11 +139,11 @@ const BAR_STRIP = STRIP_HALF * 2;
    of the strip. It still lands at full strength where it matters because the
    strip starts ABOVE the type, at the viewport edge. */
 export const BLUR_RAMP = [
-  { blur: 1, solid: 60, reach: 100 },
-  { blur: 2, solid: 40, reach: 82 },
-  { blur: 4, solid: 24, reach: 62 },
-  { blur: 8, solid: 10, reach: 42 },
-  { blur: 16, solid: 0, reach: 24 },
+  { blur: 1, solid: 50, reach: 100 },
+  { blur: 2, solid: 35, reach: 85 },
+  { blur: 3, solid: 20, reach: 65 },
+  { blur: 5, solid: 8, reach: 45 },
+  { blur: 8, solid: 0, reach: 28 },
 ] as const;
 
 /* Strip-relative stops → a mask in the LAYER's own coordinates, since each
@@ -194,7 +194,7 @@ export const maskFor = (solid: number, reach: number) =>
    before the blur is. A wash that outlived the blur would be a pale band with a
    soft bottom edge — exactly the hairline this bar does not have. */
 export const TINT_MASK =
-  "linear-gradient(to bottom, rgb(0 0 0) 0%, rgb(0 0 0) 42%, rgb(0 0 0 / 0) 92%)";
+  "linear-gradient(to bottom, rgb(0 0 0) 0%, rgb(0 0 0 / 0.85) 40%, rgb(0 0 0 / 0.45) 75%, rgb(0 0 0 / 0) 100%)";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -204,6 +204,24 @@ export function Nav() {
      first paint is correct and nothing flips during hydration. */
   const [onDark, setOnDark] = useState(false);
   const lastY = useRef(0);
+  const headerRef = useRef<HTMLElement>(null);
+
+  /* The bar's live height as `--nav-h` on the root, so a hero's TopFrost can
+     stand exactly as tall as the bar. Observed rather than computed: the bar
+     is on three viewport ramps and compacts on scroll. */
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const root = document.documentElement;
+    const ro = new ResizeObserver(() => {
+      root.style.setProperty("--nav-h", `${el.offsetHeight}px`);
+    });
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      root.style.removeProperty("--nav-h");
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -276,6 +294,7 @@ export function Nav() {
 
   return (
 <header
+  ref={headerRef}
   className={`fixed inset-x-0 top-0 z-[120]
     transition-[transform,padding]
     duration-[280ms]
@@ -288,12 +307,10 @@ export function Nav() {
     ${hidden ? "-translate-y-[115%]" : "translate-y-0"}`
   }
 >
-      {/* THE STRIP IS TALLER THAN THE BAR, by design. A progressive blur needs
-          RUNWAY below the type to decay in; give it only the bar's own height
-          and the ramp has to finish at the bar's bottom edge, which puts the
-          fastest part of the fall-off right where a boundary would have been
-          and reinstates the edge in soft form. 170% is roughly half a bar of
-          overhang.
+      {/* THE STRIP IS EXACTLY THE BAR'S HEIGHT, by request: the frost ends at
+          the bar's bottom edge rather than overhanging below it. (It was 170%,
+          half a bar of runway for the ramp to decay in; if the bottom edge
+          ever reads as a soft line, that overhang is the fix.)
 
           A PERCENTAGE, so it rides the bar's own clamps for free — the header
           is already on three viewport ramps and compacts on scroll, and a fixed
@@ -308,7 +325,7 @@ export function Nav() {
           HEIGHT under `overflow-hidden`, never its opacity. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[170%]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full"
       >
         {BLUR_RAMP.map(({ blur, solid, reach }) => {
           const mask = maskFor(solid, reach);
@@ -336,7 +353,7 @@ export function Nav() {
             safe to animate, and cross-fading two stacked layers would not be. */}
         <div
           className={`absolute inset-0 transition-colors duration-300 ease-out ${
-            onDark ? "bg-black/25" : "bg-white/85"
+            onDark ? "bg-black/25" : "bg-white/45"
           }`}
           style={{ maskImage: TINT_MASK, WebkitMaskImage: TINT_MASK }}
         />
@@ -348,16 +365,14 @@ export function Nav() {
               ramp now rather than a fixed box, but still one small PNG the
               optimiser has nothing to do with.
 
-              THE TWO CLAMPS ARE ONE BOX: the width ramp is exactly 3x the
-              height ramp at every point, which is the 120x40 the fixed pair
-              spelled, so `object-contain` letterboxes by the same amount at
-              every width and the mark never changes shape. Move one and the
-              other moves by 3x, or the wordmark starts drifting inside its own
-              box as the window resizes. */}
+              SIZED FROM THE CTA'S FIRST `nav` SIZE (2 x padding + 1.5 x text
+              + 2px border), which was then trimmed on its own; the mark was
+              kept at the larger height on purpose. `aspect-[3/1]` keeps the 3:1 box, so
+              `object-contain` letterboxes by the same amount at every width. */}
           <img
             src="/ls-icon.png"
             alt="Likelyfad Studio"
-            className="h-[clamp(28px,17px+1.2vw,52px)] w-[clamp(84px,51px+3.6vw,156px)] object-contain"
+            className="aspect-[3/1] h-[calc(1.75rem+1.425rem+2px)] w-auto object-contain tab:h-[calc(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px)]"
           />
         </a>
 
@@ -386,7 +401,7 @@ export function Nav() {
         <Button
           contact
           variant={onDark ? "light" : "dark"}
-          size="compact"
+          size="nav"
           className="shrink-0"
         >
           {content.nav.cta}

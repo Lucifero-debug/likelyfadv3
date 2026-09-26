@@ -157,7 +157,7 @@ export function PricingV4() {
             `lap:` it is set at 1/10 of the column's width, which is what puts
             "Priced to your brief," (~9.8 em wide) on one line that runs the
             full width of the half. Below `lap:` it keeps SIZE_H2. */}
-        <div className="@container flex flex-col lap:sticky lap:top-28">
+        <div className="@container flex flex-col">
           <Reveal>
             <span className={KICKER}>{pricing.kicker}</span>
           </Reveal>

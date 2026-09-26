@@ -183,7 +183,7 @@ export function FaqV4() {
             Pricing's does: from `lap:` it is set at 8.7% of the column's width,
             which runs its longer line ("The stuff founders ask", ~11.2 em) the
             full width of the half. Below `lap:` it keeps SIZE_H2. */}
-        <div className="@container flex flex-col lap:sticky lap:top-28">
+        <div className="@container flex flex-col">
           <Reveal>
             <span className={KICKER}>{faq.kicker}</span>
           </Reveal>
@@ -191,8 +191,8 @@ export function FaqV4() {
           <SplitTitle text={faq.heading} className="mt-4 lap:text-[8.7cqw]" />
 
           {/* THE CTA SITS UNDER THE TITLE, not after the eighth question: the
-              column is sticky, so the way out stays in view the whole time a
-              reader is working down the list, and it fills what was an empty
+              column heads the list, so the way out is the first thing a
+              reader sees before working down it, and it fills what was an empty
               column beside a long one. */}
           <Reveal delay={100} className="pt-8">
             <Button contact variant="light" withArrow>

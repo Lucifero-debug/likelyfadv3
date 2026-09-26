@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { contactUrl } from "@/lib/site";
 
 type Variant = "grad" | "dark" | "ghost" | "light" | "pink";
-type Size = "default" | "compact";
+type Size = "default" | "compact" | "nav";
 
 /* Buttons hold still. Hover changes colour, border and shadow only — nothing
    moves, slides or wipes, so the CTA reads as a control rather than a toy.
@@ -69,6 +69,11 @@ const SIZES: Record<Size, string> = {
   compact:
     "px-4 py-3 text-[0.875rem] " +
     "tab:px-[clamp(18px,12px+0.626vw,32px)] tab:py-[clamp(12px,8px+0.417vw,22px)] " +
+    "tab:text-[clamp(0.9rem,0.84rem+0.1vw,1.05rem)]",
+  /* The main nav's CTA: compact, a step larger. */
+  nav:
+    "px-4 py-2.5 text-[0.875rem] " +
+    "tab:px-[clamp(18px,12px+0.6vw,30px)] tab:py-[clamp(10px,7px+0.38vw,19px)] " +
     "tab:text-[clamp(0.9rem,0.84rem+0.1vw,1.05rem)]",
 };
 

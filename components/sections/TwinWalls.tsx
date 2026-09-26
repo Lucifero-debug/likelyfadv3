@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { content } from "@/lib/content";
 import { takeReels } from "@/lib/reelOrder";
 import { HOT } from "@/lib/useInViewPlay";
@@ -56,7 +57,8 @@ const GAP = "gap-[clamp(6px,0.9vw,12px)]";
 /* THE TILT — ReelWallV6's, one flat plane per wall, mirrored so the two read
    as the walls of a corridor: each OUTER edge swings toward the viewer and the
    seam between them recedes. The right wall is the old wall's own transform,
-   rotateY(-22deg) rotateX(4deg); the left is its mirror image.
+   rotateY(-22deg), without its rotateX so the walls tilt from the sides only;
+   the left is its mirror image.
 
    THE OVERHANG IS ReelWallV6's TOO, and for the same reasons. Vertically the
    stage runs 20% past the box at both ends so nothing bare shows as it tilts
@@ -73,18 +75,42 @@ const GAP = "gap-[clamp(6px,0.9vw,12px)]";
    source text. */
 const LEFT_STAGE =
   "tab:absolute tab:-inset-y-[20%] tab:left-[6%] tab:-right-[12%] tab:h-auto " +
-  "tab:[transform:rotateY(22deg)_rotateX(4deg)]";
+  "tab:[transform:rotateY(22deg)]";
 const RIGHT_STAGE =
   "tab:absolute tab:-inset-y-[20%] tab:-left-[12%] tab:right-[6%] tab:h-auto " +
-  "tab:[transform:rotateY(-22deg)_rotateX(4deg)]";
+  "tab:[transform:rotateY(-22deg)]";
 
-export function TwinWalls({ running, play }: { running: boolean; play: boolean }) {
+/* THE MIDDLE: `children` stand in their own column between the two walls from
+   `tab:` up. Below it there is no room for a column, so they lie over the
+   walls on a dim of their own. Each wall is inert (aria-hidden, no pointer
+   events); the middle is not, since it holds the hero's copy and CTAs. */
+export function TwinWalls({
+  running,
+  play,
+  children,
+}: {
+  running: boolean;
+  play: boolean;
+  children?: ReactNode;
+}) {
   return (
-    <div className="flex h-full w-full gap-[clamp(24px,4.5vw,88px)]">
-      {Array.from({ length: WALLS }, (_, w) => (
+    <div className="relative flex h-full w-full">
+      {Array.from({ length: WALLS }, (_, w) => [
+        w === 1 && children ? (
+          <div
+            key="middle"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-[rgba(23,20,27,0.8)] px-[clamp(24px,5vw,64px)] tab:static tab:w-[clamp(300px,32vw,620px)] tab:flex-none tab:bg-transparent tab:px-[clamp(16px,2vw,40px)]"
+          >
+            {children}
+          </div>
+        ) : null,
         /* THE BOX: perspective lives here because the thing that rotates is
            its direct child, the stage. 900px, as on ReelWallV6. */
-        <div key={w} className="relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px]">
+        <div
+          key={w}
+          aria-hidden="true"
+          className="pointer-events-none relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px]"
+        >
           <div className={`flex h-full ${GAP} ${w === 0 ? LEFT_STAGE : RIGHT_STAGE}`}>
           {Array.from({ length: COLS }, (_, c) => {
             const ci = w * COLS + c;
@@ -126,8 +152,8 @@ export function TwinWalls({ running, play }: { running: boolean; play: boolean }
             );
           })}
           </div>
-        </div>
-      ))}
+        </div>,
+      ])}
     </div>
   );
 }

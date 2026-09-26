@@ -7,8 +7,9 @@ import { BLUR_RAMP, TINT_MASK, maskFor } from "./Nav";
    can never drift apart.
 
    Its own strip, not the nav's: the nav hides on scroll and this edge should
-   not. Taller than the bar's strip so the fall-off has room below the bar. */
-export function TopFrost({ className = "h-[clamp(120px,9vw,180px)]" }: { className?: string }) {
+   not. Exactly as tall as the bar — `--nav-h` is the header's measured height,
+   set by Nav; the clamp is only the first-paint fallback. */
+export function TopFrost({ className = "h-[var(--nav-h,clamp(64px,4.5vw,90px))]" }: { className?: string }) {
   return (
     <div aria-hidden="true" className={`pointer-events-none absolute inset-x-0 top-0 ${className}`}>
       {BLUR_RAMP.map(({ blur, solid, reach }) => {
@@ -28,7 +29,7 @@ export function TopFrost({ className = "h-[clamp(120px,9vw,180px)]" }: { classNa
         );
       })}
       <div
-        className="absolute inset-0 bg-white/85"
+        className="absolute inset-0 bg-white/45"
         style={{ maskImage: TINT_MASK, WebkitMaskImage: TINT_MASK }}
       />
     </div>

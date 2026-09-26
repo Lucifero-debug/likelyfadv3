@@ -234,9 +234,12 @@ const TRACK =
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-deep";
 
+/* `--card-scale` trims every card to 70% of its whole-count width; what it
+   frees goes to the next card, so the peek grows rather than a gap opening. */
 const ITEM =
-  "min-w-0 flex-none snap-start basis-[calc((100%_-_var(--track-gap)_-_var(--peek))/2)] " +
-  "lap:basis-[calc((100%_-_var(--track-gap)*3_-_var(--peek))/4)]";
+  "[--card-scale:0.7] min-w-0 flex-none snap-start " +
+  "basis-[calc((100%_-_var(--track-gap)_-_var(--peek))/2*var(--card-scale))] " +
+  "lap:basis-[calc((100%_-_var(--track-gap)*3_-_var(--peek))/4*var(--card-scale))]";
 
 /* THE ARROWS. Paper pills standing in the gutter, in the same near-solid white
    the badge and the control bar use, so they read as part of this page rather
