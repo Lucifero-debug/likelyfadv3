@@ -521,8 +521,20 @@ export function Nav({
             src="/ls-icon.png"
             alt="Likelyfad Studio"
             className="aspect-[3/1] h-[calc(1.69*(1.75rem+1.425rem+2px))] w-auto -translate-x-[9.3%] object-contain transition-[height] duration-300 ease-[cubic-bezier(0.22,0.7,0.2,1)] tab:h-[calc(1.69*(2*clamp(14px,9.5px+0.47vw,25px)+1.5*clamp(1rem,0.93rem+0.11vw,1.18rem)+2px))]"
-            /* The /v3 bar runs slim at all times: the mark is 57px (34 x 1.3 x 1.3). */
-            style={slim ? { height: 57 } : undefined}
+            /* The /v3 bar runs slim at all times: the mark is 57px (34 x 1.3 x 1.3).
+               Once scrolled it scales to 70%, from the wordmark's left edge
+               (9.3% in — see the nudge note above) so it stays aligned with
+               the menu links; `scale`, not height, so the bar keeps its size. */
+            style={
+              slim
+                ? {
+                    height: 57,
+                    transformOrigin: "9.3% 50%",
+                    scale: scrolled ? "0.7" : "1",
+                    transition: "scale 700ms cubic-bezier(0.16,1,0.3,1)",
+                  }
+                : undefined
+            }
           />
         </a>
 

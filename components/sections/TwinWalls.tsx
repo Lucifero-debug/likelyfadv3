@@ -84,28 +84,40 @@ const RIGHT_STAGE =
    `tab:` up. Below it there is no room for a column, so they lie over the
    walls on a dim of their own. Each wall is inert (aria-hidden, no pointer
    events); the middle is not, since it holds the hero's copy and CTAs. */
-/* THE EDGE BLUR (opt-in, /v4). A narrow vertical band (9% of the wall — any
-   wider and it swallows the innermost column, which the tilt foreshortens
-   to ~15% of the wall) on each wall's INNER edge —
+/* THE EDGE BLUR (opt-in, /v4). A vertical band (28% of the wall) on each
+   wall's INNER edge —
    the side facing the copy column — that blurs progressively harder toward
-   the column and washes to white, so the column reads as a frosted layer
+   the column while the wall fades out under it (WALL_FADE), so the column reads as a frosted layer
    lying over the walls with the copy on it. Built like the nav's frost: a
    stack of backdrop blurs, each masked to fade out away from the seam, so the
    strength ramps instead of stepping. `to` is the direction of the seam. From
    `tab:` only; on a phone the copy already sits on its own full overlay. */
 const EDGE_RAMP = [
-  { blur: 1, solid: 55, reach: 100 },
-  { blur: 3, solid: 35, reach: 75 },
-  { blur: 6, solid: 18, reach: 52 },
-  { blur: 12, solid: 0, reach: 32 },
+  { blur: 1, solid: 60, reach: 100 },
+  { blur: 2, solid: 45, reach: 85 },
+  { blur: 4, solid: 30, reach: 68 },
+  { blur: 8, solid: 15, reach: 50 },
+  { blur: 16, solid: 0, reach: 34 },
 ] as const;
+
+/* The wall itself dissolves into the column: an EASED mask (ease-in-out
+   stops, so there is no visible start or end to the fade) from clear at the
+   seam to solid 54% in. This is what removes the hard vertical cut where the
+   wall's overflow clips the innermost tiles; with the blur ramp over it the
+   footage softens, then fades, as if it runs on in behind the column. */
+const WALL_FADE = {
+  right:
+    "tab:[mask-image:linear-gradient(to_left,rgb(0_0_0/0)_0%,rgb(0_0_0/0.04)_6%,rgb(0_0_0/0.14)_12%,rgb(0_0_0/0.3)_19%,rgb(0_0_0/0.5)_26%,rgb(0_0_0/0.7)_33%,rgb(0_0_0/0.86)_40%,rgb(0_0_0/0.96)_47%,#000_54%)]",
+  left:
+    "tab:[mask-image:linear-gradient(to_right,rgb(0_0_0/0)_0%,rgb(0_0_0/0.04)_6%,rgb(0_0_0/0.14)_12%,rgb(0_0_0/0.3)_19%,rgb(0_0_0/0.5)_26%,rgb(0_0_0/0.7)_33%,rgb(0_0_0/0.86)_40%,rgb(0_0_0/0.96)_47%,#000_54%)]",
+} as const;
 
 function EdgeBlur({ side }: { side: "left" | "right" }) {
   const to = side === "right" ? "to left" : "to right";
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-y-0 hidden w-[9%] tab:block ${side === "right" ? "right-0" : "left-0"}`}
+      className={`pointer-events-none absolute inset-y-0 hidden w-[28%] tab:block ${side === "right" ? "right-0" : "left-0"}`}
     >
       {EDGE_RAMP.map(({ blur, solid, reach }) => {
         const mask = `linear-gradient(${to}, #000 0%, #000 ${solid}%, rgb(0 0 0 / 0) ${reach}%)`;
@@ -122,12 +134,6 @@ function EdgeBlur({ side }: { side: "left" | "right" }) {
           />
         );
       })}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(${to}, #fff 0%, rgb(255 255 255 / 0.6) 25%, rgb(255 255 255 / 0.15) 60%, rgb(255 255 255 / 0) 100%)`,
-        }}
-      />
     </div>
   );
 }
@@ -162,7 +168,7 @@ export function TwinWalls({
           aria-hidden="true"
           className={`twin-wall-in pointer-events-none relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px] ${
             w === 0 ? "[--wall-from:-12%]" : "[--wall-from:12%]"
-          }`}
+          } ${edgeBlur ? WALL_FADE[w === 0 ? "right" : "left"] : ""}`}
         >
           <div className={`flex h-full ${GAP} ${w === 0 ? LEFT_STAGE : RIGHT_STAGE}`}>
           {Array.from({ length: COLS }, (_, c) => {
