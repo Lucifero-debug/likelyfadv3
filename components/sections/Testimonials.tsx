@@ -345,15 +345,19 @@ const WHO_CLAMP = "line-clamp-2";
 /* ON A PHONE THE CARD IS A WHY US PILLAR: white, a hairline, 18px corners,
    with the review and its attribution on the left and the frame on the right
    (row-reverse, so the DOM keeps frame-then-caption for every width). From
-   `tab:` up it goes back to frame over caption on bare paper. */
+   `tab:` up it goes back to frame over caption on bare paper.
+
+   212px ON A PHONE IS A WHY US PILLAR'S HEIGHT (measured at 360-430: .pillar
+   is 212 unless its title wraps). The frame fills it and takes its width from
+   9:16. If the pillar's padding or type changes, re-measure this. */
 const CARD =
-  "flex h-full flex-row-reverse items-stretch gap-4 rounded-[18px] border border-line bg-white p-3.5 " +
-  "tab:flex-col tab:gap-0 tab:rounded-none tab:border-0 tab:bg-transparent tab:p-0";
+  "flex h-[212px] flex-row-reverse items-stretch gap-4 rounded-[18px] border border-line bg-white p-3.5 " +
+  "tab:h-full tab:flex-col tab:gap-0 tab:rounded-none tab:border-0 tab:bg-transparent tab:p-0";
 
 /* The frame. `isolate` keeps every overlay inside stacked against this box, so
    a card can never lift a control over its neighbour. */
 const MEDIA =
-  "relative isolate aspect-[9/16] w-[38%] flex-none self-start overflow-hidden rounded-xl bg-poster tab:w-full tab:rounded-2xl";
+  "relative isolate aspect-[9/16] h-full w-auto flex-none overflow-hidden rounded-xl bg-poster tab:h-auto tab:w-full tab:rounded-2xl";
 
 /* Resolve a content id against the generated library. The ids are stable across
    a sync and the URLs are not, which is why content.ts stores the id. A miss
