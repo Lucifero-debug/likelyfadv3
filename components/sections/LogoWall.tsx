@@ -78,12 +78,14 @@ function Mark({ logo }: { logo: Logo }) {
   );
 }
 
-/* The strip's own breathing room, ON TOP OF the heading's HEAD_GAP above
-   and the seam into Why us below — each doubled by request (Sep 2026). As
-   measured: 32 above / 70 below on a phone, 64 / 122 at 1440, so the strip
-   adds that much again on each side. The top is PADDING: a margin would
+/* The strip's own breathing room, doubled by request (Sep 2026), and EQUAL
+   ABOVE AND BELOW. Above, the gap is HEAD_GAP plus this padding: twice
+   HEAD_GAP. Below it is this margin plus Why us's own top padding (SECTION's
+   clamp(32px,5vw,48px)); this band has no bottom padding of its own, so the
+   margin is twice HEAD_GAP less that padding and the two gaps match at every
+   width: 64 on a phone, 128 at 1440. The top is PADDING: a margin would
    collapse into HEAD_GAP's and add nothing. */
-const STRIP_GAP = "pt-[clamp(32px,4.5vw,64px)] mb-[clamp(70px,50px+5vw,122px)]";
+const STRIP_GAP = "pt-[clamp(32px,4.5vw,64px)] mb-[calc(2*clamp(32px,4.5vw,64px)-clamp(32px,5vw,48px))]";
 
 export function LogoWall() {
   const [sectionRef, near] = useNearViewport<HTMLElement>();
@@ -108,8 +110,9 @@ export function LogoWall() {
          page, and the logo PNGs carry ~10px of empty canvas above and below
          the marks; at an equal 64 the band read as floating loose between its
          neighbours. From `tab:` up it is SECTION, spelled out because Tailwind
-         scans source text and a variant cannot be prefixed onto a constant. */
-      className={`py-2 tab:py-[clamp(32px,5vw,48px)] ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
+         scans source text and a variant cannot be prefixed onto a constant.
+         No bottom padding: STRIP_GAP's margin owns the seam into Why us. */
+      className={`pt-2 tab:pt-[clamp(32px,5vw,48px)] ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
     >
       <div className={WRAP}>
         <div className={HEAD_GAP}>
