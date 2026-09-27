@@ -6,7 +6,7 @@ import type { Reel } from "@/lib/reels.generated";
 import { HeroCopy, HeroTwinWalls } from "./HeroTwinWalls";
 import { HERO_ROWS_OF_PICKS, WorkLanes } from "./Work";
 
-/* THE /v5 HERO — /v4's twin walls from `tab:` up, and a stacked layout below
+/* THE /v5 HERO — /v4's twin walls from `tab:` up (minus the inner-edge blur; the fade stays), and a stacked layout below
    it: the centred nav, then Work's three horizontal lanes filling three
    quarters of the screen, then the pitch on white underneath.
 
@@ -58,6 +58,7 @@ function PhoneHero({ onOpen, paused }: { onOpen: (reel: Reel) => void; paused: b
           size={TILE_SIZE}
           pitch={TILE_PITCH}
           light
+          fades={false}
           className="w-full"
         />
       </div>
@@ -74,7 +75,7 @@ export function HeroStacked() {
   return (
     <>
       <div className="max-tab:hidden">
-        <HeroTwinWalls edgeBlur topFrost={false} onOpen={setActive} paused={!!active} />
+        <HeroTwinWalls edgeFade topFrost={false} onOpen={setActive} paused={!!active} />
       </div>
       <PhoneHero onOpen={setActive} paused={!!active} />
       {active && <Lightbox reel={active} onClose={() => setActive(null)} />}

@@ -32,11 +32,14 @@ const reduceMotion = () =>
 
 export function HeroTwinWalls({
   edgeBlur = false,
+  edgeFade = edgeBlur,
   topFrost = true,
   onOpen,
   paused = false,
 }: {
   edgeBlur?: boolean;
+  /** The inner-edge fade without the blur — see TwinWalls. */
+  edgeFade?: boolean;
   /** Makes the walls clickable — see TwinWalls. /v5 only. */
   onOpen?: (reel: Reel) => void;
   /** Parks the walls while something covers them (the lightbox). */
@@ -67,7 +70,7 @@ export function HeroTwinWalls({
          white, so the nav's links have to stay ink over it. */
       className="relative h-svh overflow-hidden bg-white text-ink"
     >
-      <TwinWalls running={inView && !paused} play={play && inView} edgeBlur={edgeBlur} onOpen={onOpen}>
+      <TwinWalls running={inView && !paused} play={play && inView} edgeBlur={edgeBlur} edgeFade={edgeFade} onOpen={onOpen}>
         <HeroCopy />
       </TwinWalls>
 

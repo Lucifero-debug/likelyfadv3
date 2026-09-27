@@ -595,6 +595,7 @@ export function WorkLanes({
   size = TILE_SIZE,
   pitch = null,
   light = false,
+  fades = true,
   className = "",
 }: {
   rows: Reel[][];
@@ -613,6 +614,9 @@ export function WorkLanes({
   /** End fades to white instead of this band's near-black, for a wall set on
       a white ground (/v5's phone hero). */
   light?: boolean;
+  /** The two end fades. /v5's phone hero turns them off so the lanes run
+      hard to the screen edges. */
+  fades?: boolean;
   className?: string;
 }) {
   /* HOW MANY TILES EACH LANE ACTUALLY NEEDS ON THIS MACHINE. PER_ROW on
@@ -708,6 +712,8 @@ export function WorkLanes({
         </div>
       ))}
 
+      {fades && (
+      <>
       <div
         aria-hidden="true"
         className={`${FADE} left-0 ${light ? "bg-[linear-gradient(to_right,#fff,rgba(255,255,255,0))]" : "bg-[linear-gradient(to_right,#17141b,rgba(23,20,27,0))]"}`}
@@ -716,6 +722,8 @@ export function WorkLanes({
         aria-hidden="true"
         className={`${FADE} right-0 ${light ? "bg-[linear-gradient(to_left,#fff,rgba(255,255,255,0))]" : "bg-[linear-gradient(to_left,#17141b,rgba(23,20,27,0))]"}`}
       />
+      </>
+      )}
     </div>
   );
 }

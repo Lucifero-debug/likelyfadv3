@@ -145,6 +145,7 @@ export function TwinWalls({
   play,
   children,
   edgeBlur = false,
+  edgeFade = edgeBlur,
   onOpen,
 }: {
   running: boolean;
@@ -152,6 +153,10 @@ export function TwinWalls({
   children?: ReactNode;
   /** The inner-edge blur band on each wall (see EdgeBlur). /v4 only. */
   edgeBlur?: boolean;
+  /** The fade-out on each wall's inner edge (WALL_FADE). On with edgeBlur by
+      default; /v5 keeps it without the blur so the walls still dissolve
+      into the copy column instead of ending in a hard cut. */
+  edgeFade?: boolean;
   /** Work's interaction on these walls: tiles become buttons that open the
       lightbox, hovering a column dims its other tiles and stops that column.
       Absent, the walls stay inert (/v3, /v4). */
@@ -187,7 +192,7 @@ export function TwinWalls({
           aria-hidden={onOpen ? undefined : "true"}
           className={`twin-wall-in ${onOpen ? "" : "pointer-events-none"} relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px] ${
             w === 0 ? "[--wall-from:-12%]" : "[--wall-from:12%]"
-          } ${edgeBlur ? WALL_FADE[w === 0 ? "right" : "left"] : ""}`}
+          } ${edgeFade ? WALL_FADE[w === 0 ? "right" : "left"] : ""}`}
         >
           <div className={`flex h-full ${GAP} ${w === 0 ? LEFT_STAGE : RIGHT_STAGE}`}>
           {Array.from({ length: COLS }, (_, c) => {
