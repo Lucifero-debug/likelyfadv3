@@ -59,7 +59,7 @@ function PhoneHero({ onOpen, paused }: { onOpen: (reel: Reel) => void; paused: b
           pitch={TILE_PITCH}
           light
           fades={false}
-          className="w-full"
+          className="hero-stack-in w-full"
         />
       </div>
 

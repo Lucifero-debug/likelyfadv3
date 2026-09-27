@@ -889,6 +889,42 @@ html:has([data-site="v3"]) {
   }
 }
 
+/* /v5's phone hero (HeroStacked): THE TILE CASCADE. Every tile fades and
+   scales up into place, and the delay is its row plus its column, so the wall
+   fills in on a diagonal from the top-left corner while the pitch rises under
+   it. Set on the WorkLanes container: rows > track > tiles.
+
+   ONLY THE FIRST FIVE COLUMNS ARE STAGGERED. Every lane starts at 0 and slides
+   left, so at load a 390px phone shows columns 1–4 and part of 5; everything
+   past that is off screen and simply arrives with column 5, rather than
+   holding the cascade open for tiles nobody can see.
+
+   `scale`, not `transform`: the individual property composes with the track's
+   marquee transform and the tile's own hover. */
+@keyframes hero-tile-in {
+  from {
+    opacity: 0;
+    scale: 0.86;
+  }
+}
+.hero-stack-in > * > * > * {
+  --c: 4;
+  animation: hero-tile-in 800ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc((var(--r, 0) + var(--c)) * 80ms);
+}
+.hero-stack-in > :nth-child(2) { --r: 1; }
+.hero-stack-in > :nth-child(3) { --r: 2; }
+.hero-stack-in > * > * > :nth-child(1) { --c: 0; }
+.hero-stack-in > * > * > :nth-child(2) { --c: 1; }
+.hero-stack-in > * > * > :nth-child(3) { --c: 2; }
+.hero-stack-in > * > * > :nth-child(4) { --c: 3; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-stack-in > * > * > * {
+    animation: v3-fade 200ms ease both;
+    animation-delay: 0s !important;
+  }
+}
+
 /* ============================================================================
    /v4 — THE MATERIAL 3 PAGE. Colour roles live in @theme (m3-*); this block
    holds what a utility cannot be: the dark scheme, state layers, the ripple,
