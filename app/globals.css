@@ -580,14 +580,11 @@ html:has([data-paper="white"]) {
   color: var(--why-ink);
 }
 
+/* SECTION's clamp from lib/ui.ts, spelled out. This was the replicated
+   build's vh-keyed 72→152, which put 150-170px under Why us against the 96
+   every other seam on the page gets. If SECTION moves, this moves. */
 .section {
-  padding-block: clamp(4.5rem, 11vh, 9.5rem);
-}
-
-/* The logo wall pads its own bottom, so the seam between the two is its
-   padding alone rather than its padding plus this band's. */
-#clients + .why {
-  padding-top: 0;
+  padding-block: clamp(32px, 5vw, 48px);
 }
 
 .wrap {

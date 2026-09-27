@@ -90,14 +90,19 @@ export function LogoWall() {
       ref={sectionRef}
       id="clients"
       aria-label={COPY.kicker}
-      /* THIS BAND OWNS BOTH OF ITS GAPS. Why us used to supply the one below
-         from its own `.section` padding (72→152, vh-keyed), so the space under
-         the strip moved with window height while the space above moved with
-         width, and the two only matched at 1440×900. Now one width-keyed value
-         sits on each side, and `#clients + .why` in globals.css drops Why us's
-         top padding so it does not stack on top. 64 on a phone, 80 at 1440+ —
-         a notch under the 96 section seam, since a logo strip is a light band. */
-      className={`py-[clamp(64px,5.556vw,80px)] ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
+      /* SECTION, LIKE EVERY OTHER BAND. This used to own both of its seams
+         with a bespoke 64→80 and zero Why us's top padding to match, which
+         made it the one band on the page whose rhythm was authored by hand.
+         Now it pads 48 a side like the rest, Why us pads its own 48 above,
+         and the seam between them is the page's 96 — same as every other.
+
+         EXCEPT ON A PHONE, where it pads 8 and each seam is 40 against the
+         page's 64. A heading and one thin strip is the lightest band on the
+         page, and the logo PNGs carry ~10px of empty canvas above and below
+         the marks; at an equal 64 the band read as floating loose between its
+         neighbours. From `tab:` up it is SECTION, spelled out because Tailwind
+         scans source text and a variant cannot be prefixed onto a constant. */
+      className={`py-2 tab:py-[clamp(32px,5vw,48px)] ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
     >
       <div className={WRAP}>
         <div className={HEAD_GAP}>

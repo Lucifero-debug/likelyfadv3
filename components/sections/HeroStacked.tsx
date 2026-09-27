@@ -63,9 +63,9 @@ function PhoneHero({ onOpen, paused }: { onOpen: (reel: Reel) => void; paused: b
         />
       </div>
 
-      {/* No bottom padding: the logo wall under this owns that gap, and 48 here
-          on top of its 64 left the strip further from the pitch than from Why us. */}
-      <div className="flex justify-center px-[clamp(24px,5vw,64px)] pt-[clamp(32px,8vw,48px)]">
+      {/* SECTION's bottom padding, so with the logo wall's own on top the seam
+          under the pitch is the page's 64 / 96 like every other. */}
+      <div className="flex justify-center px-[clamp(24px,5vw,64px)] pb-[clamp(32px,5vw,48px)] pt-[clamp(32px,8vw,48px)]">
         <HeroCopy />
       </div>
     </section>

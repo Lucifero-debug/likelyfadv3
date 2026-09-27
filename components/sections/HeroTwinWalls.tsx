@@ -67,8 +67,13 @@ export function HeroTwinWalls({
       ref={ref}
       aria-label="Introduction"
       /* Not marked as a dark band for the nav: the top edge is frosted
-         white, so the nav's links have to stay ink over it. */
-      className="relative h-svh overflow-hidden bg-white text-ink"
+         white, so the nav's links have to stay ink over it.
+
+         SECTION'S BOTTOM HALF, UNDER A FULL SCREEN OF WALL. box-content keeps
+         h-svh as the walls' height and adds the 48 below it rather than
+         taking it out of them, so with the logo wall's own 48 on top the seam
+         is the page's 96 like every other. */
+      className="relative box-content h-svh overflow-hidden bg-white pb-[clamp(32px,5vw,48px)] text-ink"
     >
       <TwinWalls running={inView && !paused} play={play && inView} edgeBlur={edgeBlur} edgeFade={edgeFade} onOpen={onOpen}>
         <HeroCopy />
