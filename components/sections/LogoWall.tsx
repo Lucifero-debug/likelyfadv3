@@ -78,6 +78,13 @@ function Mark({ logo }: { logo: Logo }) {
   );
 }
 
+/* The strip's own breathing room, ON TOP OF the heading's HEAD_GAP above
+   and the seam into Why us below — each doubled by request (Sep 2026). As
+   measured: 32 above / 70 below on a phone, 64 / 122 at 1440, so the strip
+   adds that much again on each side. The top is PADDING: a margin would
+   collapse into HEAD_GAP's and add nothing. */
+const STRIP_GAP = "pt-[clamp(32px,4.5vw,64px)] mb-[clamp(70px,50px+5vw,122px)]";
+
 export function LogoWall() {
   const [sectionRef, near] = useNearViewport<HTMLElement>();
   /* useSyncExternalStore, not a useState initializer: the server has no window,
@@ -113,7 +120,7 @@ export function LogoWall() {
       {motion ? (
         /* THE STRIP. Full bleed; the wrap's cap is deliberately not applied so
            the logos run out of the page rather than stopping at an edge. */
-        <div className="relative">
+        <div className={`relative ${STRIP_GAP}`}>
           <div
             className={`flex w-max animate-lane-x items-center gap-[clamp(40px,5vw,88px)] will-change-transform ${
               near ? "" : "[animation-play-state:paused]"
@@ -145,7 +152,7 @@ export function LogoWall() {
         </div>
       ) : (
         <div
-          className={`${WRAP} flex flex-wrap items-center justify-center gap-x-[clamp(32px,4vw,64px)] gap-y-8`}
+          className={`${WRAP} ${STRIP_GAP} flex flex-wrap items-center justify-center gap-x-[clamp(32px,4vw,64px)] gap-y-8`}
         >
           {LOGOS.map((l) => (
             <Mark key={l.slug} logo={l} />
