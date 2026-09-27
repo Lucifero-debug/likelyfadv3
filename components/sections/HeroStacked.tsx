@@ -8,7 +8,7 @@ import { HERO_ROWS_OF_PICKS, WorkLanes } from "./Work";
 
 /* THE /v5 HERO — /v4's twin walls from `tab:` up (minus the inner-edge blur; the fade stays), and a stacked layout below
    it: the centred nav, then Work's three horizontal lanes filling three
-   quarters of the screen, then the pitch on white underneath.
+   quarters of the screen, then the pitch on paper underneath.
 
    BOTH LAYOUTS ARE IN THE MARKUP and CSS picks one, so there is no layout
    flash on hydration. The hidden one costs nothing to play: display:none
@@ -46,7 +46,7 @@ function PhoneHero({ onOpen, paused }: { onOpen: (reel: Reel) => void; paused: b
   }, []);
 
   return (
-    <section ref={ref} aria-label="Introduction" className="relative bg-white pt-[var(--nav-h)] text-ink tab:hidden">
+    <section ref={ref} aria-label="Introduction" className="relative bg-paper pt-[var(--nav-h)] text-ink tab:hidden">
       {/* THE LANES. */}
       <div className="flex h-[75svh] items-center overflow-hidden">
         <WorkLanes

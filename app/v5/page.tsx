@@ -29,7 +29,7 @@ export default function V5Page() {
       </a>
       <Nav centered frost={false} />
 
-      <main id="main" data-paper="white">
+      <main id="main">
         <HeroStacked />
         <LogoWall />
         <WhyUs />
