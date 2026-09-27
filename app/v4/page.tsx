@@ -33,7 +33,9 @@ export default function V4Page() {
       </a>
       <Nav centered frost={false} />
 
-      <main id="main">
+      {/* data-paper="white": pure white paper, as on /v5 — the warm #fbf9f6
+          read grey against the hero's bg-white. */}
+      <main id="main" data-paper="white">
         <HeroTwinWalls edgeBlur topFrost={false} />
         <LogoWall />
         <WhyUs />
