@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
-import { LogoWallScrub } from "@/components/sections/LogoWallScrub";
-import { HeroReel } from "@/components/sections/HeroReel";
+import { LogoWallGrid } from "@/components/sections/LogoWallGrid";
+import { HeroStacked } from "@/components/sections/HeroStacked";
 import { WhyUs } from "@/components/sections/WhyUs";
 import { Work } from "@/components/sections/Work";
 import { PricingV4 } from "@/components/sections/PricingV4";
@@ -9,8 +9,10 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { FaqV4 } from "@/components/sections/FaqV4";
 import { FooterV3 } from "@/components/sections/FooterV3";
 
-/* V5 — the home page with one change: the hero's scroll blur is 32px
-   instead of the home page's 14px. A blur-strength comparison page. */
+/* V5 — /v4 exactly, except on phones (below `tab:`): there the hero is the
+   centred nav, then three horizontal lanes of clips like the Work wall
+   filling three quarters of the screen, then the pitch underneath
+   (HeroStacked). From `tab:` up it is /v4's HeroTwinWalls unchanged. */
 export const metadata: Metadata = {
   title: "V5",
   robots: { index: false, follow: false },
@@ -25,11 +27,11 @@ export default function V5Page() {
       >
         Skip to content
       </a>
-      <Nav />
+      <Nav centered frost={false} />
 
       <main id="main">
-        <HeroReel blurPx={32} />
-        <LogoWallScrub />
+        <HeroStacked />
+        <LogoWallGrid />
         <WhyUs />
         <Work />
         <PricingV4 />
