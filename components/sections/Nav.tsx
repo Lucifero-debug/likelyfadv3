@@ -263,48 +263,57 @@ const FLOAT_BASE =
 const FLOAT_OFF =
   `${FLOAT_BASE} w-full border-transparent px-[clamp(24px,5vw,64px)] py-1 ` +
   "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))] tab:px-0";
-/* On a phone with the menu open, the pill lays flat into the full-width
-   frosted bar the panel hangs from (see the frost note in the render). */
-const FLOAT_FLAT_PHONE =
-  "max-tab:w-full max-tab:border-transparent max-tab:shadow-none max-tab:backdrop-blur-none " +
-  "max-tab:px-[clamp(24px,5vw,64px)]";
 const FROST_TINT = { paper: "bg-white/45", dark: "bg-black/25" } as const;
-const FROST_TINT_TAB = { paper: "tab:bg-white/45", dark: "tab:bg-black/25" } as const;
-/* THE DESKTOP MENU (/v3, from `tab:`). While it is open the bar takes its
-   pill shape whether or not the page has scrolled, frosted like the navbar
-   — the panel IS that surface: it starts at the bar's top (the header's top
-   padding down), is padded 67px (the slim bar's height) so its rows begin
-   under the bar, and carries the frost, border, radius and shadow for both.
-   OPEN_TOP turns the bar itself transparent over it, so there is one blur
-   and no seam. */
-const OPEN_TOP = "tab:border-transparent tab:shadow-none tab:backdrop-blur-none";
 /* THE MENU GROWS OUT OF THE BAR rather than appearing under it. The panel is
    a real box — frost, hairline, radius, shadow — whose HEIGHT animates from
-   the bar's own footprint (the header strip on a phone, the 67px fully round
-   pill from `tab:`) to the menu's measured height, with the corners easing
-   from pill-round to the menu's shape. Its edges and shadow are there on every
-   frame, so it reads as the bar growing; overflow-hidden reveals the rows as
-   it does. Closing shrinks it back into the pill, then hides it.
+   the bar's own footprint to the menu's measured height, with the corners
+   easing from pill-round to the menu's shape. Its edges and shadow are there
+   on every frame, so it reads as the bar growing; overflow-hidden reveals the
+   rows as it does.
 
    THE CURVE IS AN EASE-IN-OUT, not the bar's expo-out: expo-out put 70% of
    the growth in the first 100ms and then crawled, which read as a lurch.
    This one starts soft, carries speed through the middle and lands gently. */
 const PANEL_GROW = {
   open:
-    "visible isolate tab:rounded-t-[24px] tab:rounded-b-2xl " +
+    "visible isolate " +
     "[transition:height_600ms_cubic-bezier(0.45,0,0.15,1),border-radius_600ms_cubic-bezier(0.45,0,0.15,1),visibility_0s,background-color_300ms]",
   closed:
-    "invisible isolate tab:rounded-[33.5px] " +
+    "invisible isolate " +
     "[transition:height_450ms_cubic-bezier(0.45,0,0.15,1),border-radius_450ms_cubic-bezier(0.45,0,0.15,1),visibility_0s_450ms,background-color_300ms]",
 } as const;
 
-const PANEL_DESK_BASE =
-  "tab:mx-auto tab:mt-[clamp(8px,4.5px+0.39vw,18px)] tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] " +
-  "tab:max-w-full tab:border tab:border-line tab:shadow-[var(--shadow-sm)]";
+/* THE CENTRED BAR HAS ONE SURFACE, AND IT IS THE PANEL (/v3 + /v4 + /v5, all
+   widths). The floating pill you see on scroll is not drawn by the bar — the
+   bar is transparent throughout (FLOAT_ON) and only lays out the mark and the
+   button — it is this panel at the bar's size: 67px tall, fully round, same
+   width, same top. Opening the menu is then the SAME BOX getting taller and
+   squarer, not a second sheet appearing under the pill while the pill fades
+   its own outline out, which is what it was: two hairlines cross-fading read
+   as "something opened below the nav" rather than "the nav opened".
+   So the panel also carries the pill's own motion — width, hairline, shadow
+   and blur on the bar's 700ms expo-out as it forms on scroll — and is never
+   hidden, only transparent when the bar is collapsed. The frost tint arrives
+   with the growth and leaves with it, so the closed pill stays untinted. */
+const PILL_W_OFF = "w-full tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem))]";
+const PILL_W_ON = "w-[calc(100%-24px)] tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)]";
+const PILL_PANEL = {
+  base: "isolate mx-auto mt-[clamp(8px,4.5px+0.39vw,18px)] max-w-full border",
+  off: `${PILL_W_OFF} border-transparent shadow-none backdrop-blur-none`,
+  on: `${PILL_W_ON} border-line shadow-[var(--shadow-sm)] backdrop-blur-[16px]`,
+  open:
+    "h-[var(--panel-open)] rounded-t-[24px] rounded-b-2xl " +
+    "[transition:height_600ms_cubic-bezier(0.45,0,0.15,1),border-radius_600ms_cubic-bezier(0.45,0,0.15,1),background-color_600ms_cubic-bezier(0.45,0,0.15,1),width_700ms_cubic-bezier(0.16,1,0.3,1),border-color_700ms_cubic-bezier(0.16,1,0.3,1),box-shadow_700ms_cubic-bezier(0.16,1,0.3,1),backdrop-filter_700ms_cubic-bezier(0.16,1,0.3,1)]",
+  closed:
+    "h-[67px] rounded-[33.5px] bg-transparent " +
+    "[transition:height_450ms_cubic-bezier(0.45,0,0.15,1),border-radius_450ms_cubic-bezier(0.45,0,0.15,1),background-color_450ms_cubic-bezier(0.45,0,0.15,1),width_700ms_cubic-bezier(0.16,1,0.3,1),border-color_700ms_cubic-bezier(0.16,1,0.3,1),box-shadow_700ms_cubic-bezier(0.16,1,0.3,1),backdrop-filter_700ms_cubic-bezier(0.16,1,0.3,1)]",
+} as const;
 
+/* The bar once scrolled or open: pill-width and padded, but bare — the
+   panel behind it draws the pill (PILL_PANEL). The transparent border stays
+   so the bar is the panel's height, 67px, to the pixel. */
 const FLOAT_ON =
-  `${FLOAT_BASE} w-[calc(100%-24px)] border-line px-4 py-1 shadow-[var(--shadow-sm)] backdrop-blur-[16px] ` +
-  "tab:w-[calc(35*clamp(0.78rem,0.75rem+0.1vw,0.85rem)+2.5rem)] tab:px-5";
+  `${FLOAT_BASE} ${PILL_W_ON} border-transparent px-4 py-1 tab:px-5`;
 
 export function Nav({
   centered = false,
@@ -522,13 +531,7 @@ export function Nav({
 
       <div
         className={`relative z-10 flex items-center justify-between gap-6 ${
-          centered
-            ? open
-              ? `${FLOAT_ON} ${FLOAT_FLAT_PHONE} ${OPEN_TOP}`
-              : scrolled
-                ? FLOAT_ON
-                : FLOAT_OFF
-            : WRAP
+          centered ? (open || scrolled ? FLOAT_ON : FLOAT_OFF) : WRAP
         }`}
       >
         <a
@@ -658,15 +661,21 @@ export function Nav({
         ref={panelRef}
         inert={!open}
         style={{ "--panel-open": panelH ? `${panelH}px` : "auto" } as CSSProperties}
-        className={`absolute inset-x-0 top-0 overflow-hidden [contain:layout_paint] tab:backdrop-blur-[16px] ${FROST_TINT_TAB[onDark ? "dark" : "paper"]} ${centered ? PANEL_DESK_BASE : "tab:hidden"} motion-reduce:!transition-none ${
-          open ? `${PANEL_GROW.open} tab:h-[var(--panel-open)]` : `${PANEL_GROW.closed} tab:h-[67px]`
+        className={`absolute inset-x-0 top-0 overflow-hidden [contain:layout_paint] motion-reduce:!transition-none ${
+          centered
+            ? `${PILL_PANEL.base} ${open || scrolled ? PILL_PANEL.on : PILL_PANEL.off} ${
+                open ? `${PILL_PANEL.open} ${FROST_TINT[onDark ? "dark" : "paper"]}` : PILL_PANEL.closed
+              }`
+            : `tab:hidden ${open ? PANEL_GROW.open : PANEL_GROW.closed}`
         }`}
       >
-        {/* PHONE: the frost is its own layer that STRETCHES down from the bar
-            (scaleY from the header's height to the menu's, origin top), after
-            brightlifecreations.com's mobile menu — the whole header background
-            grows, on a transform, so it runs on the compositor. No radius or
-            border on a phone, so the stretch distorts nothing. */}
+        {/* PHONE, uncentred bar only: the frost is its own layer that
+            STRETCHES down from the bar (scaleY from the header's height to the
+            menu's, origin top), after brightlifecreations.com's mobile menu —
+            the whole header background grows, on a transform, so it runs on
+            the compositor. No radius or border, so the stretch distorts
+            nothing. The centred bar's panel is its own frost (PILL_PANEL). */}
+        {!centered && (
         <div
           aria-hidden
           style={{ scale: open ? "1 1" : `1 ${panelH ? Math.min(1, navH / panelH) : 0.2}` }}
@@ -676,13 +685,20 @@ export function Nav({
               : "[transition:scale_420ms_cubic-bezier(0.45,0,0.15,1),background-color_300ms]"
           }`}
         />
+        )}
         <nav
           aria-label="Primary"
           /* No card at any width — the rows stand on the panel's frost, which
              hangs flush from the bar. */
           /* The padding lives here, not on the panel, so the panel can shrink
              to exactly the bar's height (padding would set a floor). */
-          className="flex flex-col px-[clamp(24px,5vw,64px)] pt-[var(--nav-h,62px)] pb-5 tab:px-5 tab:pt-[66px] tab:pb-3"
+          /* Centred: 66px + the panel's 1px border is the 67px bar, and px-4 /
+             tab:px-5 are the bar's own, so the rows sit on the mark's edge. */
+          className={`flex flex-col ${
+            centered
+              ? "px-4 pt-[66px] pb-4 tab:px-5 tab:pb-3"
+              : "px-[clamp(24px,5vw,64px)] pt-[var(--nav-h,62px)] pb-5"
+          }`}
         >
           {content.nav.links.map((l, i) => (
             <a
