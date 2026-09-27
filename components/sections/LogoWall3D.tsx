@@ -18,12 +18,13 @@ import { ANCHOR, SECTION, WRAP } from "@/lib/ui";
    page by a wide margin — nine static uploads and nine draw calls, and the
    loop is cancelled outright when the section leaves the viewport.
 
-   WHITE TEXTURES, DERIVED AT MOUNT. On a dark ground a black wordmark does not
-   exist, so each logo is drawn to a canvas and refilled white through its own
-   alpha (`source-in`) before it becomes a texture — one file per brand on
-   disk, no mono set to keep in sync. Lit as screens: MeshBasicMaterial with
-   `transparent` so the alpha carries, no lights, no shadows, the depth cue
-   coming from the arc's foreshortening and a touch of fog.
+   WHITE CARDS, DRAWN AT MOUNT. On a dark ground a black wordmark does not
+   exist, and the logos' own colours are never altered — so each logo is drawn
+   in its true colours onto a white rounded card on a canvas, and that card
+   becomes the texture. One file per brand on disk, nothing recoloured. Lit
+   as screens: MeshBasicMaterial with `transparent` so the card's rounded
+   corners carry, no lights, no shadows, and no fog on the marks (fog would
+   shade their colours) — the depth cue is the arc's foreshortening.
 
    THE ARC IS THE WORK WALL'S, SCALED DOWN: centre behind the camera, the ends
    bowing away, camera distance SOLVED on resize from the arc's width and the
@@ -70,19 +71,20 @@ export function LogoWall3D() {
 
     const meshes: THREE.Mesh[] = [];
 
-    /* Load the colour file, pour white through its alpha, hand back a texture.
+    /* Load the colour file, lay it on a white card, hand back a texture.
        Done once per logo; the canvas is garbage the moment the texture exists. */
-    const whiteTexture = (src: string, onReady: (t: THREE.Texture) => void) => {
+    const cardTexture = (src: string, onReady: (t: THREE.Texture) => void) => {
       const img = new Image();
       img.onload = () => {
         const c = document.createElement("canvas");
         c.width = img.naturalWidth;
         c.height = img.naturalHeight;
         const g = c.getContext("2d")!;
-        g.drawImage(img, 0, 0);
-        g.globalCompositeOperation = "source-in";
         g.fillStyle = "#ffffff";
-        g.fillRect(0, 0, c.width, c.height);
+        g.beginPath();
+        g.roundRect(0, 0, c.width, c.height, c.height * 0.08);
+        g.fill();
+        g.drawImage(img, 0, 0);
         const tex = new THREE.CanvasTexture(c);
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
@@ -107,8 +109,8 @@ export function LogoWall3D() {
       cursor += w + GAP;
 
       const theta = centre / RADIUS;
-      const mat = new THREE.MeshBasicMaterial({ transparent: true, toneMapped: false, fog: true, depthWrite: false });
-      whiteTexture(logoSrc(l), (tex) => {
+      const mat = new THREE.MeshBasicMaterial({ transparent: true, toneMapped: false, fog: false, depthWrite: false });
+      cardTexture(logoSrc(l), (tex) => {
         mat.map = tex;
         mat.needsUpdate = true;
       });

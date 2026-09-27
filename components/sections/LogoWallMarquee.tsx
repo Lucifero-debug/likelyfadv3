@@ -15,12 +15,8 @@ import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
    reel walls, and a logo strip is its simplest case. No dependency, no JS on
    the animation.
 
-   INK AT REST, COLOUR ON HOVER. Nine brands in nine colour systems on one line
-   is noise; the same nine tinted to ink at 40% read as one client list. Each
-   mark is two stacked layers — the colour PNG, and the same PNG's alpha painted
-   in currentColor through `mask-image` on top. Hovering fades the tinted layer
-   out and the colour underneath comes through. An <img> cannot be recoloured
-   by CSS; a mask can, which is why the tint is a mask.
+   TRUE COLOUR, ALWAYS. Each mark is the delivered PNG as-is — no tint, no
+   fade, no hover recolour. The brands' own colours are never altered.
 
    THE STRIP PAUSES ON HOVER, so a logo can be looked at, and parks entirely
    while the section is off screen. Reduced motion gets a wrapped grid rather
@@ -55,7 +51,7 @@ function Mark({ logo }: { logo: Logo }) {
   const src = logoSrc(logo);
   return (
     <div
-      className="group/mark relative shrink-0 text-ink"
+      className="relative shrink-0"
       style={{ width: logoWidth(logo), height: logo.h }}
       title={logo.name}
     >
@@ -67,18 +63,6 @@ function Mark({ logo }: { logo: Logo }) {
         loading="lazy"
         decoding="async"
         className="block size-full object-contain"
-      />
-      {/* The tint. Sits over the colour mark and fades on hover. */}
-      <span
-        aria-hidden
-        className="absolute inset-0 bg-current opacity-40 transition-opacity duration-300 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] group-hover/mark:opacity-0"
-        style={{ WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
-      />
-      {/* Paper behind the tint, so the colour does not bleed through at 40%. */}
-      <span
-        aria-hidden
-        className="absolute inset-0 -z-[1] bg-paper transition-opacity duration-300 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] group-hover/mark:opacity-0"
-        style={{ WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
       />
     </div>
   );

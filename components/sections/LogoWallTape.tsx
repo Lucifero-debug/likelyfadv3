@@ -30,9 +30,9 @@ import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
    section clips it. The same reason the bands carry a separator glyph between
    marks — a tape reads as tape when it repeats a rhythm, not just a list.
 
-   WHITE MARKS ON BOTH BANDS, via the logo's alpha as a mask, since neither
-   ground is paper. No colour reveal: on a moving diagonal there is nothing to
-   hover. Parks off screen; reduced motion stops the tracks where globals.css
+   TRUE-COLOUR MARKS ON WHITE CARDS on both bands, since neither ground is
+   paper and the logos' own colours are never altered — like stickers on
+   tape. Parks off screen; reduced motion stops the tracks where globals.css
    leaves them, which with both sets on the band is still a full row. */
 
 const COPY = {
@@ -47,14 +47,12 @@ const TILT = 2;
 function Mark({ logo }: { logo: Logo }) {
   const src = logoSrc(logo);
   return (
-    <span
-      className="block shrink-0 bg-white [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
-      style={{
-        width: `min(${logoWidth(logo)}px, ${(logo.aspect * 7).toFixed(1)}vw)`,
-        aspectRatio: String(logo.aspect),
-        WebkitMaskImage: `url(${src})`,
-        maskImage: `url(${src})`,
-      }}
+    <img
+      src={src}
+      alt=""
+      decoding="async"
+      className="block max-w-none shrink-0 rounded-[10px] bg-white object-contain"
+      style={{ width: `min(${logoWidth(logo)}px, ${(logo.aspect * 7).toFixed(1)}vw)`, aspectRatio: String(logo.aspect) }}
     />
   );
 }

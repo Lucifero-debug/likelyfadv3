@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { LOGOS, logoSrc, logoWidth, type Logo } from "@/lib/logos";
 import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
 
 /* THE LOGO WALL.
@@ -14,15 +15,9 @@ import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
    globals.css for the reel walls, and a logo strip is the simplest possible
    case of the same mechanism. No dependency, no JS on the animation.
 
-   THE LOGOS ARE MONOCHROME UNTIL HOVERED. Fourteen brands in fourteen colour
-   systems on one line is noise; the same fourteen as ink at low opacity reads
-   as one client list. Colour arrives on hover, per logo, which is also the only
-   feedback the row gives — it is not clickable and does not pretend to be.
-
-   THE LOGO FILES ARE SVGs WITH `currentColor` FILLS. That is what lets one CSS
-   colour rule tint all of them: the file's own colours are stripped once, at
-   export, and the component decides the colour. A raster logo or an SVG with
-   hard-coded fills will ignore the tint and sit there in full colour.
+   TRUE COLOUR, ALWAYS. Each mark is the delivered PNG from lib/logos.ts as-is
+   — no tint, no fade, no hover recolour. The brands' own colours are never
+   altered.
 
    `near` PARKS THE LANE OFF SCREEN, same as the reel walls. A marquee animating
    in a section nobody can see is a composited frame paid for nothing.
@@ -30,23 +25,6 @@ import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
    REDUCED MOTION gets a wrapped grid rather than a stopped marquee — a strip
    that only shows its first screen of logos is a client list with most of the
    clients hidden. */
-
-/* Move this to lib/content.ts once the list settles. `name` is the alt text and
-   the hover label; `src` is a monochrome SVG in /public/logos/. `width` lets a
-   wide wordmark and a square emblem sit at the same optical weight, since equal
-   HEIGHT makes a wordmark look tiny next to a monogram. */
-type Logo = { name: string; src: string; width?: number };
-
-const LOGOS: Logo[] = [
-  { name: "Brand One", src: "/logos/brand-one.svg", width: 120 },
-  { name: "Brand Two", src: "/logos/brand-two.svg", width: 96 },
-  { name: "Brand Three", src: "/logos/brand-three.svg", width: 132 },
-  { name: "Brand Four", src: "/logos/brand-four.svg", width: 88 },
-  { name: "Brand Five", src: "/logos/brand-five.svg", width: 110 },
-  { name: "Brand Six", src: "/logos/brand-six.svg", width: 124 },
-  { name: "Brand Seven", src: "/logos/brand-seven.svg", width: 100 },
-  { name: "Brand Eight", src: "/logos/brand-eight.svg", width: 116 },
-];
 
 const COPY = {
   kicker: "Clients",
@@ -57,10 +35,6 @@ const COPY = {
 /* Seconds for one full loop. The lane slides half its length per cycle, so this
    is the time for one copy of the set to pass a fixed point. */
 const SECONDS = 38;
-
-const LOGO =
-  "group/logo relative flex h-14 shrink-0 items-center justify-center " +
-  "text-ink/40 transition-colors duration-300 hover:text-ink";
 
 const FADE = "pointer-events-none absolute inset-y-0 z-[2] w-[14%]";
 
@@ -93,20 +67,16 @@ function getMotion() {
 
 function Mark({ logo }: { logo: Logo }) {
   return (
-    <div className={LOGO} style={{ width: logo.width ?? 110 }} title={logo.name}>
-      {/* `mask-image` rather than <img>, so the SVG's shape is painted in the
-          element's own currentColor and one colour rule tints every logo. An
-          <img> cannot be recoloured by CSS. */}
-      <span
-        role="img"
-        aria-label={logo.name}
-        className="block size-full bg-current [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
-        style={{
-          WebkitMaskImage: `url(${logo.src})`,
-          maskImage: `url(${logo.src})`,
-        }}
-      />
-    </div>
+    <img
+      src={logoSrc(logo)}
+      alt={logo.name}
+      title={logo.name}
+      width={logoWidth(logo)}
+      height={logo.h}
+      loading="lazy"
+      decoding="async"
+      className="block max-w-none shrink-0 object-contain"
+    />
   );
 }
 
@@ -148,11 +118,11 @@ export function LogoWall() {
             {/* Two copies, and the second is hidden from assistive tech — read
                 aloud, one client list is a list and two is a stutter. */}
             {LOGOS.map((l) => (
-              <Mark key={l.name} logo={l} />
+              <Mark key={l.slug} logo={l} />
             ))}
             <div aria-hidden className="contents">
               {LOGOS.map((l) => (
-                <Mark key={`dup-${l.name}`} logo={l} />
+                <Mark key={`dup-${l.slug}`} logo={l} />
               ))}
             </div>
           </div>
@@ -173,7 +143,7 @@ export function LogoWall() {
           className={`${WRAP} flex flex-wrap items-center justify-center gap-x-[clamp(32px,4vw,64px)] gap-y-8`}
         >
           {LOGOS.map((l) => (
-            <Mark key={l.name} logo={l} />
+            <Mark key={l.slug} logo={l} />
           ))}
         </div>
       )}

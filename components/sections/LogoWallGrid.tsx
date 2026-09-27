@@ -23,10 +23,8 @@ import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
    cells' alignment. A right and bottom border on every cell, with the last
    column and row trimmed, is exact at every zoom.
 
-   INK AT REST, COLOUR ON HOVER, same two-layer mask as the marquee: the brand
-   mark under a currentColor tint, and the tint fades away under the pointer.
-   The cell also lifts a hair and goes white, so the hover reads as a card
-   coming forward rather than as a colour flicker.
+   TRUE COLOUR, ALWAYS: the delivered PNG as-is, never tinted. On hover the
+   cell lifts a hair and goes white, so it reads as a card coming forward.
 
    The entrance stagger runs across each ROW and resets, so the ninth cell is
    not still arriving when the reader gets there. */
@@ -54,16 +52,6 @@ function Mark({ logo }: { logo: Logo }) {
   return (
     <div className="relative" style={{ width: w, maxWidth: "100%", aspectRatio: `${w} / ${h}` }}>
       <img src={src} alt={logo.name} width={w} height={h} loading="lazy" decoding="async" className="block size-full object-contain" />
-      <span
-        aria-hidden
-        className="absolute inset-0 bg-current opacity-45 transition-opacity duration-300 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] group-hover/cell:opacity-0"
-        style={{ WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
-      />
-      <span
-        aria-hidden
-        className="absolute inset-0 -z-[1] bg-paper transition-opacity duration-300 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] group-hover/cell:opacity-0"
-        style={{ WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
-      />
     </div>
   );
 }

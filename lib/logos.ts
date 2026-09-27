@@ -1,47 +1,55 @@
 /* THE CLIENT LOGOS, AS DATA.
 
    Every logo wall reads this one list, so adding a brand is one line here and
-   one file in /public/logos — never an edit to a component.
+   one PNG in /public/logos — never an edit to a component.
 
-   ONE FILE PER LOGO, /logos/<slug>.svg. Each is the brand's own mark, cleaned
-   and trimmed to its alpha bounds, wrapped in an SVG. Light-ground walls tint
-   it to ink by painting currentColor through the file's alpha with
-   `mask-image`; dark-ground walls do the same with white. The WebGL wall
-   derives its white texture from the same file at mount. So there is no
-   separate mono set to keep in sync.
+   THE FILES ARE USED EXACTLY AS DELIVERED. All nine are 1030 x 354 with the
+   mark already centred and padded inside that canvas, so every logo shares one
+   aspect (2.91) and one box height, and the padding baked into the file is
+   what spaces the marks from each other. The file name is the delivered one,
+   spaces included; `logoSrc` encodes it for the URL.
 
-   `aspect` IS MEASURED FROM THE TRIMMED FILE, not typed. `h` is the optical
-   height a logo renders at on a desktop wall — and it is NOT the same for
-   every brand. Equal height makes a wide wordmark like Matter (6.6:1) read as
-   huge beside a compact one like Moné (2.5:1). Wide marks are set shorter so
-   all nine carry about the same visual weight; that is the number to adjust
-   when one brand is shouting.
+   WHY EVERY `h` IS THE SAME. With a trimmed mark the box would be sized per
+   logo so a wide wordmark and a compact emblem sat at the same optical weight.
+   With a uniform padded canvas that balance was set by whoever exported these,
+   and it is left alone. If one brand reads too loud, the fix is in the PNG,
+   not here.
 
-   SOMARA WAS THE ONLY LOGO THAT ARRIVED ON A WHITE BOX; it has been knocked
-   out to transparency. MOVES METHOD is pale lime (220,227,174) — invisible on
-   paper at full colour, which is why the light-ground walls tint at rest and
-   only reveal true colour on hover. */
+   LOGO COLOURS ARE NEVER ALTERED. No tint, mask recolour, filter or opacity
+   on a mark, on any wall. Dark walls show each PNG as-is on a white card.
+
+   TWO THINGS TO KNOW ABOUT THE DELIVERED FILES:
+   - SOMARA IS ON A SOLID WHITE BOX, not transparent. Every other logo is
+     transparent. A knocked-out Somara is in the outputs from the earlier
+     pass if you want to swap it.
+   - MOVES METHOD IS PALE LIME (220,227,174). Low contrast on paper and on
+     the white cards; if it reads too faint, the fix is in the PNG. */
 
 export type Logo = {
   slug: string;
   name: string;
-  /** width / height of the trimmed mark */
+  /** the delivered file name, as-is */
+  file: string;
+  /** width / height of the delivered canvas */
   aspect: number;
-  /** optical height in px on a desktop wall */
+  /** box height in px on a desktop wall */
   h: number;
 };
 
+const ASPECT = 1030 / 354;
+const H = 44;
+
 export const LOGOS: Logo[] = [
-  { slug: "gte", name: "GTE", aspect: 3.18, h: 34 },
-  { slug: "livingcore", name: "Livingcore", aspect: 3.72, h: 32 },
-  { slug: "lymphoria", name: "Lymphoria", aspect: 5.85, h: 24 },
-  { slug: "matter", name: "Matter", aspect: 6.58, h: 22 },
-  { slug: "mone", name: "Moné Eros", aspect: 2.45, h: 40 },
-  { slug: "moves-method", name: "Moves Method", aspect: 2.51, h: 36 },
-  { slug: "somara", name: "Somara Supplements", aspect: 2.91, h: 36 },
-  { slug: "sparsa-ai", name: "Sparsa AI", aspect: 4.82, h: 28 },
-  { slug: "tryscent", name: "TryScent", aspect: 3.78, h: 32 },
+  { slug: "gte", name: "GTE", file: "GTE.png", aspect: ASPECT, h: H },
+  { slug: "livingcore", name: "Livingcore", file: "Livingcore.png", aspect: ASPECT, h: H },
+  { slug: "lymphoria", name: "Lymphoria", file: "Lymphoria.png", aspect: ASPECT, h: H },
+  { slug: "matter", name: "Matter", file: "Matter Daily Beets.png", aspect: ASPECT, h: H },
+  { slug: "mone", name: "Moné Eros", file: "Mone Eros.png", aspect: ASPECT, h: H },
+  { slug: "moves-method", name: "Moves Method", file: "Moves Method.png", aspect: ASPECT, h: H },
+  { slug: "somara", name: "Somara Supplements", file: "Somara.png", aspect: ASPECT, h: H },
+  { slug: "sparsa-ai", name: "Sparsa AI", file: "Sparsa AI.png", aspect: ASPECT, h: H },
+  { slug: "tryscent", name: "TryScent", file: "Try Scent.png", aspect: ASPECT, h: H },
 ];
 
-export const logoSrc = (l: Logo) => `/logos/${l.slug}.svg`;
+export const logoSrc = (l: Logo) => `/logos/${encodeURIComponent(l.file)}`;
 export const logoWidth = (l: Logo) => Math.round(l.h * l.aspect);

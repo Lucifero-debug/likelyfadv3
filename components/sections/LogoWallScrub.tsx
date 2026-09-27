@@ -23,10 +23,9 @@ import { ANCHOR, SECTION, WRAP } from "@/lib/ui";
    read from the DOM on mount and resize, so the last logo arrives exactly at
    the right edge as the section leaves — never short, never past.
 
-   A DARK BAND, SO THE MARKS ARE PAINTED WHITE. A black wordmark on noir does
-   not exist; each mark here is the logo's alpha with white poured through it
-   via `mask-image`, at 70%, and the hovered one at 100%. The only wall in the
-   set with no colour reveal — one line of white on dark is the point. */
+   A DARK BAND, SO EACH MARK SITS ON A WHITE CARD. A black wordmark on noir
+   does not exist, and the logos' own colours are never altered — so rather
+   than recolour the mark, each delivered PNG is shown as-is on white. */
 
 const COPY = {
   kicker: "Clients",
@@ -106,16 +105,14 @@ export function LogoWallScrub() {
       >
         {LOGOS.map((l, i) => (
           <Reveal key={l.slug} delay={i * 40}>
-            <span
-              role="img"
-              aria-label={l.name}
-              className="block shrink-0 bg-white opacity-70 transition-opacity duration-300 hover:opacity-100 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
-              style={{
-                width: Math.round(logoWidth(l) * 1.3),
-                height: Math.round(l.h * 1.3),
-                WebkitMaskImage: `url(${logoSrc(l)})`,
-                maskImage: `url(${logoSrc(l)})`,
-              }}
+            <img
+              src={logoSrc(l)}
+              alt={l.name}
+              width={Math.round(logoWidth(l) * 1.3)}
+              height={Math.round(l.h * 1.3)}
+              loading="lazy"
+              decoding="async"
+              className="block max-w-none shrink-0 rounded-[10px] bg-white object-contain"
             />
           </Reveal>
         ))}

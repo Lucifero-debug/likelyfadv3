@@ -11,11 +11,9 @@ import { ANCHOR, HEAD_GAP, SECTION, SIZE_32, WRAP } from "@/lib/ui";
    credits page reads. It is the only wall that says each brand's name aloud
    in the site's own voice.
 
-   THE MARK SITS AT THE END OF ITS ROW, tinted to ink at rest like the grid's,
-   and the row answers the pointer in three moves at once: the ground goes
-   white, the name slides a few pixels right, and the tint lifts off the mark
-   so its true colour arrives. Three small moves read as one gesture; any one
-   of them alone reads as a glitch.
+   THE MARK SITS AT THE END OF ITS ROW in its true colour, never tinted, and
+   the row answers the pointer in two moves at once: the ground goes white and
+   the name slides a few pixels right.
 
    TWO COLUMNS FROM `lap:`, one below. Nine rows in one column is a long list
    to scroll past on a desktop; split 5 + 4 it is a spread. Numbers run down
@@ -46,16 +44,6 @@ function Mark({ logo }: { logo: Logo }) {
   return (
     <div className="relative ml-auto shrink-0 max-tab:max-w-[38%]" style={{ width: w, aspectRatio: `${w} / ${h}` }}>
       <img src={src} alt="" width={w} height={h} loading="lazy" decoding="async" className="block size-full object-contain" />
-      <span
-        aria-hidden
-        className="absolute inset-0 bg-ink opacity-50 transition-opacity duration-300 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] group-hover/row:opacity-0"
-        style={{ WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
-      />
-      <span
-        aria-hidden
-        className="absolute inset-0 -z-[1] bg-paper transition-opacity duration-300 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] group-hover/row:opacity-0"
-        style={{ WebkitMaskImage: `url(${src})`, maskImage: `url(${src})` }}
-      />
     </div>
   );
 }

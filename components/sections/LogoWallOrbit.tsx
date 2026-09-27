@@ -22,8 +22,8 @@ import { ANCHOR, SECTION, WRAP } from "@/lib/ui";
    units, so the whole figure scales as one object from a phone to a desktop
    instead of the marks overlapping as the rings shrink.
 
-   WHITE ON NOIR, like the arc on /v7 — it is the same dark family of page.
-   Marks sit at 70% and the hovered one comes to full; the whole orbit pauses
+   TRUE-COLOUR MARKS ON WHITE CARDS, since a black wordmark on noir does not
+   exist and the logos' own colours are never altered. The whole orbit pauses
    under the pointer so a mark can be read, and parks off screen. Reduced
    motion is handled by globals.css, which collapses every animation to one
    iteration — a full turn, which ends exactly where it began. */
@@ -59,16 +59,12 @@ function Mark({ logo }: { logo: Logo }) {
   const src = logoSrc(logo);
   const w = Math.round(logoWidth(logo) * 1.1);
   return (
-    <span
-      role="img"
-      aria-label={logo.name}
-      className="block bg-white opacity-70 transition-opacity duration-300 [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] hover:opacity-100"
-      style={{
-        width: `min(${w}px, ${MAX_W}cqw)`,
-        aspectRatio: String(logo.aspect),
-        WebkitMaskImage: `url(${src})`,
-        maskImage: `url(${src})`,
-      }}
+    <img
+      src={src}
+      alt={logo.name}
+      decoding="async"
+      className="block rounded-[10px] bg-white object-contain"
+      style={{ width: `min(${w}px, ${MAX_W}cqw)`, aspectRatio: String(logo.aspect) }}
     />
   );
 }
