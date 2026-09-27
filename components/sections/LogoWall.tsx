@@ -27,7 +27,7 @@ import { ANCHOR, HEAD_GAP, WRAP } from "@/lib/ui";
 
 const COPY = {
   kicker: "Clients",
-  heading: "Brands that *ship with us.*",
+  heading: "Brands that\n*ship with us.*",
 };
 
 /* Seconds for one full loop. The lane slides half its length per cycle, so this
@@ -90,13 +90,14 @@ export function LogoWall() {
       ref={sectionRef}
       id="clients"
       aria-label={COPY.kicker}
-      /* NOT SECTION'S SYMMETRIC PADDING. The band under this is Why us, whose
-         own `.section` padding (72→152, vh-keyed) already opens the seam below
-         the logos; SECTION's 48 on top of it put 147px under the strip and 54
-         over the kicker at 1440, so the band hung off the hero. This side owns
-         the gap above, Why us owns the gap below, and the two land within a few
-         px of each other: 96 over 99 at 1440×900, 80 over 93 on a phone. */
-      className={`pt-[clamp(80px,7vw,96px)] ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
+      /* THIS BAND OWNS BOTH OF ITS GAPS. Why us used to supply the one below
+         from its own `.section` padding (72→152, vh-keyed), so the space under
+         the strip moved with window height while the space above moved with
+         width, and the two only matched at 1440×900. Now one width-keyed value
+         sits on each side, and `#clients + .why` in globals.css drops Why us's
+         top padding so it does not stack on top. 64 on a phone, 80 at 1440+ —
+         a notch under the 96 section seam, since a logo strip is a light band. */
+      className={`py-[clamp(64px,5.556vw,80px)] ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
     >
       <div className={WRAP}>
         <div className={HEAD_GAP}>

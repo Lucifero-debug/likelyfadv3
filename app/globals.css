@@ -585,6 +585,12 @@ html:has([data-paper="white"]) {
   padding-block: clamp(4.5rem, 11vh, 9.5rem);
 }
 
+/* The logo wall pads its own bottom, so the seam between the two is its
+   padding alone rather than its padding plus this band's. */
+#clients + .why {
+  padding-top: 0;
+}
+
 .wrap {
   width: 100%;
   max-width: 1180px;

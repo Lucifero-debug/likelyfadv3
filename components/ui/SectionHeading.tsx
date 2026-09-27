@@ -114,7 +114,11 @@ export function SectionHeading({
          belongs to the section, as HEAD_GAP. */
       className={`${TEXT_H2} mx-auto mb-4 max-w-[calc(var(--title)*var(--measure))] text-center ${className}`}
     >
-      <Reveal>
+      {/* mb-3 IS THE KICKER-TO-HEADING GAP, and it lives here because this div
+          is a block: the h2 under it is inline (RevealText's root), so a margin
+          on the h2 is inert. 12px matches the gap-3 Why us, Pricing and the FAQ
+          set between their own kicker and heading. */}
+      <Reveal className="mb-3">
         {/* Section kickers sit above a big heading, so they carry more presence
             than the standalone one in the hero: bigger type, longer rule. */}
         <span
@@ -125,10 +129,6 @@ export function SectionHeading({
           {kicker}
         </span>
       </Reveal>
-      {/* mt-3 is inert here and is kept only because v1 carries it: margin-top
-          does nothing on a non-replaced inline element, and this h2 is inline.
-          The gap under the kicker is line-box height, not margin. Give the h2 a
-          block wrapper if you ever want that 12px back. */}
       {/* A heading that sets its own break with a \n must NOT be balanced. The
           two are the same decision made by different parties: `balance` evens
           the lines by choosing where they turn, which is precisely the choice
@@ -153,7 +153,7 @@ export function SectionHeading({
            this pass exists to smooth out. 1.1 is the value the other four
            section headings on the page already set flat, so this is the same
            setting everywhere rather than a fifth one. */
-        className={`mt-3 ${
+        className={`${
           heading.includes("\n") ? "text-pretty" : "text-balance"
         } font-display text-(length:--title) font-bold leading-[1.1] tracking-[-0.022em]`}
       />

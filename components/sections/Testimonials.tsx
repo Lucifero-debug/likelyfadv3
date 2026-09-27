@@ -794,21 +794,21 @@ export function Testimonials() {
             against the body size and not against the title. */}
         <div className={`${HEAD_GAP} mx-auto max-w-[832px] text-center`}>
           {/* Roboto, not the mono the other kickers use — "rest use roboto"
-              covers this. The rule stays in em so it tracks the type. */}
-          <Reveal>
+              covers this. The rule stays in em so it tracks the type.
+              mb-3 is the kicker-to-heading gap, on this block div because the
+              h2 below is inline and a margin on it is inert — same as
+              SectionHeading. */}
+          <Reveal className="mb-3">
             <span
               className={`inline-flex items-center gap-[0.62em] font-sans ${SIZE_16} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:w-[2.2em] before:bg-current before:opacity-55 before:content-['']`}
             >
               {testimonials.kicker}
             </span>
           </Reveal>
-          {/* mt-3 is inert on a non-replaced inline element and this h2 is one —
-              kept because SectionHeading carries it and this is otherwise its
-              markup. The gap under the kicker is line-box height, not margin. */}
           <RevealText
             as="h2"
             text={testimonials.heading}
-            className={`mt-3 text-balance font-display ${SIZE_H2} font-bold leading-[1.1] tracking-[-0.022em]`}
+            className={`text-balance font-display ${SIZE_H2} font-bold leading-[1.1] tracking-[-0.022em]`}
           />
         </div>
       </div>
