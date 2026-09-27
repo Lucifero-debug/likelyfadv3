@@ -5,6 +5,7 @@ import { content } from "@/lib/content";
 import { TopFrost } from "./TopFrost";
 import { Button } from "@/components/ui/Button";
 import { TEXT_LEAD, TEXT_META } from "@/lib/ui";
+import type { Reel } from "@/lib/reels.generated";
 import { TwinWalls } from "./TwinWalls";
 
 const { hero } = content;
@@ -32,8 +33,14 @@ const reduceMotion = () =>
 export function HeroTwinWalls({
   edgeBlur = false,
   topFrost = true,
+  onOpen,
+  paused = false,
 }: {
   edgeBlur?: boolean;
+  /** Makes the walls clickable — see TwinWalls. /v5 only. */
+  onOpen?: (reel: Reel) => void;
+  /** Parks the walls while something covers them (the lightbox). */
+  paused?: boolean;
   /** The frosted white strip across the top (TopFrost). Off on /v4. */
   topFrost?: boolean;
 } = {}) {
@@ -60,7 +67,7 @@ export function HeroTwinWalls({
          white, so the nav's links have to stay ink over it. */
       className="relative h-svh overflow-hidden bg-white text-ink"
     >
-      <TwinWalls running={inView} play={play && inView} edgeBlur={edgeBlur}>
+      <TwinWalls running={inView && !paused} play={play && inView} edgeBlur={edgeBlur} onOpen={onOpen}>
         <HeroCopy />
       </TwinWalls>
 

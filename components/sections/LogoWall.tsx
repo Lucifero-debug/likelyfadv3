@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LOGOS, logoSrc, logoWidth, type Logo } from "@/lib/logos";
-import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
+import { ANCHOR, HEAD_GAP, WRAP } from "@/lib/ui";
 
 /* THE LOGO WALL.
 
@@ -28,8 +27,7 @@ import { ANCHOR, HEAD_GAP, SECTION, WRAP } from "@/lib/ui";
 
 const COPY = {
   kicker: "Clients",
-  heading: "Brands that ship with us.",
-  sub: "From DTC launches to enterprise campaigns.",
+  heading: "Brands that *ship with us.*",
 };
 
 /* Seconds for one full loop. The lane slides half its length per cycle, so this
@@ -92,16 +90,17 @@ export function LogoWall() {
       ref={sectionRef}
       id="clients"
       aria-label={COPY.kicker}
-      className={`${SECTION} ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
+      /* NOT SECTION'S SYMMETRIC PADDING. The band under this is Why us, whose
+         own `.section` padding (72→152, vh-keyed) already opens the seam below
+         the logos; SECTION's 48 on top of it put 147px under the strip and 54
+         over the kicker at 1440, so the band hung off the hero. This side owns
+         the gap above, Why us owns the gap below, and the two land within a few
+         px of each other: 96 over 99 at 1440×900, 80 over 93 on a phone. */
+      className={`pt-[clamp(80px,7vw,96px)] ${ANCHOR} relative overflow-hidden bg-paper text-ink`}
     >
       <div className={WRAP}>
         <div className={HEAD_GAP}>
           <SectionHeading kicker={COPY.kicker} heading={COPY.heading} />
-          <Reveal delay={100}>
-            <p className="mt-3 text-center font-mono text-[0.8rem] tracking-[0.04em] text-ink-soft">
-              {COPY.sub}
-            </p>
-          </Reveal>
         </div>
       </div>
 
@@ -131,11 +130,11 @@ export function LogoWall() {
               passes through black — the same rule every fade on this site keeps. */}
           <div
             aria-hidden
-            className={`${FADE} left-0 bg-[linear-gradient(to_right,#fbf9f6,rgba(251,249,246,0))]`}
+            className={`${FADE} left-0 bg-[linear-gradient(to_right,var(--color-paper),rgb(from_var(--color-paper)_r_g_b_/_0))]`}
           />
           <div
             aria-hidden
-            className={`${FADE} right-0 bg-[linear-gradient(to_left,#fbf9f6,rgba(251,249,246,0))]`}
+            className={`${FADE} right-0 bg-[linear-gradient(to_left,var(--color-paper),rgb(from_var(--color-paper)_r_g_b_/_0))]`}
           />
         </div>
       ) : (

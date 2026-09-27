@@ -217,13 +217,23 @@ const TILE_FRAME =
   "relative aspect-[9/16] flex-none rounded-lg " +
   "bg-[#1a1620] shadow-[0_12px_32px_rgba(0,0,0,0.45)] tab:rounded-xl";
 const TILE_SIZE = "w-[clamp(112px,33vw,146px)] tab:w-[clamp(116px,12vw,158px)]";
-const TILE_HOVER =
+export const TILE_HOVER =
   "transition-[opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,0.7,0.2,1)] " +
   "hover:scale-[1.05] active:brightness-90 " +
   "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] " +
-  "after:shadow-[0_20px_54px_rgba(0,0,0,0.62)] after:opacity-0 after:content-[''] " +
+  "after:opacity-0 after:content-[''] " +
   "after:transition-opacity after:duration-[280ms] hover:after:opacity-100 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-white";
+  "focus-visible:outline-2 focus-visible:outline-offset-[3px]";
+
+/* The two halves of the hover that depend on the ground. On this band the lift
+   is a deep black shadow and the focus ring is white; on white (/v5's hero)
+   that shadow reads as a smudge and a white ring is invisible, so the light
+   ground gets a softer ink shadow and an ink ring. Split out of TILE_HOVER
+   rather than overridden, so no two classes write the same property. */
+export const TILE_DARK =
+  "after:shadow-[0_20px_54px_rgba(0,0,0,0.62)] focus-visible:outline-white";
+export const TILE_LIGHT =
+  "after:shadow-[0_18px_40px_rgba(22,20,26,0.28)] focus-visible:outline-ink";
 
 /* The fade at each end, painted ON TOP rather than masked. A mask forces the
    layer beneath it — here a ~2720px-wide row holding thirty-two decoding
@@ -258,6 +268,7 @@ function Tile({
   lane,
   enabled,
   size,
+  light,
 }: {
   reel: Reel;
   /** Absent makes the tile a plain, inert picture — see WorkLanes. */
@@ -271,6 +282,8 @@ function Tile({
       observer — see the same flag on LazyVideo and useInViewPlay. The wall
       passes false under prefers-reduced-motion; the note in Work() says why. */
   enabled: boolean;
+  /** Set on a white ground — see TILE_LIGHT. */
+  light: boolean;
 }) {
   const Frame = onOpen ? "button" : "div";
   return (
@@ -278,7 +291,7 @@ function Tile({
       {...(onOpen
         ? { type: "button" as const, onClick: onOpen, "aria-label": label }
         : { "aria-hidden": true })}
-      className={`${TILE_FRAME} ${size} ${onOpen ? TILE_HOVER : ""}`}
+      className={`${TILE_FRAME} ${size} ${onOpen ? `${TILE_HOVER} ${light ? TILE_LIGHT : TILE_DARK}` : ""}`}
     >
       {/* The clip gets its own box so the tile is free to paint shadows outside
           itself. A wrapper rather than border-radius straight on the <video>:
@@ -681,6 +694,7 @@ export function WorkLanes({
                 lane={`${lane}-${ri}`}
                 onOpen={onOpen && (() => onOpen(clip))}
                 size={size}
+                light={light}
                 enabled={play}
                 /* Numbered off the count this lane actually rendered, not off
                    PER_ROW: the two diverge on a trimmed wall, and against the

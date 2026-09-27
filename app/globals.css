@@ -259,6 +259,22 @@ html {
   --shadow-pink: 0 20px 46px -16px rgba(240, 64, 127, 0.45);
 }
 
+/* WHITE PAPER, PER PAGE. A page that marks any element [data-paper="white"]
+   swaps the warm paper for pure white everywhere — body, bg-paper bands, the
+   edge fades — by redefining the one token rather than restyling sections.
+   /v5 does this: its phone hero is bg-white, and #fbf9f6 beside it read grey.
+   Unlayered, and html:has() outranks :root, so this wins over @theme. */
+html:has([data-paper="white"]) {
+  --color-paper: #ffffff;
+  --fade-stops:
+    rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.99) 10%,
+    rgba(255, 255, 255, 0.955) 20%, rgba(255, 255, 255, 0.89) 30%,
+    rgba(255, 255, 255, 0.79) 40%, rgba(255, 255, 255, 0.655) 50%,
+    rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0.345) 70%,
+    rgba(255, 255, 255, 0.205) 79%, rgba(255, 255, 255, 0.095) 87%,
+    rgba(255, 255, 255, 0.03) 94%, rgba(255, 255, 255, 0) 100%;
+}
+
 /* The hero wash. Three offset radial ramps, each falling off to alpha 0 of its
    OWN colour — never to `transparent`, which is rgba(0, 0, 0, 0) and would grey
    the tail into a visible ring. The stops trace a smoothstep rather than a

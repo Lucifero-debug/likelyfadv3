@@ -6,6 +6,7 @@ import { takeReels } from "@/lib/reelOrder";
 import { HOT } from "@/lib/useInViewPlay";
 import type { Reel } from "@/lib/reels.generated";
 import { LazyVideo } from "@/components/ui/LazyVideo";
+import { TILE_HOVER, TILE_LIGHT } from "./Work";
 
 /* TWO WALLS OF FOUR VERTICAL LANES, side by side with a narrow seam between
    them — the /v3 hero's backdrop.
@@ -25,9 +26,10 @@ import { LazyVideo } from "@/components/ui/LazyVideo";
 
    Below `tab:` each wall drops to two columns; four would be ~40px tiles.
 
-   Inert throughout: aria-hidden, no pointer events, and every tile is a
+   Inert by default: aria-hidden, no pointer events, and every tile is a
    LazyVideo on a lane of its own column so lib/useInViewPlay gates playback on
-   visibility exactly as it does for the home hero's wall. */
+   visibility exactly as it does for the home hero's wall. Pass `onOpen` and
+   the walls answer the pointer the way Work's rows do instead (/v5). */
 
 const COLS = 4;
 const WALLS = 2;
@@ -143,12 +145,17 @@ export function TwinWalls({
   play,
   children,
   edgeBlur = false,
+  onOpen,
 }: {
   running: boolean;
   play: boolean;
   children?: ReactNode;
   /** The inner-edge blur band on each wall (see EdgeBlur). /v4 only. */
   edgeBlur?: boolean;
+  /** Work's interaction on these walls: tiles become buttons that open the
+      lightbox, hovering a column dims its other tiles and stops that column.
+      Absent, the walls stay inert (/v3, /v4). */
+  onOpen?: (reel: Reel) => void;
 }) {
   return (
     <div className="relative flex h-full w-full">
@@ -177,8 +184,8 @@ export function TwinWalls({
            its direct child, the stage. 900px, as on ReelWallV6. */
         <div
           key={w}
-          aria-hidden="true"
-          className={`twin-wall-in pointer-events-none relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px] ${
+          aria-hidden={onOpen ? undefined : "true"}
+          className={`twin-wall-in ${onOpen ? "" : "pointer-events-none"} relative h-full min-w-0 flex-1 overflow-hidden tab:[perspective:900px] ${
             w === 0 ? "[--wall-from:-12%]" : "[--wall-from:12%]"
           } ${edgeBlur ? WALL_FADE[w === 0 ? "right" : "left"] : ""}`}
         >
@@ -188,25 +195,46 @@ export function TwinWalls({
             return (
               <div
                 key={c}
-                /* `contain` scopes each marquee's invalidation to its column. */
+                /* `contain` scopes each marquee's invalidation to its column.
+
+                   Interactive, a column gets Work's row treatment turned on its
+                   side. -mx-3 px-3 is the room for the 1.05 hover scale:
+                   overflow and paint containment clip at the padding box, so
+                   without it a magnified tile loses its left and right edges.
+                   The negative margin hands the padding straight back, so the
+                   column's width and the gaps between columns do not move. */
                 className={`h-full min-w-0 flex-1 overflow-hidden [contain:layout_paint_style] ${
                   c >= 2 ? "hidden tab:block" : ""
-                }`}
+                } ${onOpen ? "-mx-3 px-3 hover:z-[3] [&:hover_button:not(:hover)]:opacity-45" : ""}`}
               >
                 <div
                   /* Spaced by a margin under every tile, not a flex gap: a gap
                      leaves the doubled track half a gap short of two sets, and
                      the -50% loop would jump by that much. */
-                  className={`flex animate-lane-y flex-col will-change-transform ${
+                  className={`flex animate-lane-y flex-col will-change-transform [&:has(button:hover)]:[animation-play-state:paused] ${
                     w === 1 ? "[animation-direction:reverse]" : ""
                   } ${!running ? "[animation-play-state:paused]" : ""}`}
                   style={{ animationDuration: `${SECONDS[ci]}s` }}
                 >
-                  {[...COLUMNS[ci], ...COLUMNS[ci]].map((reel, i) => (
-                    <div
-                      key={i}
-                      className="relative mb-[clamp(6px,0.9vw,12px)] aspect-[9/16] w-full flex-none overflow-hidden rounded-lg bg-[#1a1620] tab:rounded-xl"
-                    >
+                  {[...COLUMNS[ci], ...COLUMNS[ci]].map((reel, i) => {
+                    const Frame = onOpen ? "button" : "div";
+                    return (
+                      <Frame
+                        key={i}
+                        {...(onOpen
+                          ? {
+                              type: "button" as const,
+                              onClick: () => onOpen(reel),
+                              "aria-label": `Play reel ${ci * PER_COL + (i % PER_COL) + 1} full size`,
+                            }
+                          : null)}
+                        className={`relative mb-[clamp(6px,0.9vw,12px)] block aspect-[9/16] w-full flex-none rounded-lg bg-[#1a1620] tab:rounded-xl ${
+                          onOpen ? `${TILE_HOVER} ${TILE_LIGHT}` : ""
+                        }`}
+                      >
+                      {/* Clipped on its own box, as in Work's Tile, so the
+                          hover shadow (the ::after) can paint outside it. */}
+                      <span className="absolute inset-0 overflow-hidden rounded-[inherit]">
                       <LazyVideo
                         lane={`v3-hero-col-${ci}`}
                         src={reel.src}
@@ -216,8 +244,10 @@ export function TwinWalls({
                         policy={HOT}
                         className="relative size-full object-cover"
                       />
-                    </div>
-                  ))}
+                      </span>
+                      </Frame>
+                    );
+                  })}
                 </div>
               </div>
             );

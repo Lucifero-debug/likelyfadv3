@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/sections/Nav";
-import { LogoWallGrid } from "@/components/sections/LogoWallGrid";
+import { LogoWall } from "@/components/sections/LogoWall";
 import { HeroStacked } from "@/components/sections/HeroStacked";
 import { WhyUs } from "@/components/sections/WhyUs";
 import { Work } from "@/components/sections/Work";
@@ -29,9 +29,9 @@ export default function V5Page() {
       </a>
       <Nav centered frost={false} />
 
-      <main id="main">
+      <main id="main" data-paper="white">
         <HeroStacked />
-        <LogoWallGrid />
+        <LogoWall />
         <WhyUs />
         <Work />
         <PricingV4 />
