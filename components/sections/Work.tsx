@@ -214,8 +214,12 @@ export const HERO_ROWS_OF_PICKS = dealRows(0);
    image needs no clip of its own — a background is already clipped to the
    border box, radius included. */
 const TILE_FRAME =
-  "relative aspect-[9/16] flex-none rounded-lg " +
-  "bg-[#1a1620] shadow-[0_12px_32px_rgba(0,0,0,0.45)] tab:rounded-xl";
+  "relative aspect-[9/16] flex-none rounded-lg bg-[#1a1620] tab:rounded-xl";
+/* The resting shadow, per ground. The deep one is for the dark band; on white
+   (/v5's phone hero) the rows sit 8px apart, so a 32px black blur from every
+   tile pooled in each gap and the whole lane area read grey. */
+const TILE_REST_DARK = "shadow-[0_12px_32px_rgba(0,0,0,0.45)]";
+const TILE_REST_LIGHT = "shadow-[0_2px_6px_rgba(22,20,26,0.08)]";
 const TILE_SIZE = "w-[clamp(112px,33vw,146px)] tab:w-[clamp(116px,12vw,158px)]";
 export const TILE_HOVER =
   "transition-[opacity,transform] duration-[280ms] ease-[cubic-bezier(0.22,0.7,0.2,1)] " +
@@ -291,7 +295,7 @@ function Tile({
       {...(onOpen
         ? { type: "button" as const, onClick: onOpen, "aria-label": label }
         : { "aria-hidden": true })}
-      className={`${TILE_FRAME} ${size} ${onOpen ? `${TILE_HOVER} ${light ? TILE_LIGHT : TILE_DARK}` : ""}`}
+      className={`${TILE_FRAME} ${light ? TILE_REST_LIGHT : TILE_REST_DARK} ${size} ${onOpen ? `${TILE_HOVER} ${light ? TILE_LIGHT : TILE_DARK}` : ""}`}
     >
       {/* The clip gets its own box so the tile is free to paint shadows outside
           itself. A wrapper rather than border-radius straight on the <video>:
