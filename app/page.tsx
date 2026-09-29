@@ -1,16 +1,16 @@
 import { Nav } from "@/components/sections/Nav";
-import { LogoWallBoard } from "@/components/sections/LogoWallBoard";
-import { HeroReel } from "@/components/sections/HeroReel";
+import { LogoWall } from "@/components/sections/LogoWall";
+import { HeroStacked } from "@/components/sections/HeroStacked";
 import { WhyUs } from "@/components/sections/WhyUs";
-import { WorkCorridor } from "@/components/sections/WorkCorridor";
+import { Work } from "@/components/sections/Work";
 import { PricingV4 } from "@/components/sections/PricingV4";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { FaqV4 } from "@/components/sections/FaqV4";
 import { FooterV3 } from "@/components/sections/FooterV3";
-import { Work } from "@/components/sections/Work";
 
-/* The home page. The redesigned version of this page lives at /v2
-   (app/v2/page.tsx), built from its own copies in components/redesign.
+/* The home page — the /v5 layout: centred nav, HeroStacked (three lanes of
+   clips over the pitch on phones, /v4's twin walls from `tab:` up), then the
+   LogoWall.
 
    One version of each band is mounted. Keep it that way: every reel wall below
    the fold decodes and composites video continuously, so stacking variants on
@@ -24,11 +24,11 @@ export default function Home() {
       >
         Skip to content
       </a>
-      <Nav />
+      <Nav centered frost={false} />
 
       <main id="main">
-        <HeroReel />
-        <LogoWallBoard />
+        <HeroStacked />
+        <LogoWall />
         <WhyUs />
         <Work />
         <PricingV4 />
