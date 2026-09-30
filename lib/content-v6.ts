@@ -35,7 +35,7 @@ export const content = {
       { title: "Days, not weeks", body: "Send a brief today, see first concepts in about 48 hours." },
       { title: "A fraction of the cost", body: "No crew, no location, no reshoots. You pay for output, not overhead." },
       { title: "Angles, not one bet", body: "20 to 40 variants a month, so you learn what wins before you spend big." },
-      { title: "Built to run", body: "Hook-first, sized for every placement, ready for your ad manager." },
+      { title: "Made to win", body: "Hook-first, sized for every placement, ready for your ad manager." },
       // Round 7 (Aman msg 2767; Alex, alex-steps.md section 5): the DM now lives in How it works step 1.
       { title: "Your workflow stays yours", body: "We fit into your system, timelines, style and speed. Only the output changes." },
     ],
@@ -60,7 +60,7 @@ export const content = {
       "Unlimited revisions on the monthly retainer",
     ],
     cta: "Get your quote",
-    foot: "One paid trial video first. Don't like it? Full refund, no questions asked.",
+    foot: "Start with one paid trial video. A person checks every frame before it ships.",
   },
 
   testimonials: {
@@ -82,7 +82,7 @@ export const content = {
       { q: "Will Meta or TikTok flag AI ads?", a: "We mark what needs the AI label. Disclosed ads run on Meta and TikTok every day." },
       { q: "Do I own the work, paid ads included?", a: "Yes. Full commercial rights for paid and organic, no watermarks, yours forever." },
       { q: "Will people be able to tell it's AI?", a: "Judge the work above. A person checks every frame; if it reads fake, it never ships." },
-      { q: "What does it cost, and what if I don't like it?", a: "Priced to your brief. One paid trial video, full refund if you don't like it." },
+      { q: "What does it cost, and what if I don't like it?", a: "Priced to your brief. One paid trial video first; don't like it, we refund it." },
       { q: "Who writes the script, and how fast?", a: "You send a product link and the angle. We write, you approve. First cut in 48 hours." },
     ],
   },
@@ -135,7 +135,7 @@ export const content = {
     typed: "Here's my product: ",
     link: "yourbrand.com/product",
     typing: "Likelyfad is typing…",
-    reply: "On it. First cut in 48 hours. Don't like it, full refund.",
+    reply: "On it. First cut in 48 hours, made to win, not just to look real.",
     contact: "Likelyfad",
   },
   // Round 4: the rotating line (Alex). Placement pending Aman.
@@ -148,7 +148,7 @@ export const content = {
   // Round 4 review stack (Aman msg 2669): the live close kept as option 4.
   closeClassic: {
     heading: "Your best ad is getting older.",
-    sub: "New ones in 48 hours. One paid trial, full refund if you don't like it.",
+    sub: "First cut in 48 hours. Made to win, checked frame by frame.",
     cta: CTA,
   },
 
@@ -158,7 +158,7 @@ export const content = {
     // Round 4 (Aman msg 2659; Alex): the phone-chat close.
     heading: "Starting takes ten seconds.",
     sub: "Send the DM, we do the rest.",
-    guarantee: "One paid trial video. Don't like it? Full refund, no questions asked.",
+    guarantee: "One paid trial video. First cut in 48 hours, made to win, not just to look real.",
     cta: CTA,
   },
 

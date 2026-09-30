@@ -25,7 +25,7 @@ export function AdRing({ posters }: { posters: string[] }) {
       focusOnClick={false}
       captions={false}
       parallax={0}
-      fadeColor="#fbf9f6"
+      fadeColor="var(--v6-paper)"
       cornerRadius={10}
     />
   );

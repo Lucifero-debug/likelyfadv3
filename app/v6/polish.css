@@ -1,5 +1,9 @@
 /* Round 4 values only. No selector changes the live / or /v4. */
 [data-site="polish"] {
+  --v6-paper: #f8f6fd; /* Round 8 (Aman msg 2799): lavender near-white from the logo gradient (was #fbf9f6) */
+  --v6-paper-rgb: 248 246 253;
+  --color-paper: var(--v6-paper);
+  background-color: var(--color-paper);
   /* Logo H/S preserved exactly; text L × .90, CTA L × .70. See motion-contrast.json. */
   --v6-grad-text: linear-gradient(100deg, hsl(12.879581 98.963731% 52.5%) 2%, hsl(355.950920 91.061453% 56%) 25%, hsl(337.325581 81.904762% 52.941176%) 50%, hsl(305.689655 46.031746% 45.529412%) 75%, hsl(266.619718 66.981132% 52.588235%) 98%);
   --v6-grad-cta: linear-gradient(100deg, hsl(12.879581 98.963731% 43.509804%) 2%, hsl(355.950920 91.061453% 45.431373%) 25%, hsl(337.325581 81.904762% 41.176471%) 50%, hsl(305.689655 46.031746% 35.411765%) 75%, hsl(266.619718 66.981132% 40.901961%) 98%);
@@ -35,7 +39,7 @@
 [data-site="polish"] footer a[href="#top"] { min-height: 40px; }
 /* The centered nav's painted surface is paper, including over dark sections.
    The mark stays untouched. Icon and open-menu text follow that same surface. */
-[data-site="polish"] [data-polish-nav] #phone-menu { background-color: rgb(251 249 246 / 0.94); }
+[data-site="polish"] [data-polish-nav] #phone-menu { background-color: rgb(var(--v6-paper-rgb) / 0.94); }
 [data-site="polish"] [data-polish-nav][data-scrolled="false"][data-open="false"] #phone-menu { background-color: transparent; }
 @media (max-width: 760.98px) {
   [data-site="polish"] { --nav-h: 68px; }
@@ -67,18 +71,23 @@
 [data-site="polish"] [data-expand-stage] { position: relative; height: 100svh; display: grid; place-items: center; overflow: hidden; }
 [data-site="polish"] [data-expand-frame] { width: 100%; height: 100%; background: var(--color-ink); overflow: hidden; }
 [data-site="polish"] [data-expand-frame] video { display: block; width: 100%; height: 100%; object-fit: contain; }
-[data-site="polish"] [data-expand-sound] { position: absolute; bottom: max(32px, env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; min-width: 44px; min-height: 44px; padding: 12px 20px; border-radius: 999px; background: #fbf9f6; color: var(--color-ink); font-weight: 500; cursor: pointer; }
+[data-site="polish"] [data-expand-sound] { position: absolute; bottom: max(32px, env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; min-width: 44px; min-height: 44px; padding: 12px 20px; border-radius: 999px; background: var(--v6-paper); color: var(--color-ink); font-weight: 500; cursor: pointer; }
 /* Reed: beats A. White on a 62% ink scrim: worst case over a white video frame is
    about 5.2:1. Opacity is the only thing that changes, so the fade is composited. */
 [data-site="polish"] [data-expand-beats] { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; pointer-events: none; z-index: 1; }
-[data-site="polish"] [data-beat-line] { grid-area: 1 / 1; max-width: min(calc(100vw - 48px), 56vw); padding: 10px 18px; border-radius: 16px; background: rgb(20 18 23 / .62); color: #fff; font-family: var(--font-display, inherit); font-weight: 700; font-size: clamp(1.5rem, 5.5vw, 4rem); line-height: 1.12; text-wrap: balance; letter-spacing: -0.01em; text-align: center; opacity: 0; transition: opacity 400ms ease; }
+/* Give phone beats the available width so the fixed copy fits in two lines. */
+[data-site="polish"] [data-beat-line] { grid-area: 1 / 1; max-width: min(calc(100vw - 48px), 20em); padding: 10px 18px; border-radius: 16px; background: rgb(20 18 23 / .62); color: #fff; font-family: var(--font-display, inherit); font-weight: 700; font-size: clamp(1.5rem, 5.5vw, 4rem); line-height: 1.12; text-wrap: balance; letter-spacing: -0.01em; text-align: center; opacity: 0; transition: opacity 400ms ease; }
+/* Give the longest beat extra room on the narrowest phones. */
+@media (max-width: 360px) {
+  [data-site="polish"] [data-beat-line="3"] { max-width: calc(100vw - 24px); }
+}
 [data-site="polish"] [data-beat="1"] [data-beat-line="1"],
 [data-site="polish"] [data-beat="2"] [data-beat-line="2"],
 [data-site="polish"] [data-beat="3"] [data-beat-line="3"] { opacity: 1; }
 [data-site="polish"] [data-expand-sound] { z-index: 2; font-size: 1.0625rem; }
-[data-site="polish"] [data-expand-sound]:focus-visible { outline: 3px solid #fbf9f6; outline-offset: 4px; }
+[data-site="polish"] [data-expand-sound]:focus-visible { outline: 3px solid var(--v6-paper); outline-offset: 4px; }
 [data-site="polish"] #work { padding-top: 0; }
-[data-site="polish"] .v6-work-heading-wrap { max-width: none; padding-block: clamp(32px, 5vw, 48px); margin-bottom: clamp(32px, 4.5vw, 64px); background: #fbf9f6; color: var(--color-ink); }
+[data-site="polish"] .v6-work-heading-wrap { max-width: none; padding-block: clamp(32px, 5vw, 48px); margin-bottom: clamp(32px, 4.5vw, 64px); background: var(--v6-paper); color: var(--color-ink); }
 [data-site="polish"] .v6-work-heading-wrap > div { margin-bottom: 0; }
 [data-site="polish"] .v6-work-heading-wrap p { color: var(--color-ink-soft); }
 [data-site="polish"] [data-scroll-word] { display: inline-block; opacity: 1; filter: none; }
@@ -235,10 +244,10 @@
 
 /* PART 1 (Aman msgs 2593, 2597-2600; Reed). ------------------------------- */
 /* Background: one paper everywhere. The desktop hero was bg-white (#fff) on
-   the paper (#fbf9f6) page: its bottom padding showed as a white line, and
+   the paper (var(--v6-paper)) page: its bottom padding showed as a white line, and
    the column behind the pitch as a white glow. The shared TopFrost wash is
    re-tinted to paper here (the component is shared with "/"). */
-[data-site="polish"] .bg-white\/45 { background-color: rgb(251 249 246 / 0.45); }
+[data-site="polish"] .bg-white\/45 { background-color: rgb(var(--v6-paper-rgb) / 0.45); }
 
 /* Clipped glyphs: the reveal no longer slides, so RevealText's word masks and
    the hero's line masks have nothing to hide. Unmasked, descenders (y, g, p)
@@ -285,16 +294,16 @@
    borders can expose the paper; Pricing retains its existing paper ground. */
 [data-site="polish"] :is(#featured-ad, #numbers, #work) {
   background: var(--color-ink, #141217);
-  color: #fbf9f6;
-  --v6-heading-accent: #fbf9f6;
+  color: var(--v6-paper);
+  --v6-heading-accent: var(--v6-paper);
   margin-block: 0;
   border-block: 0;
 }
 [data-site="polish"] [data-expand-stage] { background: var(--color-ink, #141217); }
-[data-site="polish"] .v6-work-heading-wrap { background: transparent; color: #fbf9f6; }
+[data-site="polish"] .v6-work-heading-wrap { background: transparent; color: var(--v6-paper); }
 [data-site="polish"] .v6-work-heading-wrap p { color: #d5d0da; }
 [data-site="polish"] #work .uppercase { color: #d5d0da; }
-[data-site="polish"] #numbers h2 { color: #fbf9f6; }
+[data-site="polish"] #numbers h2 { color: var(--v6-paper); }
 [data-site="polish"] .v6-numbers-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -302,7 +311,7 @@
 }
 [data-site="polish"] .v6-number-tile {
   min-width: 0;
-  border-top: 1px solid rgb(251 249 246 / .22);
+  border-top: 1px solid rgb(var(--v6-paper-rgb) / .22);
   padding-top: 24px;
 }
 [data-site="polish"] .v6-number-value {
@@ -311,7 +320,7 @@
   line-height: 1.2;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-  color: #fbf9f6;
+  color: var(--v6-paper);
 }
 [data-site="polish"] .v6-number-label {
   margin: 12px 0 0;
@@ -350,6 +359,8 @@
     inset: auto;
     grid-area: 1 / 1;
     width: 100%;
+    min-width: 0;
+    container-type: inline-size;
     place-items: center start;
   }
   [data-site="polish"] [data-beat-line] {
@@ -357,7 +368,8 @@
     padding: 0;
     border-radius: 0;
     background: none;
-    font-size: clamp(2.25rem, 5vw, 5.5rem);
+    /* Tall viewports leave a narrower text column beside the portrait video. */
+    font-size: clamp(1.5rem, min(5vw, 14cqw), 5.5rem);
     line-height: 1.15;
     text-align: left;
     text-wrap: balance;
@@ -420,7 +432,7 @@
     transform-origin: 50% 50%;
   }
   [data-site="polish"] [data-expand-beats] { justify-self: start; }
-  [data-site="polish"] [data-beat-line] { max-width: 11em; }
+  [data-site="polish"] [data-beat-line] { max-width: min(100%, 11em); }
   [data-site="polish"] [data-expand-frame] > [data-expand-sound] {
     position: absolute !important;
     inset: auto auto 24px 50% !important;
@@ -488,7 +500,7 @@
   padding: clamp(64px, 9vw, 128px) clamp(24px, 6vw, 88px); border-radius: 32px;
   box-shadow: var(--shadow);
 }
-[data-site="polish"] .v6-close-card p { color: rgb(251 249 246 / 0.88); }
+[data-site="polish"] .v6-close-card p { color: rgb(var(--v6-paper-rgb) / 0.88); }
 [data-site="polish"] #close h2 { font-size: var(--v6-h2) !important; }
 
 
@@ -567,8 +579,8 @@
 
 /* ROUND 4: END CTA PHONE + ROTATING LINE (Aman msg 2659; Reed). --------------- */
 [data-site="polish"] .v6-close-card { padding: clamp(40px, 6vw, 88px) clamp(20px, 5vw, 80px) !important; max-width: 72rem; }
-[data-site="polish"] .v6-close-sub { font-size: var(--v6-sub); color: rgb(251 249 246 / 0.9); margin: 0; }
-[data-site="polish"] .v6-close-guarantee { font-size: var(--v6-small); color: rgb(251 249 246 / 0.78); margin: 0; }
+[data-site="polish"] .v6-close-sub { font-size: var(--v6-sub); color: rgb(var(--v6-paper-rgb) / 0.9); margin: 0; }
+[data-site="polish"] .v6-close-guarantee { font-size: var(--v6-small); color: rgb(var(--v6-paper-rgb) / 0.78); margin: 0; }
 
 
 /* Rotating line: n words share one slot; each is up for 1/n of the cycle. */
@@ -706,7 +718,7 @@
 [data-site="polish"] .v6-how-screen { grid-area: 1 / 1; position: relative; min-height: 0; opacity: 0; transform: scale(0.985); display: flex; flex-direction: column; }
 [data-site="polish"] .v6-how-screen.is-on { opacity: 1; transform: none; z-index: 1; }
 /* Chat screens, light. */
-[data-site="polish"] .v6-how-top { display: flex; align-items: center; gap: 10px; padding: 18px 22px; border-bottom: 1px solid #efebe6; font: 600 15px/1 var(--font-sans); color: var(--color-ink); background: #fbf9f6; }
+[data-site="polish"] .v6-how-top { display: flex; align-items: center; gap: 10px; padding: 18px 22px; border-bottom: 1px solid #efebe6; font: 600 15px/1 var(--font-sans); color: var(--color-ink); background: var(--v6-paper); }
 [data-site="polish"] .v6-how-av { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 13px; background: linear-gradient(135deg, #fe683f, #ec4081 55%, #8d4edc); }
 [data-site="polish"] .v6-how-thread { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; padding: 24px 22px 28px; }
 [data-site="polish"] .v6-how-b { margin: 0; max-width: 82%; padding: 12px 16px; border-radius: 20px; font: 400 clamp(0.95rem, 0.9rem + 0.25vw, 1.0625rem)/1.35 var(--font-sans); }
@@ -726,7 +738,7 @@
 [data-site="polish"] .v6-how-bar { position: absolute; left: 16px; right: 16px; bottom: 16px; height: 3px; border-radius: 3px; background: rgb(255 255 255 / 0.35); overflow: hidden; }
 [data-site="polish"] .v6-how-bar i { position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(0.35); }
 /* Monthly grid. */
-[data-site="polish"] .v6-how-grid { background: #fbf9f6; }
+[data-site="polish"] .v6-how-grid { background: var(--v6-paper); }
 [data-site="polish"] .v6-how-tiles { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; padding: 12px 12px 64px; }
 [data-site="polish"] .v6-how-tiles span { border-radius: 14px; background-size: cover; background-position: center; background-color: #e9e4de; }
 
@@ -753,13 +765,13 @@
    screen transform together. Chat sizes are in the screen's 390 x 844 units. */
 [data-site="polish"] .v6-hand-card {
   display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: clamp(8px, 2vw, 24px);
-  padding: clamp(44px, 6vw, 80px) clamp(20px, 5vw, 80px) 0; border-radius: 32px;
-  background: #fbf9f6; border: 1px solid var(--color-line, #ece7e1); box-shadow: var(--shadow); color: var(--color-ink);
+  padding: clamp(44px, 6vw, 80px) 12px 0; border-radius: 32px;
+  background: var(--v6-paper); border: 1px solid var(--color-line, #ece7e1); box-shadow: var(--shadow); color: var(--color-ink);
 }
-@media (min-width: 761px) { [data-site="polish"] .v6-hand-card { grid-template-columns: minmax(0, 1fr) auto; padding-top: 0; padding-right: clamp(32px, 5vw, 96px); } }
+@media (min-width: 1024px) { [data-site="polish"] .v6-hand-card { grid-template-columns: minmax(0, 1fr) auto; padding: 0 clamp(32px, 5vw, 96px) 0 clamp(20px, 5vw, 80px); } }
 [data-site="polish"] .v6-hand-card.v6-sweep::before { z-index: 2; }
 [data-site="polish"] .v6-hand-copy { display: flex; flex-direction: column; gap: 20px; align-items: center; text-align: center; }
-@media (min-width: 761px) { [data-site="polish"] .v6-hand-copy { align-self: center; align-items: flex-start; text-align: left; max-width: 30rem; padding-block: clamp(56px, 7vw, 96px); } }
+@media (min-width: 1024px) { [data-site="polish"] .v6-hand-copy { align-self: center; align-items: flex-start; text-align: left; max-width: 30rem; padding-block: clamp(56px, 7vw, 96px); } }
 [data-site="polish"] .v6-hand-copy h2 { margin: 0; font-size: var(--v6-h2) !important; max-width: 12em; }
 [data-site="polish"] .v6-hand-sub { margin: 0; font-size: var(--v6-sub); color: var(--color-ink-soft); }
 [data-site="polish"] .v6-hand-guarantee { margin: 0; font-size: var(--v6-small); color: var(--color-ink-soft); }
@@ -952,3 +964,116 @@
 
 /* The ring inside scene 4. */
 [data-site="polish"] .v6s-ring-slot .circular-carousel { height: 100%; }
+
+/* ROUND 8 prep (Aman msg 2797): ONE header rule. Every section header
+   (kicker, H2, sub) is centred at the top; its content is centred below in
+   the 1312 box. Pricing and FAQ leave their split layout: the list and the
+   accordion centre under the header, and the FAQ's CTA moves under it. */
+@media (min-width: 0px) {
+  [data-site="polish"] #pricing > div, [data-site="polish"] #faq > div { display: flex !important; flex-direction: column; align-items: center; gap: clamp(32px, 4.5vw, 64px) !important; }
+  [data-site="polish"] #pricing > div > div:first-child, [data-site="polish"] #faq > div > div:first-child { align-items: center; text-align: center; position: static !important; }
+  /* The title column is a size container: give it the full width or its heading sizes off ~0px. */
+  [data-site="polish"] #pricing > div > div:first-child { width: 100%; max-width: 820px; }
+  [data-site="polish"] #pricing > div > div:first-child h2 span, [data-site="polish"] #faq > div > div:first-child h2 span { text-align: center; }
+  [data-site="polish"] #pricing > div > div:last-child, [data-site="polish"] #faq > div > div:last-child { width: 100%; max-width: 820px; }
+  /* FAQ: the CTA block (inside the title column) goes under the accordion. */
+  [data-site="polish"] #faq > div > div:first-child { display: contents; }
+  [data-site="polish"] #faq > div > div:first-child > * { align-self: center; text-align: center; }
+  [data-site="polish"] #faq > div > div:first-child > *:last-child { order: 3; align-items: center; padding-top: 0; }
+  [data-site="polish"] #faq > div > div:last-child { order: 2; }
+  [data-site="polish"] #pricing > div > div:last-child > :not(ul) { display: flex; flex-direction: column; align-items: center; text-align: center; }
+}
+
+
+/* ROUND 8: CTA chat cards (Aman msg 2801) */
+[data-site="polish"] .v6-hand-art:has(> .v6-chat-card) {
+  display: grid; place-items: center; align-self: center; width: min(100%, 460px); min-width: 0;
+  padding-block: 28px 36px; line-height: 1.4;
+}
+@media (min-width: 1024px) {
+  [data-site="polish"] .v6-hand-art:has(> .v6-chat-card) { width: clamp(280px, 36vw, 460px); padding-block: 48px; }
+  [data-site="polish"] .v6-chat-card { min-height: clamp(350px, 45vw, 575px); }
+}
+[data-site="polish"] .v6-chat-card {
+  --v6-chat-text: 17px;
+  box-sizing: border-box; display: flex; flex-direction: column; width: 100%; max-width: 460px; min-width: 0;
+  /* All three rows contribute to height, including a wrapped typing field. */
+  height: auto; overflow: visible; isolation: isolate;
+  border: 1px solid var(--color-line, #ece7e1); border-radius: 28px; background: var(--color-paper);
+  box-shadow: 0 12px 36px rgb(44 29 35 / 0.07), 0 2px 6px rgb(44 29 35 / 0.025);
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", var(--font-sans), system-ui, sans-serif;
+  font-size: var(--v6-chat-text); line-height: 1.4; text-align: left; color: #111b21;
+}
+[data-site="polish"] .v6-chat-card svg { flex-shrink: 0; }
+[data-site="polish"] .v6-chat-card > :first-child { border-radius: 27px 27px 0 0; }
+[data-site="polish"] .v6-chat-card > :last-child { border-radius: 0 0 27px 27px; }
+[data-site="polish"] .v6-chat-card .v6-hs-thread {
+  flex: 1 0 auto; min-width: 0; min-height: 280px; justify-content: center; padding: 24px 22px;
+}
+[data-site="polish"] .v6-chat-card .v6-hs-av { flex: none; }
+[data-site="polish"] .v6-chat-card .v6-hs-typed {
+  flex: 1; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: #111b21;
+}
+[data-site="polish"] .v6-chat-card .v6-hs-caret { height: 1.1em; vertical-align: -0.15em; }
+[data-site="polish"] .v6-chat-card :is(.v6-im-b, .v6-wa-b) {
+  box-sizing: border-box; flex-shrink: 0; min-width: 0; max-width: 88%; padding: 11px 15px;
+  font-size: var(--v6-chat-text); line-height: 1.4; letter-spacing: -0.15px; overflow-wrap: anywhere;
+}
+[data-site="polish"] .v6-chat-card u { text-decoration-thickness: 1px; text-underline-offset: 2px; }
+/* The inherited phone entrance scales its bubbles. Cards never scale text. */
+[data-site="polish"] .v6-chat-card :is(.v6-im-b, .v6-wa-b, .v6-im-dlv, .v6-im-typing) { animation: none; transform: none; }
+[data-site="polish"] .v6-chat-card .v6-im-head {
+  flex: none; grid-template-columns: 28px minmax(0, 1fr) 28px; padding: 16px 20px 12px;
+  background: var(--color-paper); border-bottom: 1px solid var(--color-line, #ece7e1);
+}
+[data-site="polish"] .v6-chat-card-imessage .v6-hs-av { width: 44px; height: 44px; font-size: 19px; }
+[data-site="polish"] .v6-chat-card .v6-im-who { gap: 5px; }
+[data-site="polish"] .v6-chat-card .v6-im-name { font-size: 13px; line-height: 1.3; }
+[data-site="polish"] .v6-chat-card .v6-im-stamp { margin: 0 0 20px; font-size: 12px; line-height: 1.4; }
+[data-site="polish"] .v6-chat-card .v6-im-b { margin-bottom: 0; border-radius: 22px; }
+[data-site="polish"] .v6-chat-card .v6-im-in { margin-top: 18px; }
+[data-site="polish"] .v6-chat-card :is(.v6-im-out, .v6-im-in)::after { background: var(--color-paper); }
+[data-site="polish"] .v6-chat-card .v6-im-dlv { margin: 8px 5px 0 0; font-size: 12px; line-height: 1.3; }
+[data-site="polish"] .v6-chat-card .v6-im-typing { margin-top: 18px; }
+[data-site="polish"] .v6-chat-card :is(.v6-im-bar, .v6-wa-bar) {
+  flex: none; align-items: flex-end; gap: 8px; padding: 12px 14px 16px; background: var(--color-paper);
+}
+[data-site="polish"] .v6-chat-card :is(.v6-im-plus, .v6-wa-plus) { flex: none; align-self: center; }
+[data-site="polish"] .v6-chat-card :is(.v6-im-field, .v6-wa-field) {
+  box-sizing: border-box; min-width: 0; height: auto; min-height: 40px; border-radius: 22px;
+  font-size: var(--v6-chat-text); line-height: 1.4; overflow: visible;
+}
+[data-site="polish"] .v6-chat-card .v6-im-field { align-items: flex-end; padding: 6px 6px 6px 12px; }
+[data-site="polish"] .v6-chat-card .v6-im-field > svg { align-self: center; margin-right: 4px; }
+[data-site="polish"] .v6-chat-card .v6-wa-head {
+  flex: none; gap: 9px; min-width: 0; min-height: 76px; padding: 16px 14px;
+  background: var(--color-paper); border-bottom: 1px solid var(--color-line, #ece7e1);
+}
+[data-site="polish"] .v6-chat-card-whatsapp .v6-hs-av { width: 36px; height: 36px; font-size: 16px; }
+[data-site="polish"] .v6-chat-card .v6-wa-who { min-width: 0; gap: 3px; }
+[data-site="polish"] .v6-chat-card .v6-wa-who b { font-size: 16px; }
+[data-site="polish"] .v6-chat-card .v6-wa-who small { font-size: 12px; }
+[data-site="polish"] .v6-chat-card .v6-wa-chip { margin-bottom: 22px; }
+[data-site="polish"] .v6-chat-card .v6-wa-in { margin-top: 18px; }
+[data-site="polish"] .v6-chat-card .v6-wa-meta { margin: 7px 0 -3px 10px; font-size: 11px; line-height: 1.2; }
+[data-site="polish"] .v6-chat-card .v6-wa-field { padding: 8px 12px; }
+[data-site="polish"] .v6-chat-card .v6-wa-bar > svg { align-self: center; }
+[data-site="polish"] .v6-chat-card-whatsapp .v6-hs-caret { background: #25d366; }
+[data-site="polish"] .v6-chat-card .v6-chat-typing { display: flex; gap: 4px; padding: 14px; }
+[data-site="polish"] .v6-chat-card .v6-chat-typing i { width: 8px; height: 8px; border-radius: 50%; background: #8696a0; opacity: 0.5; }
+@media (max-width: 760px) {
+  [data-site="polish"] .v6-chat-card { --v6-chat-text: 16px; }
+  [data-site="polish"] .v6-chat-card .v6-hs-thread { padding-inline: 16px; }
+  [data-site="polish"] .v6-chat-card :is(.v6-im-b, .v6-wa-b) { max-width: 92%; padding: 10px 12px; }
+  [data-site="polish"] .v6-chat-card .v6-wa-head { gap: 7px; padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-chat-card[data-animated="true"] :is(.v6-im-b, .v6-wa-b, .v6-im-dlv, .v6-im-typing) { animation: v6-chat-appear 320ms ease-out both; }
+  [data-site="polish"] .v6-chat-card .v6-chat-typing i { animation: v6-msg-dot 1.2s ease-in-out infinite; }
+  [data-site="polish"] .v6-chat-card .v6-chat-typing i:nth-child(2) { animation-delay: 0.15s; }
+  [data-site="polish"] .v6-chat-card .v6-chat-typing i:nth-child(3) { animation-delay: 0.3s; }
+}
+[data-site="polish"] .v6-chat-card[data-playing="false"] *,
+[data-site="polish"] .v6-chat-card[data-playing="false"] *::before,
+[data-site="polish"] .v6-chat-card[data-playing="false"] *::after { animation-play-state: paused; }
+@keyframes v6-chat-appear { from { opacity: 0; } to { opacity: 1; } }

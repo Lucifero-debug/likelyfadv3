@@ -8,7 +8,7 @@
   overflow: hidden;
   border-radius: 24px;
   border: 1px solid #ece7e1;
-  background: #fbf9f6;
+  background: var(--v6-paper);
   color: #302b37;
   font-family: var(--font-sans, system-ui, sans-serif);
   isolation: isolate;
@@ -33,10 +33,10 @@
 [data-site="polish"] .v6s-scene .v6s-brief .v6s-chip { padding: 2cqw 3cqw; border-radius: 3cqw; }
 [data-site="polish"] .v6s-scene .v6s-brief-script { color: #75517d; }
 [data-site="polish"] .v6s-scene .v6s-brief-script svg { width: 4.4cqw; height: 4.4cqw; }
-[data-site="polish"] .v6s-scene .v6s-formats-window { position: absolute; left: 7cqw; right: 7cqw; top: 43cqw; overflow: hidden; border-radius: 3cqw; }
-[data-site="polish"] .v6s-scene .v6s-formats { display: flex; gap: 2cqw; width: max-content; }
+[data-site="polish"] .v6s-scene .v6s-formats-window { position: absolute; left: 7cqw; right: 7cqw; top: 41cqw; overflow: hidden; border-radius: 3cqw; }
+[data-site="polish"] .v6s-scene .v6s-formats { display: flex; flex-wrap: wrap; gap: 2cqw; }
 [data-site="polish"] .v6s-scene .v6s-formats span { white-space: nowrap; padding: 2cqw 3cqw; font-size: 3.5cqw; line-height: 1.3; color: #6c526a; border-radius: 3cqw; background: #f2eaf0; }
-[data-site="polish"] .v6s-scene .v6s-editor { position: absolute; top: 58cqw; left: 7cqw; right: 7cqw; height: 58cqw; border: .3cqw solid #e7e1df; background: #fff; border-radius: 5cqw; box-shadow: 0 3cqw 7cqw #51402b08; }
+[data-site="polish"] .v6s-scene .v6s-editor { position: absolute; top: 63cqw; left: 7cqw; right: 7cqw; height: 55cqw; border: .3cqw solid #e7e1df; background: #fff; border-radius: 5cqw; box-shadow: 0 3cqw 7cqw #51402b08; }
 [data-site="polish"] .v6s-scene .v6s-editor-top { display: flex; align-items: center; justify-content: space-between; width: 47cqw; height: 14cqw; padding: 0 4cqw; }
 [data-site="polish"] .v6s-scene .v6s-editor-dots { display: flex; gap: 1.3cqw; }
 [data-site="polish"] .v6s-scene .v6s-editor-dots i { width: 1.6cqw; height: 1.6cqw; border-radius: 50%; background: #ddd7d1; }
@@ -138,7 +138,7 @@
 @keyframes v6s-brief-angle { 0%, 2% { opacity: 0; transform: translateY(2cqw); } 10%, 100% { opacity: 1; transform: none; } }
 @keyframes v6s-brief-format { 0%, 8% { opacity: 0; transform: translateY(2cqw); } 16%, 100% { opacity: 1; transform: none; } }
 @keyframes v6s-brief-script { 0%, 14% { opacity: 0; transform: translateY(2cqw); } 22%, 100% { opacity: 1; transform: none; } }
-@keyframes v6s-formats { 0%, 16% { transform: translateX(0); } 33%, 39% { transform: translateX(calc(86cqw - 100%)); } 49%, 100% { transform: translateX(0); } }
+@keyframes v6s-formats { 0%, 14% { opacity: 0; transform: translateY(2cqw); } 22%, 100% { opacity: 1; transform: none; } }
 @keyframes v6s-clips { 0%, 32% { transform: scaleX(0); } 51%, 100% { transform: scaleX(1); } }
 @keyframes v6s-voice { 0%, 42% { transform: scaleX(0); } 61%, 100% { transform: scaleX(1); } }
 @keyframes v6s-captions { 0%, 52% { transform: scaleX(0); } 71%, 100% { transform: scaleX(1); } }

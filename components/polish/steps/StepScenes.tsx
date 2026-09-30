@@ -50,7 +50,7 @@ export function SceneTrial() {
         <span className="v6s-chip v6s-brief-script v6s-anim"><svg viewBox="0 0 20 20" fill="none"><path d="M6 2h6l4 4v12H4V2h2Zm6 0v5h4M7 11h6M7 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>Script attached</span>
       </div>
       <div className="v6s-formats-window"><div className="v6s-formats v6s-anim">
-        {["UGC", "podcast", "animation", "AI drama", "AI song", "anything you can imagine"].map((format) => <span key={format}>{format}</span>)}
+        {/* Alex (1 Oct): four chips, wrapped, never cropped; the punchline last. */ ["UGC", "Podcast", "Animation", "Anything you imagine"].map((format) => <span key={format}>{format}</span>)}
       </div></div>
       <div className="v6s-editor">
         <div className="v6s-editor-top"><span className="v6s-editor-dots"><i /><i /><i /></span><span className="v6s-countdown"><span className="v6s-count-48 v6s-anim">48h</span><span className="v6s-count-24 v6s-anim">24h</span><span className="v6s-count-0 v6s-anim">0h</span></span></div>

@@ -6,7 +6,7 @@ import { content } from "@/lib/content-v6";
 import { Button } from "@/components/ui/Button";
 import { SECTION, WRAP } from "@/lib/ui";
 import { CLAIM_BG, CLAIM_SCRIM } from "./claimBg";
-import { PhoneInHand } from "./PhoneInHand";
+import { ChatCard } from "./ChatCard";
 import { RotatingLine } from "./RotatingLine";
 
 function Label({ n, name }: { n: number; name: string }) {
@@ -33,7 +33,7 @@ function PhoneClose({ id, n, skin }: { id: string; n: number; skin: "imessage" |
             <Button contact variant="grad" withArrow className="v6-cta-lg">{close.cta}</Button>
             <p className="v6-hand-guarantee font-sans">{close.guarantee}</p>
           </div>
-          <div className="v6-hand-art relative z-[1]"><PhoneInHand skin={skin} /></div>
+          <div className="v6-hand-art relative z-[1]"><ChatCard skin={skin} /></div>
         </div>
       </div>
     </section>

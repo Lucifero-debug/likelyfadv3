@@ -206,7 +206,7 @@ export function FaqV4() {
             <Button contact variant="grad" withArrow className="v6-cta-lg">
               {faq.cta}
             </Button>
-            <p className="v6-cta-note font-sans text-ink-soft">One paid trial video. Don&apos;t like it? Full refund, no questions asked.</p>
+            <p className="v6-cta-note font-sans text-ink-soft">One paid trial video. First cut in 48 hours, made to win, not just to look real.</p>
           </Reveal>
         </div>
 

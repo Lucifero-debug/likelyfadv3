@@ -145,7 +145,7 @@ export function HeroCopy({ phone = false }: { phone?: boolean }) {
         </Button>
         {/* Reed: on phone the guarantee sits right under the primary CTA, inside the first screen (Aman msg 2446) */}
         <p className="font-sans text-[0.875rem] leading-[1.45] text-ink-soft tab:hidden">
-          One paid trial video. Don&apos;t like it? Full refund, no questions asked.
+          One paid trial video. First cut in 48 hours, made to win in paid.
         </p>
         <Button
           href={hero.secondaryHref}
@@ -161,7 +161,7 @@ export function HeroCopy({ phone = false }: { phone?: boolean }) {
         style={{ animationDelay: "1000ms" }}
         className="hero-rise mt-4 font-sans text-[0.875rem] leading-[1.45] text-ink-soft max-tab:hidden"
       >
-        One paid trial video. Don&apos;t like it? Full refund, no questions asked.
+        One paid trial video. First cut in 48 hours, made to win in paid.
       </p>
       {hero.reassurance ? (
       <p

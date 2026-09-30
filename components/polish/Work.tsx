@@ -620,7 +620,7 @@ export function WorkLanes({
       are not Work's size — see usePitchRowLength. Keep it a stable reference
       (module scope), or the store re-reads on every render. */
   pitch?: ((vw: number, vh: number) => number) | null;
-  /** End fades to paper (#fbf9f6) instead of this band's near-black, for a
+  /** End fades to paper (var(--v6-paper)) instead of this band's near-black, for a
       wall set on a light ground (/v5's phone hero). */
   light?: boolean;
   /** The two end fades. /v5's phone hero turns them off so the lanes run
@@ -726,11 +726,11 @@ export function WorkLanes({
       <>
       <div
         aria-hidden="true"
-        className={`${FADE} left-0 ${light ? "bg-[linear-gradient(to_right,#fbf9f6,rgba(251,249,246,0))]" : "bg-[linear-gradient(to_right,#17141b,rgba(23,20,27,0))]"}`}
+        className={`${FADE} left-0 ${light ? "bg-[linear-gradient(to_right,var(--v6-paper),rgb(var(--v6-paper-rgb)/0))]" : "bg-[linear-gradient(to_right,#17141b,rgba(23,20,27,0))]"}`}
       />
       <div
         aria-hidden="true"
-        className={`${FADE} right-0 ${light ? "bg-[linear-gradient(to_left,#fbf9f6,rgba(251,249,246,0))]" : "bg-[linear-gradient(to_left,#17141b,rgba(23,20,27,0))]"}`}
+        className={`${FADE} right-0 ${light ? "bg-[linear-gradient(to_left,var(--v6-paper),rgb(var(--v6-paper-rgb)/0))]" : "bg-[linear-gradient(to_left,#17141b,rgba(23,20,27,0))]"}`}
       />
       </>
       )}
