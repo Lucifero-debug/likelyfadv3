@@ -29,7 +29,18 @@ export default function SmoothScroll() {
        its current name (`syncTouch`) either. Touch scrolling is momentum the OS
        already owns and the finger is already tracking; intercepting it is how a
        page starts feeling detached from the thumb. */
-    const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    /* T-0088 TOUCH TEST (Aman msg 2514): /v6 ONLY, and only with ?smoothtouch=1
+       in the URL, so Aman can compare it with native iOS scrolling on his phone.
+       Every other page and every normal /v6 visit gets the options below
+       unchanged. Default off; do not turn it on for touch without his verdict. */
+    const touchTest =
+      window.location.pathname.startsWith("/v6") &&
+      new URLSearchParams(window.location.search).get("smoothtouch") === "1";
+    const lenis = new Lenis(
+      touchTest
+        ? { duration: 1.1, smoothWheel: true, syncTouch: true, syncTouchLerp: 0.075 }
+        : { duration: 1.1, smoothWheel: true },
+    );
 
     let frame = 0;
     const raf = (time: number) => {

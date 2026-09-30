@@ -38,13 +38,11 @@ export default function Home() {
         <Work />
         <PricingV4 />
         <Testimonials />
-        <div className="relative">
-          <FaqV4 />
-          <GradualBlur spot="footer" />
-        </div>
+        <FaqV4 />
       </main>
 
       <FooterV3 />
+      <GradualBlur />
     </>
   );
 }

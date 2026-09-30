@@ -4,6 +4,7 @@
    Website use; not distributed as a component product.
    Uses the original window-scroll runway, sticky stage and smoothstep curve.
    Uniform frame scale replaces clipping/zoom, preserving the whole portrait ad.
+   Scroll drives transform only (one var on the frame); beats flip one attribute.
    No perpetual RAF, deferred video source, visibility-gated playback, accessible
    sound control, and an unpinned, poster-only reduced-motion finished state. */
 import { useEffect, useRef, useState } from "react";
@@ -18,7 +19,8 @@ export function ScrollExpand({ src, poster, mediaType, useWindowScroll }: {
 
   useEffect(() => {
     const el = root.current, media = video.current;
-    if (!el || !media) return;
+    const frameEl = el?.querySelector<HTMLElement>("[data-expand-frame]");
+    if (!el || !media || !frameEl) return;
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0, visible = false, disposed = false;
     const playback = () => {
@@ -34,7 +36,13 @@ export function ScrollExpand({ src, poster, mediaType, useWindowScroll }: {
       const raw = preference.matches ? 1 : Math.max(0, Math.min(1, -el.getBoundingClientRect().top / innerHeight));
       const p = raw >= 0.995 ? 1 : raw; // Reed: scroll maths tops out at 0.9999 at 1440, so "fully expanded" never fired
       const eased = p * p * (3 - 2 * p);
-      el.style.setProperty("--expand-scale", String(0.58 + 0.42 * eased));
+      // Reed: the scale lives on the frame only, so each scroll frame restyles one
+      // composited layer (transform), never the section or a paint property.
+      frameEl.style.setProperty("--expand-scale", String(0.58 + 0.42 * eased));
+      // Beats (Alex, option A): three proof lines while the ad grows, then the
+      // sound control alone at full width. Only an attribute flips; CSS fades.
+      const beat = p === 1 ? "4" : p < 0.3 ? "1" : p < 0.65 ? "2" : "3";
+      if (el.dataset.beat !== beat) el.dataset.beat = beat;
       el.dataset.progress = String(p);
       el.dataset.expanded = String(p === 1);
       if (p === 1 && el.dataset.expandComplete !== "true") {
@@ -60,11 +68,16 @@ export function ScrollExpand({ src, poster, mediaType, useWindowScroll }: {
   }, [src, useWindowScroll]);
 
   return (
-    <section ref={root} id="featured-ad" aria-label="Featured ad" data-scroll-expand data-media-type={mediaType} data-progress="1" data-expanded="true">
+    <section ref={root} id="featured-ad" aria-label="Featured ad" data-scroll-expand data-media-type={mediaType} data-progress="1" data-expanded="true" data-beat="4">
       <div data-expand-stage>
         <div data-expand-frame>
           <video ref={video} poster={poster} preload="none" muted={muted} loop playsInline aria-label="Featured AI ad" />
         </div>
+        <p data-expand-beats>
+          <span data-beat-line="1">Watch this ad.</span>
+          <span data-beat-line="2">Every frame is AI.</span>
+          <span data-beat-line="3">Not one was filmed.</span>
+        </p>
         <button type="button" data-expand-sound aria-pressed={!muted} onClick={() => {
           const media = video.current;
           if (!media) return;

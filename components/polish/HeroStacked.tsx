@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { GradualBlur } from "./reactbits/GradualBlur";
 import { Lightbox } from "@/components/ui/Lightbox";
 import type { Reel } from "@/lib/reels.generated";
 import { HeroCopy, HeroTwinWalls } from "./HeroTwinWalls";
@@ -85,7 +84,6 @@ function PhoneHero({ onOpen, paused }: { onOpen: (reel: Reel) => void; paused: b
           fades={false}
           className="hero-stack-in w-full"
         />
-        <GradualBlur spot="hero" />
       </div>
 
       {/* SECTION's bottom padding, so with the logo wall's own on top the seam

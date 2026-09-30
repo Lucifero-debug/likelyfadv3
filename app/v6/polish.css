@@ -67,29 +67,38 @@
 [data-site="polish"] [data-expand-stage] { position: relative; height: 100svh; display: grid; place-items: center; overflow: hidden; }
 [data-site="polish"] [data-expand-frame] { width: 100%; height: 100%; background: var(--color-ink); overflow: hidden; }
 [data-site="polish"] [data-expand-frame] video { display: block; width: 100%; height: 100%; object-fit: contain; }
-[data-site="polish"] [data-expand-sound] { position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); right: 24px; min-width: 44px; min-height: 44px; padding: 12px 20px; border-radius: 999px; background: #fbf9f6; color: var(--color-ink); font-weight: 500; cursor: pointer; }
+[data-site="polish"] [data-expand-sound] { position: absolute; bottom: max(32px, env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; min-width: 44px; min-height: 44px; padding: 12px 20px; border-radius: 999px; background: #fbf9f6; color: var(--color-ink); font-weight: 500; cursor: pointer; }
+/* Reed: beats A. White on a 62% ink scrim: worst case over a white video frame is
+   about 5.2:1. Opacity is the only thing that changes, so the fade is composited. */
+[data-site="polish"] [data-expand-beats] { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; pointer-events: none; z-index: 1; }
+[data-site="polish"] [data-beat-line] { grid-area: 1 / 1; max-width: min(calc(100vw - 48px), 56vw); padding: 10px 18px; border-radius: 16px; background: rgb(20 18 23 / .62); color: #fff; font-family: var(--font-display, inherit); font-weight: 700; font-size: clamp(1.5rem, 5.5vw, 4rem); line-height: 1.12; text-wrap: balance; letter-spacing: -0.01em; text-align: center; opacity: 0; transition: opacity 400ms ease; }
+[data-site="polish"] [data-beat="1"] [data-beat-line="1"],
+[data-site="polish"] [data-beat="2"] [data-beat-line="2"],
+[data-site="polish"] [data-beat="3"] [data-beat-line="3"] { opacity: 1; }
+[data-site="polish"] [data-expand-sound] { z-index: 2; font-size: 1.0625rem; }
 [data-site="polish"] [data-expand-sound]:focus-visible { outline: 3px solid #fbf9f6; outline-offset: 4px; }
 [data-site="polish"] #work { padding-top: 0; }
 [data-site="polish"] .v6-work-heading-wrap { max-width: none; padding-block: clamp(32px, 5vw, 48px); margin-bottom: clamp(32px, 4.5vw, 64px); background: #fbf9f6; color: var(--color-ink); }
 [data-site="polish"] .v6-work-heading-wrap > div { margin-bottom: 0; }
 [data-site="polish"] .v6-work-heading-wrap p { color: var(--color-ink-soft); }
 [data-site="polish"] [data-scroll-word] { display: inline-block; opacity: 1; filter: none; }
-[data-site="polish"] [data-gradual-blur] { position: absolute; inset: auto 0 0; height: 48px; z-index: 2; pointer-events: none; }
+/* Reed: the permanent viewport-bottom strip (option B). Hidden (visibility, so
+   nothing is painted) while a video wall is under it; fades over 300ms. */
+[data-site="polish"] [data-gradual-blur] { position: fixed; inset: auto 0 0; height: 48px; z-index: 90; pointer-events: none; opacity: 1; visibility: visible; transition: opacity 300ms ease, visibility 0s linear 0s; }
+[data-site="polish"] [data-gradual-blur][data-over-video="true"] { opacity: 0; visibility: hidden; transition: opacity 300ms ease, visibility 0s linear 300ms; }
 [data-site="polish"] [data-gradual-blur] > div { position: absolute; inset: 0; }
-/* Acceptance A/B: no backdrop layers are painted when off, just as with the
-   SHOW_GRADUAL_BLUR build flag. There is no animation or JS in either case. */
+/* Acceptance: "plain" keeps the strip painted over the video walls too (Doom, msg 2519 A/B). */
+[data-site="polish"][data-gradual-blur-plain="true"] [data-gradual-blur][data-over-video="true"] { opacity: 1; visibility: visible; }
+/* Acceptance A/B: no backdrop layers are painted when off. */
 [data-site="polish"][data-gradual-blur-enabled="false"] [data-gradual-blur] { display: none; }
-@media (min-width: 761px) {
-  [data-site="polish"] [data-gradual-blur="hero"] { display: none; }
-}
 @media (prefers-reduced-motion: no-preference) {
   [data-site="polish"] [data-scroll-expand] { height: 225svh; }
   [data-site="polish"] [data-expand-stage] { position: sticky; top: 0; }
-  [data-site="polish"] [data-expand-frame] { transform: scale(var(--expand-scale, .58)); border-radius: calc((1 - var(--expand-scale, .58)) * 48px); }
+  [data-site="polish"] [data-expand-frame] { transform: scale(var(--expand-scale, .58)); border-radius: 24px; will-change: transform; }
   [data-site="polish"] [data-expanded="false"] [data-expand-sound] { visibility: hidden; }
   /* Same word timing/easing/delay as shared RevealText, with blur + opacity. */
-  [data-site="polish"] span[class*="translate-y-[118%]"] { filter: blur(8px); opacity: 0; }
-  [data-site="polish"] span.translate-y-0.will-change-transform { filter: blur(0); opacity: 1; transition-property: transform, opacity, filter; }
+  [data-site="polish"] span[class*="translate-y-[118%]"] { filter: blur(4px); opacity: 0; }
+  [data-site="polish"] span.translate-y-0.will-change-transform { filter: blur(0); opacity: 1; transition-property: transform, translate, opacity, filter; }
   [data-site="polish"] [data-polish-pitch] .hero-line.bg-clip-text {
     background-size: 140% 100%;
     animation: hero-line 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards, v6-gradient-shift 14s ease-in-out infinite;
@@ -110,7 +119,7 @@
   [data-site="polish"] [class*="translate-y-[26px]"],
   [data-site="polish"] [data-reveal-root="self"],
   [data-site="polish"] [data-reveal-item] { transform: none !important; translate: none !important; opacity: 1 !important; filter: none !important; }
-  [data-site="polish"] [data-expand-frame] { transform: none; border-radius: 0; }
+  [data-site="polish"] [data-expand-frame] { transform: none; border-radius: 0; will-change: auto; }
   [data-site="polish"] [data-scroll-word] { opacity: 1; filter: none; }
   [data-site="polish"] [data-polish-pitch] .hero-line.bg-clip-text { background-position: 0 50%; }
 }

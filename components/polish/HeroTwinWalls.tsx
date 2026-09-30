@@ -66,6 +66,7 @@ export function HeroTwinWalls({
     <section
       ref={ref}
       aria-label="Introduction"
+      data-video-wall
       /* Not marked as a dark band for the nav: the top edge is frosted
          white, so the nav's links have to stay ink over it.
 
