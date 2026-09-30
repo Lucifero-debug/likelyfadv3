@@ -567,65 +567,9 @@
 
 /* ROUND 4: END CTA PHONE + ROTATING LINE (Aman msg 2659; Reed). --------------- */
 [data-site="polish"] .v6-close-card { padding: clamp(40px, 6vw, 88px) clamp(20px, 5vw, 80px) !important; max-width: 72rem; }
-[data-site="polish"] .v6-close-grid { display: grid; gap: clamp(32px, 5vw, 72px); align-items: center; justify-items: center; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 761px) { [data-site="polish"] .v6-close-grid { grid-template-columns: auto minmax(0, 1fr); justify-items: start; } }
-[data-site="polish"] .v6-close-copy { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; text-align: left; max-width: 30rem; }
-@media (max-width: 760.98px) { [data-site="polish"] .v6-close-copy { align-items: center; text-align: center; } }
 [data-site="polish"] .v6-close-sub { font-size: var(--v6-sub); color: rgb(251 249 246 / 0.9); margin: 0; }
 [data-site="polish"] .v6-close-guarantee { font-size: var(--v6-small); color: rgb(251 249 246 / 0.78); margin: 0; }
 
-/* The phone: devices.css draws it at 428 x 868; zoom scales layout and paint together. */
-[data-site="polish"] .v6-phone { zoom: 0.58; filter: drop-shadow(0 40px 60px rgb(0 0 0 / 0.45)); }
-@media (min-width: 761px) { [data-site="polish"] .v6-phone { zoom: 0.66; } }
-
-/* The chat, shared. Sizes are in the phone's own 390px screen units (zoomed with it). */
-[data-site="polish"] .v6-chat { display: flex !important; flex-direction: column; overflow: hidden; font-family: -apple-system, "SF Pro Text", system-ui, sans-serif; }
-[data-site="polish"] .v6-chat-top { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; padding: 64px 20px 14px; }
-[data-site="polish"] .v6-chat-avatar { grid-row: 1 / span 2; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font: 700 20px/1 var(--font-display); color: #fff; background: linear-gradient(135deg, #fe683f, #ec4081 50%, #8d4edc); }
-[data-site="polish"] .v6-chat-name { font-weight: 600; font-size: 19px; }
-[data-site="polish"] .v6-chat-status { font-size: 14px; opacity: 0.6; }
-[data-site="polish"] .v6-chat-thread { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 16px 16px 12px; }
-[data-site="polish"] .v6-bubble { max-width: 78%; margin: 0; padding: 12px 16px; border-radius: 22px; font-size: 19px; line-height: 1.3; animation: v6-bubble-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-[data-site="polish"] .v6-out { align-self: flex-end; }
-[data-site="polish"] .v6-in { align-self: flex-start; }
-[data-site="polish"] .v6-link { text-decoration: underline; text-underline-offset: 3px; }
-[data-site="polish"] .v6-typing { display: flex; flex-direction: column; gap: 4px; align-self: flex-start; }
-[data-site="polish"] .v6-typing-label { font-size: 13px; opacity: 0.6; padding-left: 6px; }
-[data-site="polish"] .v6-dots { display: inline-flex; gap: 5px; padding: 16px 18px; }
-[data-site="polish"] .v6-dots i { width: 9px; height: 9px; border-radius: 50%; background: currentColor; opacity: 0.35; animation: v6-dot 1.2s ease-in-out infinite; }
-[data-site="polish"] .v6-dots i:nth-child(2) { animation-delay: 0.15s; }
-[data-site="polish"] .v6-dots i:nth-child(3) { animation-delay: 0.3s; }
-[data-site="polish"] .v6-chat-input { display: flex; align-items: center; gap: 10px; padding: 10px 14px 34px; }
-[data-site="polish"] .v6-chat-field { flex: 1; min-height: 44px; display: flex; align-items: center; padding: 8px 16px; border-radius: 22px; font-size: 18px; white-space: pre; overflow: hidden; }
-[data-site="polish"] .v6-placeholder { opacity: 0.45; }
-[data-site="polish"] .v6-caret { display: inline-block; width: 2px; height: 22px; margin-left: 2px; background: #0a84ff; animation: v6-caret 1s steps(1) infinite; }
-[data-site="polish"] .v6-chat-send { width: 38px; height: 38px; border-radius: 50%; opacity: 0.35; transition: opacity 200ms; }
-[data-site="polish"] .v6-chat-send[data-active="true"] { opacity: 1; }
-@keyframes v6-bubble-in { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: none; } }
-@keyframes v6-dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 0.9; transform: translateY(-3px); } }
-@keyframes v6-caret { 50% { opacity: 0; } }
-
-/* Skin: iMessage (light). */
-[data-site="polish"] [data-skin="imessage"] .device .device-screen.v6-chat { background: #fff; color: #000; }
-[data-site="polish"] [data-skin="imessage"] .v6-chat-top { background: #f7f7f8; border-bottom: 1px solid #e5e5ea; }
-[data-site="polish"] [data-skin="imessage"] .v6-out { background: #0a84ff; color: #fff; }
-[data-site="polish"] [data-skin="imessage"] .v6-in { background: #e9e9eb; color: #000; }
-[data-site="polish"] [data-skin="imessage"] .v6-chat-field { border: 1px solid #d1d1d6; }
-[data-site="polish"] [data-skin="imessage"] .v6-chat-send { background: #0a84ff; }
-
-/* Skin: WhatsApp (light). */
-[data-site="polish"] [data-skin="whatsapp"] .device .device-screen.v6-chat { background: #efe7de; color: #111b21; }
-[data-site="polish"] [data-skin="whatsapp"] .v6-chat-top { background: #f6f5f3; border-bottom: 1px solid #e2ddd6; }
-[data-site="polish"] [data-skin="whatsapp"] .v6-bubble { border-radius: 14px; box-shadow: 0 1px 1px rgb(0 0 0 / 0.08); }
-[data-site="polish"] [data-skin="whatsapp"] .v6-out { background: #d9fdd3; color: #111b21; }
-[data-site="polish"] [data-skin="whatsapp"] .v6-in { background: #fff; color: #111b21; }
-[data-site="polish"] [data-skin="whatsapp"] .v6-chat-field { background: #fff; }
-[data-site="polish"] [data-skin="whatsapp"] .v6-caret { background: #25d366; }
-[data-site="polish"] [data-skin="whatsapp"] .v6-chat-send { background: #25d366; }
-
-@media (prefers-reduced-motion: reduce) {
-  [data-site="polish"] .v6-bubble, [data-site="polish"] .v6-dots i, [data-site="polish"] .v6-caret { animation: none !important; }
-}
 
 /* Rotating line: n words share one slot; each is up for 1/n of the cycle. */
 [data-site="polish"] .v6-rotate { font-family: var(--font-display); font-weight: 700; }
@@ -802,3 +746,127 @@
 @keyframes v6-how-tile { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
 @keyframes v6-how-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @media (prefers-reduced-motion: reduce) { [data-site="polish"] .v6-how-typing { display: none; } }
+
+/* ROUND 6 (Aman msgs 2705-2734): the end CTA phone, in hand, on a light card.
+   Stage = 395px wide in layout, the photo's own aspect ratio (never forced);
+   phones shrink it with zoom, which scales layout, paint and the constant
+   screen transform together. Chat sizes are in the screen's 390 x 844 units. */
+[data-site="polish"] .v6-hand-card {
+  display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: clamp(8px, 2vw, 24px);
+  padding: clamp(44px, 6vw, 80px) clamp(20px, 5vw, 80px) 0; border-radius: 32px;
+  background: #fbf9f6; border: 1px solid var(--color-line, #ece7e1); box-shadow: var(--shadow); color: var(--color-ink);
+}
+@media (min-width: 761px) { [data-site="polish"] .v6-hand-card { grid-template-columns: minmax(0, 1fr) auto; padding-top: 0; padding-right: clamp(32px, 5vw, 96px); } }
+[data-site="polish"] .v6-hand-card.v6-sweep::before { z-index: 2; }
+[data-site="polish"] .v6-hand-copy { display: flex; flex-direction: column; gap: 20px; align-items: center; text-align: center; }
+@media (min-width: 761px) { [data-site="polish"] .v6-hand-copy { align-self: center; align-items: flex-start; text-align: left; max-width: 30rem; padding-block: clamp(56px, 7vw, 96px); } }
+[data-site="polish"] .v6-hand-copy h2 { margin: 0; font-size: var(--v6-h2) !important; max-width: 12em; }
+[data-site="polish"] .v6-hand-sub { margin: 0; font-size: var(--v6-sub); color: var(--color-ink-soft); }
+[data-site="polish"] .v6-hand-guarantee { margin: 0; font-size: var(--v6-small); color: var(--color-ink-soft); }
+[data-site="polish"] .v6-hand-art { justify-self: center; line-height: 0; }
+[data-site="polish"] .v6-hand { zoom: 0.8; }
+@media (max-width: 380px) { [data-site="polish"] .v6-hand { zoom: 0.7; } }
+@media (min-width: 761px) { [data-site="polish"] .v6-hand { zoom: 1; margin-top: 48px; } }
+[data-site="polish"] .v6-hand-stage { position: relative; width: 395px; aspect-ratio: 2222 / 3934; }
+[data-site="polish"] .v6-hand-img { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+
+/* The screen (under the photo). */
+[data-site="polish"] .v6-hs {
+  position: absolute; left: 0; top: 0; z-index: 1; width: 390px; height: 844px; transform-origin: 0 0; overflow: hidden;
+  border-radius: 58px; display: flex; flex-direction: column; text-align: left;
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", var(--font-sans), system-ui, sans-serif; color: #000;
+}
+[data-site="polish"] .v6-hs-probe { position: absolute; width: 0; height: 0; }
+[data-site="polish"] .v6-hs-probe[data-c="0"] { left: 0; top: 0; } [data-site="polish"] .v6-hs-probe[data-c="1"] { right: 0; top: 0; }
+[data-site="polish"] .v6-hs-probe[data-c="2"] { right: 0; bottom: 0; } [data-site="polish"] .v6-hs-probe[data-c="3"] { left: 0; bottom: 0; }
+[data-site="polish"] .v6-hs-sb { display: flex; justify-content: space-between; align-items: center; height: 54px; padding: 19px 30px 0 44px; font-weight: 600; font-size: 17px; line-height: 1; }
+[data-site="polish"] .v6-hs-sbi { display: flex; gap: 6px; align-items: center; } [data-site="polish"] .v6-hs-sbi svg { fill: currentColor; }
+[data-site="polish"] .v6-hs-av { display: grid; place-items: center; border-radius: 50%; color: #fff; font-weight: 600; background: linear-gradient(135deg, #fe683f, #ec4081 55%, #8d4edc); }
+[data-site="polish"] .v6-hs-thread { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 14px 12px; }
+[data-site="polish"] .v6-hs-home { position: absolute; left: 50%; bottom: 8px; width: 136px; height: 5px; margin-left: -68px; border-radius: 3px; background: #000; opacity: 0.85; }
+[data-site="polish"] .v6-hs-typed { white-space: pre; color: #000; }
+[data-site="polish"] .v6-hs-caret { display: inline-block; width: 2px; height: 20px; margin-left: 1px; vertical-align: -4px; background: #0a84ff; }
+[data-site="polish"] .v6-hs-ph { color: #b3b3b8; }
+
+/* iMessage. */
+[data-site="polish"] .v6-hs-imessage { background: #fff; }
+[data-site="polish"] .v6-im-head { display: grid; grid-template-columns: 24px 1fr 30px; align-items: center; padding: 4px 14px 10px; background: rgb(249 249 249 / 0.94); border-bottom: 0.5px solid #d8d8dc; }
+[data-site="polish"] .v6-im-who { display: grid; justify-items: center; gap: 3px; }
+[data-site="polish"] .v6-hs-imessage .v6-hs-av { width: 54px; height: 54px; font-size: 22px; }
+[data-site="polish"] .v6-im-name { font-size: 12px; } [data-site="polish"] .v6-im-name b { color: #8e8e93; font-weight: 400; }
+[data-site="polish"] .v6-im-stamp { margin: 0 0 10px; text-align: center; font-size: 11.5px; line-height: 1.35; color: #8e8e93; } [data-site="polish"] .v6-im-stamp b { font-weight: 600; }
+[data-site="polish"] .v6-im-b { position: relative; margin: 0 0 2px; max-width: 72%; padding: 8px 13px; border-radius: 19px; font-size: 17px; line-height: 1.28; letter-spacing: -0.2px; }
+[data-site="polish"] .v6-im-out { align-self: flex-end; background: #0b84fe; color: #fff; }
+[data-site="polish"] .v6-im-in { align-self: flex-start; background: #e9e9eb; margin-top: 6px; }
+[data-site="polish"] .v6-im-b u { text-decoration-thickness: 1px; }
+[data-site="polish"] .v6-im-out::before, [data-site="polish"] .v6-im-in::before { content: ""; position: absolute; bottom: 0; width: 20px; height: 20px; }
+[data-site="polish"] .v6-im-out::after, [data-site="polish"] .v6-im-in::after { content: ""; position: absolute; bottom: 0; width: 26px; height: 20px; background: #fff; }
+[data-site="polish"] .v6-im-out::before { right: -7px; background: #0b84fe; border-bottom-left-radius: 16px 14px; }
+[data-site="polish"] .v6-im-out::after { right: -26px; border-bottom-left-radius: 10px; }
+[data-site="polish"] .v6-im-in::before { left: -7px; background: #e9e9eb; border-bottom-right-radius: 16px 14px; }
+[data-site="polish"] .v6-im-in::after { left: -26px; border-bottom-right-radius: 10px; }
+[data-site="polish"] .v6-im-dlv { margin: 2px 4px 0 0; align-self: flex-end; font-size: 11px; font-weight: 500; color: #8e8e93; }
+[data-site="polish"] .v6-im-typing { position: relative; align-self: flex-start; display: flex; gap: 4px; margin-top: 10px; padding: 11px 13px; border-radius: 18px; background: #e9e9eb; }
+[data-site="polish"] .v6-im-typing i { width: 8px; height: 8px; border-radius: 50%; background: #8e8e93; opacity: 0.5; }
+[data-site="polish"] .v6-im-typing::before { content: ""; position: absolute; left: -2px; bottom: -2px; width: 11px; height: 11px; border-radius: 50%; background: #e9e9eb; }
+[data-site="polish"] .v6-im-typing::after { content: ""; position: absolute; left: -8px; bottom: -8px; width: 5px; height: 5px; border-radius: 50%; background: #e9e9eb; }
+[data-site="polish"] .v6-im-bar { display: flex; align-items: center; gap: 8px; padding: 6px 12px 30px; }
+[data-site="polish"] .v6-im-plus { width: 33px; height: 33px; border-radius: 50%; display: grid; place-items: center; background: #e9e9eb; color: #8e8e93; font-size: 26px; font-weight: 300; line-height: 1; }
+[data-site="polish"] .v6-im-field { flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 8px; height: 35px; padding: 0 5px 0 13px; border: 1px solid #c6c6c8; border-radius: 18px; font-size: 17px; overflow: hidden; }
+[data-site="polish"] .v6-im-send { flex: none; width: 27px; height: 27px; border-radius: 50%; background: #0b84fe url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 18V6M6.5 11.5 12 6l5.5 5.5' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat; }
+
+/* WhatsApp. */
+[data-site="polish"] .v6-hs-whatsapp { background: #efeae2; color: #111b21; }
+[data-site="polish"] .v6-wa-head { display: flex; align-items: center; gap: 9px; padding: 4px 14px 9px; background: #f6f5f3; border-bottom: 0.5px solid #d6d3cf; }
+[data-site="polish"] .v6-hs-whatsapp .v6-hs-av { width: 36px; height: 36px; font-size: 15px; }
+[data-site="polish"] .v6-wa-who { flex: 1; display: grid; line-height: 1.15; } [data-site="polish"] .v6-wa-who b { font-size: 16.5px; font-weight: 600; } [data-site="polish"] .v6-wa-who small { font-size: 12.5px; color: #667781; }
+[data-site="polish"] .v6-wa-wall {
+  background-color: #efeae2;
+  background-image: radial-gradient(circle at 20% 30%, rgb(0 0 0 / 0.035) 2px, transparent 2.5px), radial-gradient(circle at 70% 60%, rgb(0 0 0 / 0.03) 3px, transparent 3.5px), radial-gradient(circle at 45% 85%, rgb(0 0 0 / 0.03) 1.6px, transparent 2px);
+  background-size: 46px 46px, 58px 58px, 38px 38px;
+}
+[data-site="polish"] .v6-wa-chip { align-self: center; margin: 0 0 12px; padding: 5px 11px; border-radius: 8px; background: #fff; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); font-size: 12px; font-weight: 500; color: #54656f; }
+[data-site="polish"] .v6-wa-b { position: relative; margin: 0 0 4px; max-width: 78%; padding: 6px 9px 7px; border-radius: 8px; font-size: 16px; line-height: 1.3; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); }
+[data-site="polish"] .v6-wa-meta { float: right; display: inline-flex; align-items: center; gap: 3px; margin: 8px 0 -4px 10px; font-size: 11px; color: #667781; }
+[data-site="polish"] .v6-wa-out { align-self: flex-end; background: #d9fdd3; border-top-right-radius: 0; }
+[data-site="polish"] .v6-wa-in { align-self: flex-start; background: #fff; border-top-left-radius: 0; margin-top: 4px; }
+[data-site="polish"] .v6-wa-out::before { content: ""; position: absolute; top: 0; right: -8px; border-style: solid; border-width: 0 0 10px 9px; border-color: transparent transparent transparent #d9fdd3; }
+[data-site="polish"] .v6-wa-in::before { content: ""; position: absolute; top: 0; left: -8px; border-style: solid; border-width: 0 9px 10px 0; border-color: transparent #fff transparent transparent; }
+[data-site="polish"] .v6-wa-bar { display: flex; align-items: center; gap: 12px; padding: 7px 14px 30px; background: #f6f5f3; }
+[data-site="polish"] .v6-wa-plus { font-size: 30px; font-weight: 300; line-height: 1; }
+[data-site="polish"] .v6-wa-field { flex: 1; display: flex; align-items: center; height: 34px; padding: 0 12px; border-radius: 17px; background: #fff; border: 1px solid #e3e1dd; font-size: 16px; overflow: hidden; }
+[data-site="polish"] .v6-hs-whatsapp .v6-hs-caret { background: #25d366; }
+[data-site="polish"] .v6-wa-send { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #25d366 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12 20 4l-4 16-4-7Z' fill='%23fff'/%3E%3C/svg%3E") center / 18px no-repeat; }
+
+/* Appearance of each message. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-im-b, [data-site="polish"] .v6-im-typing, [data-site="polish"] .v6-im-dlv, [data-site="polish"] .v6-wa-b { animation: v6-msg-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  [data-site="polish"] .v6-im-typing i { animation: v6-msg-dot 1.2s ease-in-out infinite; }
+  [data-site="polish"] .v6-im-typing i:nth-child(2) { animation-delay: 0.15s; } [data-site="polish"] .v6-im-typing i:nth-child(3) { animation-delay: 0.3s; }
+  [data-site="polish"] .v6-hs-caret { animation: v6-msg-caret 1s steps(1) infinite; }
+}
+@keyframes v6-msg-in { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes v6-msg-dot { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+@keyframes v6-msg-caret { 50% { opacity: 0; } }
+
+/* The card background: one class (v6-bgopt-aurora | -dots | -grain). */
+[data-site="polish"] .v6-bgopt { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+[data-site="polish"] .v6-bgopt-aurora .v6-bgopt i { position: absolute; width: 70%; aspect-ratio: 1; border-radius: 50%; opacity: 0.55; }
+[data-site="polish"] .v6-bgopt-aurora .v6-bgopt i:nth-child(1) { left: -15%; top: -40%; background: radial-gradient(closest-side, #ffb89f, transparent 72%); }
+[data-site="polish"] .v6-bgopt-aurora .v6-bgopt i:nth-child(2) { left: 30%; top: 20%; width: 85%; background: radial-gradient(closest-side, #ffa8cb, transparent 72%); }
+[data-site="polish"] .v6-bgopt-aurora .v6-bgopt i:nth-child(3) { right: -25%; top: -30%; background: radial-gradient(closest-side, #cdb4ff, transparent 72%); }
+[data-site="polish"] .v6-bgopt-dots .v6-bgopt { background-image: radial-gradient(circle, rgb(22 19 28 / 0.16) 1.2px, transparent 1.6px); background-size: 22px 22px; -webkit-mask-image: radial-gradient(ellipse 80% 90% at 70% 50%, #000 35%, transparent 85%); mask-image: radial-gradient(ellipse 80% 90% at 70% 50%, #000 35%, transparent 85%); }
+[data-site="polish"] .v6-bgopt-dots .v6-bgopt i:nth-child(1) { position: absolute; width: 60%; aspect-ratio: 1; right: 2%; top: 50%; margin-top: -30%; border-radius: 50%; background: radial-gradient(closest-side, rgb(236 64 129 / 0.22), rgb(141 78 220 / 0.12) 55%, transparent 75%); }
+[data-site="polish"] .v6-bgopt-grain .v6-bgopt { background: linear-gradient(120deg, #fff3ec 0%, #ffe1ea 35%, #efe4ff 65%, #e9f0ff 100%); background-size: 200% 200%; }
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-bgopt-aurora .v6-bgopt i:nth-child(1) { animation: v6-aur-1 18s ease-in-out infinite alternate; }
+  [data-site="polish"] .v6-bgopt-aurora .v6-bgopt i:nth-child(2) { animation: v6-aur-2 22s ease-in-out infinite alternate; }
+  [data-site="polish"] .v6-bgopt-aurora .v6-bgopt i:nth-child(3) { animation: v6-aur-3 20s ease-in-out infinite alternate; }
+  [data-site="polish"] .v6-bgopt-dots .v6-bgopt i:nth-child(1) { animation: v6-aur-3 16s ease-in-out infinite alternate; }
+  [data-site="polish"] .v6-bgopt-grain .v6-bgopt { animation: v6-grain-shift 24s ease-in-out infinite alternate; }
+}
+@keyframes v6-grain-shift { to { background-position: 100% 100%; } }
+
+/* Round 6: at <=380px the FAQ heading's no-wrap word line ("Before you reach
+   out." = 343px) is wider than the column (320px at 360); let it wrap there. */
+@media (max-width: 380px) { [data-site="polish"] #faq h2 span { white-space: normal !important; } }

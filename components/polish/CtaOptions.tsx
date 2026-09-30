@@ -6,12 +6,18 @@ import { content } from "@/lib/content-v6";
 import { Button } from "@/components/ui/Button";
 import { SECTION, WRAP } from "@/lib/ui";
 import { CLAIM_BG, CLAIM_SCRIM } from "./claimBg";
-import { PhoneChat } from "./PhoneChat";
+import { PhoneInHand } from "./PhoneInHand";
 import { RotatingLine } from "./RotatingLine";
 
 function Label({ n, name }: { n: number; name: string }) {
   return <p className="v6-option-label"><span>Option {n}</span> {name}</p>;
 }
+
+/* Options 1 and 2 (Aman msgs 2705-2734): the in-hand phone, on a light card.
+   The background is one class; Aman has not picked yet (msg 2707), so "aurora"
+   stands in. The others: "dots" (dot grid + brand glow), "grain" (grainy
+   pastel gradient). */
+const PHONE_BG: "aurora" | "dots" | "grain" = "aurora";
 
 function PhoneClose({ id, n, skin }: { id: string; n: number; skin: "imessage" | "whatsapp" }) {
   const { close } = content;
@@ -19,17 +25,15 @@ function PhoneClose({ id, n, skin }: { id: string; n: number; skin: "imessage" |
     <section id={id} aria-label={`CTA option ${n}`} className={`${SECTION} v6-cta-option bg-paper text-ink`}>
       <div className={WRAP}>
         <Label n={n} name={skin === "imessage" ? "iMessage" : "WhatsApp"} />
-        <div data-nav-dark className={`v6-close-card v6-sweep relative isolate mx-auto overflow-hidden text-paper ${CLAIM_BG}`}>
-          <div aria-hidden className={CLAIM_SCRIM} />
-          <div className="v6-close-grid relative">
-            <PhoneChat skin={skin} />
-            <div className="v6-close-copy">
-              <h2 className="text-balance font-display font-bold leading-[1.1] tracking-[-0.022em]">{close.heading}</h2>
-              <p className="v6-close-sub font-sans">{close.sub}</p>
-              <Button contact variant="grad" withArrow className="v6-cta-lg">{close.cta}</Button>
-              <p className="v6-close-guarantee font-sans">{close.guarantee}</p>
-            </div>
+        <div className={`v6-hand-card v6-bgopt-${PHONE_BG} v6-sweep relative isolate overflow-hidden`}>
+          <div aria-hidden className="v6-bgopt"><i /><i /><i /></div>
+          <div className="v6-hand-copy relative z-[1]">
+            <h2 className="text-balance font-display font-bold leading-[1.1] tracking-[-0.022em]">{close.heading}</h2>
+            <p className="v6-hand-sub font-sans">{close.sub}</p>
+            <Button contact variant="grad" withArrow className="v6-cta-lg">{close.cta}</Button>
+            <p className="v6-hand-guarantee font-sans">{close.guarantee}</p>
           </div>
+          <div className="v6-hand-art relative z-[1]"><PhoneInHand skin={skin} /></div>
         </div>
       </div>
     </section>
