@@ -122,7 +122,7 @@ export function FooterV3() {
           288 brand block and a 480 link group held apart by `justify-between`;
           at 1920 that is a thousand pixels of noir between them, which is a
           worse answer than a cap. 1320 is as far as it goes. */}
-      <div className="mx-auto flex w-full max-w-[clamp(1128px,58.75vw,1320px)] flex-col gap-10 lap:flex-row lap:items-center lap:justify-between">
+      <div data-v6-reveal-group className="mx-auto flex w-full max-w-[clamp(1128px,58.75vw,1320px)] flex-col gap-10 lap:flex-row lap:items-center lap:justify-between">
         <div className="flex max-w-[288px] flex-col items-start gap-8">
           <div className="flex flex-col items-start gap-4">
             {/* THE BRAND ROW — a 24 mark, 8, then the wordmark. The mark carries

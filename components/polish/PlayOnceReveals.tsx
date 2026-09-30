@@ -1,65 +1,106 @@
 "use client";
-/* T-0088 ONE REVEAL (Aman msg 2542). Every text element on /v6 plays the same
-   entry animation once (blur + fade, polish.css "ONE REVEAL"). RevealText,
-   Reveal and the why cards already have a trigger; this tags the text that has
-   none (eyebrows, leads, card text, the Work heading, the footer) and reveals
-   it once when it enters. It never reverses.
 
-   Section-agnostic: it finds text by element type, not by section, so a
-   reorder carries it. It skips video tiles, the featured ad, the nav, and
-   anything already inside a reveal. It only tags what is BELOW the viewport
-   at load, so nothing on screen is hidden and nothing flashes. A horizontally
-   scrolling track (the testimonial carousel) is tagged as one unit, so cards
-   do not reveal one by one on each swipe. Reduced motion: nothing is tagged. */
 import { useEffect } from "react";
 
-const TEXT = "h1, h2, h3, h4, p, li, blockquote, figcaption, dt, dd, [class*='uppercase'][class*='tracking-']";
-const SKIP = "nav, header, [data-video-wall], [data-polish-lanes], #featured-ad, [data-gradual-blur]";
-const HAS_REVEAL = "[class*='translate-y-[26px]'], [class*='duration-[950ms]'], [data-reveal-item], [data-reveal-root], [data-v6-reveal]";
-const STEP = 70, MAX_DELAY = 280;
+// Component markup, never section IDs or order. Shared reveals are made static
+// by polish.css; this observer owns their entry along with the remaining copy.
+const BLOCK = '[class*="translate-y-[26px]"], [class*="duration-[950ms]"]';
+const TEXT = 'h1, h2, h3, h4, h5, h6, [role="heading"], p, li, blockquote, figcaption, dt, dd, a, button, [class*="uppercase"], .pillar-num';
+const GROUP = '[data-v6-reveal-group], article, figure, [data-reveal-root="self"], [data-reveal-item]';
+const SKIP = '[data-polish-nav], [data-polish-pitch], [data-video-wall], [data-polish-lanes], [data-polish-reel], [data-scroll-expand], [data-gradual-blur], [role="dialog"], .sr-only';
 
 export function PlayOnceReveals() {
   useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const site = document.querySelector<HTMLElement>('[data-site="polish"]');
     if (!site) return;
-    let io: IntersectionObserver | null = null;
-    const timers: number[] = [];
+    const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    const pitches = [...site.querySelectorAll<HTMLElement>("[data-polish-pitch]")];
+    const tagged: HTMLElement[] = [];
+    let observer: IntersectionObserver | undefined;
+
+    const finish = (el: HTMLElement) => {
+      observer?.unobserve(el);
+      el.setAttribute("data-v6-shown", "");
+      el.setAttribute("data-v6-done", "");
+    };
+    const finishAll = () => {
+      if (!motion.matches) return;
+      tagged.forEach(finish);
+      pitches.forEach(el => el.setAttribute("data-v6-hero-done", ""));
+    };
+    const onEnd = (event: AnimationEvent) => {
+      if (event.animationName !== "v6-reveal" || !(event.target instanceof HTMLElement)) return;
+      if (event.target.hasAttribute("data-v6-reveal")) finish(event.target);
+      if (event.target.hasAttribute("data-polish-pitch")) event.target.setAttribute("data-v6-hero-done", "");
+    };
+    // Keyboard navigation must never land on invisible copy.
+    const onFocus = (event: FocusEvent) => {
+      if (!(event.target instanceof Element)) return;
+      const target = event.target.closest<HTMLElement>("[data-v6-reveal]");
+      if (target) finish(target);
+      event.target.closest("[data-polish-pitch]")?.setAttribute("data-v6-hero-done", "");
+    };
+
     const frame = requestAnimationFrame(() => {
-      const unit = (el: HTMLElement): HTMLElement => {
-        for (let a = el.parentElement; a && a !== site; a = a.parentElement) {
-          if (a.scrollWidth > a.clientWidth + 1 && /hidden|auto|scroll|clip/.test(getComputedStyle(a).overflowX)) return a;
+      if (motion.matches || !("IntersectionObserver" in window)) return;
+
+      const candidates = new Set<HTMLElement>();
+      site.querySelectorAll<HTMLElement>(`${TEXT}, ${BLOCK}, ${GROUP}`).forEach(el => {
+        if (el.closest(SKIP)) return;
+        if (el.closest("button")?.querySelector("video, img")) return;
+
+        let target = el;
+        // Select the outermost semantic/reveal unit, so a card, heading or
+        // grouped introduction never multiplies its children's blur/opacity.
+        for (let parent: HTMLElement | null = el; parent && parent !== site; parent = parent.parentElement) {
+          if (parent.matches(`${GROUP}, ${BLOCK}, h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption`)) target = parent;
+          // A horizontal carousel enters together, including offscreen cards.
+          if (parent.scrollWidth > parent.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(parent).overflowX)) target = parent;
         }
-        return el;
-      };
-      const tagged: HTMLElement[] = [];
-      site.querySelectorAll<HTMLElement>(TEXT).forEach(el => {
-        if (el.closest(SKIP) || el.closest(HAS_REVEAL)) return;
-        if (el.querySelector("span.inline-flex.overflow-hidden > span.inline-block")) return; // a RevealText root
-        const tile = el.closest("button");
-        if (tile && tile.querySelector("video, img")) return; // a video tile caption
-        const target = unit(el);
-        if (target.closest(HAS_REVEAL)) return;
-        if (target.getBoundingClientRect().top < innerHeight) return; // on screen or above: leave visible
-        target.setAttribute("data-v6-reveal", "");
-        tagged.push(target);
+        if (!target.closest(SKIP)) candidates.add(target);
       });
-      io = new IntersectionObserver(entries => {
-        let n = 0;
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          const el = e.target as HTMLElement;
-          io!.unobserve(el);
-          const delay = Math.min(n++ * STEP, MAX_DELAY);
-          el.style.setProperty("--v6-rv-delay", `${delay}ms`);
-          el.setAttribute("data-v6-shown", "");
-          // Hand the element's own transitions back once the reveal is over.
-          timers.push(window.setTimeout(() => el.setAttribute("data-v6-done", ""), 900 + delay + 80));
+
+      // Nested selections are removed before measuring or hiding anything.
+      const units = [...candidates].filter(el => {
+        for (let parent = el.parentElement; parent && parent !== site; parent = parent.parentElement) {
+          if (candidates.has(parent)) return false;
         }
-      }, { rootMargin: "0px 0px -8% 0px" });
-      tagged.forEach(el => io!.observe(el));
+        return true;
+      });
+      const belowFold = units.filter(el => el.getClientRects().length > 0 && el.getBoundingClientRect().top >= window.innerHeight);
+
+      observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          observer!.unobserve(el);
+          el.setAttribute("data-v6-shown", "");
+        }
+      }, { threshold: 0 });
+      belowFold.forEach(el => {
+        el.setAttribute("data-v6-reveal", "");
+        tagged.push(el);
+        observer!.observe(el);
+      });
     });
-    return () => { cancelAnimationFrame(frame); io?.disconnect(); timers.forEach(clearTimeout); };
+
+    site.addEventListener("animationend", onEnd);
+    site.addEventListener("focusin", onFocus);
+    motion.addEventListener("change", finishAll);
+    finishAll();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      site.removeEventListener("animationend", onEnd);
+      site.removeEventListener("focusin", onFocus);
+      motion.removeEventListener("change", finishAll);
+      pitches.forEach(el => el.removeAttribute("data-v6-hero-done"));
+      tagged.forEach(el => {
+        el.removeAttribute("data-v6-reveal");
+        el.removeAttribute("data-v6-shown");
+        el.removeAttribute("data-v6-done");
+      });
+    };
   }, []);
   return null;
 }

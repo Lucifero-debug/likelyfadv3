@@ -794,7 +794,7 @@ export function Testimonials() {
             13-title-em measure SectionHeading gives its other four. It is in px
             rather than em because it sits on this DIV, where an em would resolve
             against the body size and not against the title. */}
-        <div className={`${HEAD_GAP} mx-auto max-w-[832px] text-center`}>
+        <div data-v6-reveal-group className={`${HEAD_GAP} mx-auto max-w-[832px] text-center`}>
           {/* Roboto, not the mono the other kickers use — "rest use roboto"
               covers this. The rule stays in em so it tracks the type.
               mb-3 is the kicker-to-heading gap, on this block div because the
@@ -823,6 +823,7 @@ export function Testimonials() {
             slide away with the cards it is meant to move. */}
         <div className="relative">
           <div
+            data-v6-reveal-group
             ref={track}
             onScroll={readEdges}
             /* FOCUSABLE, because a scrollport that only a pointer can move is

@@ -35,7 +35,7 @@ export function WhyUs() {
             *asterisk* run in why.heading is set in the page gradient by
             UiRevealText. Its own flex column, because RevealText's root is
             inline and a margin on it would be inert. */}
-        <div className={`${HEAD_GAP} flex flex-col items-center gap-3 text-center`}>
+        <div data-v6-reveal-group className={`${HEAD_GAP} flex flex-col items-center gap-3 text-center`}>
           <UiReveal>
             <span className={`inline-flex items-center gap-[0.62em] font-sans ${SIZE_24} font-medium uppercase tracking-[0.22em] text-pink-deep before:h-px before:w-[2.2em] before:bg-current before:opacity-55 before:content-['']`}>
               {why.kicker}
@@ -74,7 +74,7 @@ export function WhyUs() {
         >
           <div aria-hidden className={CLAIM_SCRIM} />
 
-          <div className="relative flex flex-col items-center gap-6">
+          <div data-v6-reveal-group className="relative flex flex-col items-center gap-6">
             {/* A direct flex child, so the inline RevealText root blockifies and
                 the 26ch measure applies. */}
             <UiRevealText

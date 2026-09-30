@@ -96,13 +96,7 @@
   [data-site="polish"] [data-expand-stage] { position: sticky; top: 0; }
   [data-site="polish"] [data-expand-frame] { transform: scale(var(--expand-scale, .58)); border-radius: 24px; will-change: transform; }
   [data-site="polish"] [data-expanded="false"] [data-expand-sound] { visibility: hidden; }
-  /* Same word timing/easing/delay as shared RevealText, with blur + opacity. */
-  [data-site="polish"] [data-polish-pitch] .hero-line.bg-clip-text {
-    background-size: 140% 100%;
-    animation: hero-line 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards, v6-gradient-shift 14s ease-in-out infinite;
-  }
 }
-@keyframes v6-gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 @media (prefers-reduced-motion: reduce) {
   [data-site="polish"] *, [data-site="polish"] *::before, [data-site="polish"] *::after { animation: none !important; transition: none !important; }
   [data-site="polish"] span[class*="translate-y-"],
@@ -148,41 +142,75 @@
 @keyframes v6-beat-2 { 0%, 27% { opacity: 0; } 33%, 62% { opacity: 1; } 68%, 100% { opacity: 0; } }
 @keyframes v6-beat-3 { 0%, 62% { opacity: 0; } 68%, 96% { opacity: 1; } 100% { opacity: 0; } }
 
-/* ONE REVEAL (Aman msg 2542): every text element on /v6, phone and desktop,
-   plays ONE entry animation once: blur 8px -> 0 + fade, a lift small enough
-   to read as a fade, the same duration and curve everywhere. Triggered on
-   entry, never scrubbed, never reversed. It overrides the existing reveals
-   (RevealText words, Reveal blocks, why cards); PlayOnceReveals tags the text
-   that has none. Reduced motion: the finished state (block further up). */
-[data-site="polish"] { --v6-rv-dur: 900ms; --v6-rv-ease: cubic-bezier(0.16, 1, 0.3, 1); --v6-rv-blur: 8px; }
-@media (prefers-reduced-motion: no-preference) {
-  /* RevealText words (lift 0.1em stays inside each word's 0.16em mask padding). */
-  [data-site="polish"] span[class*="translate-y-[118%]"] { translate: 0 0.1em !important; opacity: 0; filter: blur(var(--v6-rv-blur)); }
-  [data-site="polish"] span.translate-y-0.will-change-transform {
-    opacity: 1; filter: blur(0);
-    transition-property: translate, transform, opacity, filter;
-    transition-duration: var(--v6-rv-dur); transition-timing-function: var(--v6-rv-ease);
-  }
-  /* Reveal blocks (components/ui/Reveal). */
-  [data-site="polish"] [class*="translate-y-[26px]"] { translate: 0 6px !important; filter: blur(var(--v6-rv-blur)); }
-  [data-site="polish"] [class*="duration-[950ms]"] {
-    filter: blur(0);
-    transition-property: opacity, translate, transform, filter !important;
-    transition-duration: var(--v6-rv-dur) !important; transition-timing-function: var(--v6-rv-ease) !important;
-  }
-  /* The why cards ([data-reveal-root] in globals.css). */
-  [data-site="polish"] [data-reveal-root][data-reveal-root="self"][data-phase="armed"],
-  [data-site="polish"] [data-reveal-root][data-reveal-root="stagger"][data-phase="armed"] [data-reveal-item] { opacity: 0; transform: translateY(6px); filter: blur(var(--v6-rv-blur)); }
-  [data-site="polish"] [data-reveal-root][data-reveal-root="self"][data-phase="in"],
-  [data-site="polish"] [data-reveal-root][data-reveal-root="stagger"][data-phase="in"] [data-reveal-item] {
-    animation: v6-reveal var(--v6-rv-dur) var(--v6-rv-ease) backwards;
-    animation-delay: var(--reveal-delay, 0s);
-  }
-  /* Text with no reveal of its own, tagged by PlayOnceReveals. */
-  [data-site="polish"] [data-v6-reveal]:not([data-v6-done]) {
-    transition: opacity var(--v6-rv-dur) var(--v6-rv-ease), filter var(--v6-rv-dur) var(--v6-rv-ease), translate var(--v6-rv-dur) var(--v6-rv-ease);
-    transition-delay: var(--v6-rv-delay, 0ms);
-  }
-  [data-site="polish"] [data-v6-reveal]:not([data-v6-shown]) { opacity: 0; filter: blur(var(--v6-rv-blur)); translate: 0 6px; }
+/* ONE REVEAL (Aman msg 2542): one observer, one keyframe, no lift or stagger.
+   Whole introductions/cards are units; nested shared reveals stay finished.
+   Unarmed server HTML stays readable. Nothing already on screen is re-hidden. */
+[data-site="polish"] {
+  --v6-rv-dur: 900ms;
+  --v6-rv-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --v6-rv-blur: 8px;
 }
-@keyframes v6-reveal { from { opacity: 0; transform: translateY(6px); filter: blur(8px); } to { opacity: 1; transform: none; filter: blur(0); } }
+/* Neutralize the shared entry effects only on this route. Keep their markup
+   and word masks for identical text wrapping. Inline word delays cannot win. */
+[data-site="polish"] :where(
+  span[class*="translate-y-[118%]"],
+  span.translate-y-0.will-change-transform,
+  [class*="translate-y-[26px]"],
+  [class*="duration-[950ms]"],
+  [data-polish-pitch] .hero-rise
+) {
+  translate: none !important;
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+/* Reed review: the why cards are neutralised by STATE only, so the desktop
+   .pillar:hover lift (globals.css) and its transition still work. */
+[data-site="polish"] :where([data-reveal-root][data-phase="armed"] [data-reveal-item], [data-reveal-root="self"][data-phase="armed"]) { transform: none !important; }
+[data-site="polish"] :where([data-reveal-root][data-phase="in"] [data-reveal-item], [data-reveal-root="self"][data-phase="in"]) { animation: none !important; }
+/* Reed review: the hero line keeps its approved slow gradient shift (msg 2486);
+   only its entrance slide is removed. */
+[data-site="polish"] [data-polish-pitch] .hero-line { translate: none !important; transform: none !important; }
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] [data-polish-pitch] .hero-line.bg-clip-text { background-size: 140% 100%; animation: v6-gradient-shift 14s ease-in-out infinite !important; }
+}
+@keyframes v6-gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+/* Nested legacy effects must stay finished even when their old observer fires.
+   A legacy wrapper selected as a unit instead gets the three states below. */
+[data-site="polish"] :where(
+  span[class*="translate-y-[118%]"],
+  span.translate-y-0.will-change-transform,
+  [class*="translate-y-[26px]"],
+  [class*="duration-[950ms]"],
+  [data-reveal-root="self"],
+  [data-reveal-item],
+  [data-polish-pitch] .hero-line,
+  [data-polish-pitch] .hero-rise
+):is(:not([data-v6-reveal]), [data-v6-done]) {
+  opacity: 1 !important;
+  filter: none !important;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] [data-v6-reveal]:not([data-v6-shown]) {
+    opacity: 0 !important;
+    filter: blur(var(--v6-rv-blur)) !important;
+  }
+  [data-site="polish"] [data-v6-reveal][data-v6-shown]:not([data-v6-done]),
+  [data-site="polish"] [data-polish-pitch]:not([data-v6-hero-done]) {
+    animation: v6-reveal var(--v6-rv-dur) var(--v6-rv-ease) both !important;
+  }
+}
+/* Also covers a preference change while a reveal is armed or playing. */
+@media (prefers-reduced-motion: reduce) {
+  [data-site="polish"] [data-v6-reveal],
+  [data-site="polish"] [data-polish-pitch] {
+    opacity: 1 !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@keyframes v6-reveal {
+  from { opacity: 0; filter: blur(var(--v6-rv-blur)); }
+  to { opacity: 1; filter: blur(0); }
+}

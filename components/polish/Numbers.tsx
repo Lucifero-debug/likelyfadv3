@@ -15,10 +15,10 @@ export function Numbers() {
   return (
     <section id="numbers" className={SECTION} aria-label="In numbers">
       <div className={WRAP}>
-        <div className={HEAD_GAP}><SectionHeading kicker="In numbers" heading="What the work does." /></div>
+        <div data-v6-reveal-group className={HEAD_GAP}><SectionHeading kicker="In numbers" heading="What the work does." /></div>
         <dl className="grid grid-cols-1 gap-y-10 tab:grid-cols-3 tab:gap-x-8">
           {FIGURES.map((f) => (
-            <div key={f.label} className="border-t border-line pt-6" data-placeholder="true">
+            <div data-v6-reveal-group key={f.label} className="border-t border-line pt-6" data-placeholder="true">
               <dt className="sr-only">{f.label}</dt>
               <dd className="font-display text-[clamp(2.75rem,2rem+3vw,4.5rem)] font-bold leading-none tracking-[-0.03em] text-ink">{f.value}</dd>
               <dd className="mt-3 flex items-baseline gap-2 font-sans text-[1rem] text-ink-soft">

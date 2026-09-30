@@ -519,7 +519,7 @@ export function Work() {
       className={`${SECTION} ${ANCHOR} relative overflow-hidden [content-visibility:auto] [contain-intrinsic-size:auto_1200px] bg-[radial-gradient(120%_90%_at_50%_-10%,#241d2b,#17141b_72%)] text-[#f5f3f0]`}
     >
       <div className={`${WRAP} v6-work-heading-wrap`}>
-        <div className={HEAD_GAP}>
+        <div data-v6-reveal-group className={HEAD_GAP}>
           <WorkHeading kicker={work.kicker} heading={work.heading} />
           <Reveal delay={100}>
             <p className={`mt-3 text-center font-mono ${TEXT_META} leading-1.2 tracking-[0.04em] text-ink-dim`}>
