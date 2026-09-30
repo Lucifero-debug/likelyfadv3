@@ -870,3 +870,85 @@
 /* Round 6: at <=380px the FAQ heading's no-wrap word line ("Before you reach
    out." = 343px) is wider than the column (320px at 360); let it wrap there. */
 @media (max-width: 380px) { [data-site="polish"] #faq h2 span { white-space: normal !important; } }
+
+/* ROUND 7 (Aman msg 2737): on wide screens the boxed sections stop growing.
+   One token = the boxed content width. Aman picks (msg 2739):
+     A = 1152px (Option 4's old cap)   B = 1312px (the 1440 layout, frozen)
+   The WRAP keeps its side padding (64px from 1280px up), so its cap is the
+   token + 128px. Full-bleed bands (hero, logos, featured ad, work wall,
+   testimonials track) are left full width by design. */
+[data-site="polish"] { --v6-box: 1312px; }
+[data-site="polish"] #numbers > div,
+[data-site="polish"] #how > div,
+[data-site="polish"] .v6-cta-option > div { max-width: calc(var(--v6-box) + 128px); }
+[data-site="polish"] .v6-hand-card,
+[data-site="polish"] .v6-rotate-card,
+[data-site="polish"] .v6-close-card { width: 100%; max-width: var(--v6-box) !important; margin-inline: auto; }
+
+/* Round 7 (Aman msg 2767): Why, Pricing and FAQ widen to the same boxed width
+   as every other section (their .wrap pads 64px from 1280px up). */
+[data-site="polish"] #why .wrap,
+[data-site="polish"] #pricing .wrap,
+[data-site="polish"] #faq .wrap { max-width: calc(var(--v6-box) + 128px); }
+[data-site="polish"] #how-cards > div { max-width: calc(var(--v6-box) + 128px); }
+
+/* ROUND 7: HOW IT WORKS, two review options (Aman msgs 2754-2767).
+   THE SHARED TIMING RULE. Scenes (steps-scenes.css) only name keyframes;
+   this rule runs every .v6s-anim on one progress value --v6s-p (0..1) that
+   StepsScrub writes: a paused 1s animation whose negative delay IS the
+   progress. With no data-v6s-mode (reduced motion, no JS) nothing animates
+   and the scenes' own default styles, their end frames, show. */
+[data-site="polish"] [data-v6s-mode] .v6s-anim {
+  animation-duration: 1s; animation-timing-function: linear; animation-fill-mode: both;
+  animation-iteration-count: 1; animation-play-state: paused;
+  animation-delay: calc(var(--v6s-p, 1) * -1s);
+}
+
+/* The step text. */
+[data-site="polish"] .v6-st-num { display: block; margin-bottom: 12px; font: 500 13px/1 var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: #c52e67; }
+[data-site="polish"] .v6-st-step h3, [data-site="polish"] .v6-card h3 { margin: 0; font-size: clamp(1.625rem, 1.2rem + 1.4vw, 2.375rem); line-height: 1.12; letter-spacing: -0.02em; color: var(--color-ink); }
+[data-site="polish"] .v6-st-step p, [data-site="polish"] .v6-card > p { margin: 14px 0 0; max-width: 34ch; font-size: var(--v6-sub); line-height: 1.45; color: var(--color-ink-soft); }
+[data-site="polish"] .v6-st-close { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: clamp(40px, 5vw, 72px); text-align: center; }
+[data-site="polish"] .v6-st-close p { margin: 0; font-size: var(--v6-sub); color: var(--color-ink-soft); }
+
+/* OPTION A: sticky. Text and card sit close together, centred in the box (msg 2755). */
+[data-site="polish"] .v6-st-texts { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(40px, 8vw, 64px); }
+[data-site="polish"] .v6-st-inline { margin-top: 24px; max-width: 480px; }
+[data-site="polish"] .v6-st-visual { display: none; }
+@media (min-width: 900px) {
+  [data-site="polish"] .v6-st { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 480px); justify-content: center; gap: clamp(48px, 6vw, 96px); }
+  [data-site="polish"] .v6-st-texts { gap: 0; }
+  [data-site="polish"] .v6-st-step { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; }
+  [data-site="polish"] .v6-st-inline { display: none; }
+  [data-site="polish"] .v6-st-visual { display: block; }
+  [data-site="polish"] .v6-st-pin { position: sticky; top: calc(50vh - min(300px, 39vh)); display: grid; }
+  [data-site="polish"] .v6-st-layer { grid-area: 1 / 1; width: min(480px, calc(78vh * 0.8)); opacity: 0; transform: translateY(12px) scale(0.985); }
+  [data-site="polish"] .v6-st-layer.is-on { opacity: 1; transform: none; z-index: 1; }
+  [data-site="polish"] .v6-st-rail { grid-area: 1 / 1; align-self: end; justify-self: center; display: flex; gap: 8px; margin-bottom: -28px; }
+  [data-site="polish"] .v6-st-rail i { width: 28px; height: 3px; border-radius: 3px; background: rgb(20 16 28 / 0.12); }
+  [data-site="polish"] .v6-st-rail i.is-on { background: linear-gradient(90deg, #fe683f, #ec4081 55%, #8d4edc); }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-site="polish"] .v6-st-layer { transition: opacity 500ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+    [data-site="polish"] .v6-st-rail i { transition: background 300ms; }
+  }
+  /* Reduced motion: no pinned stack; every step shows its own finished scene inline. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-site="polish"] .v6-st { display: block; }
+    [data-site="polish"] .v6-st-visual { display: none; }
+    [data-site="polish"] .v6-st-inline { display: block; }
+    [data-site="polish"] .v6-st-step { min-height: 0; margin-bottom: 56px; }
+  }
+}
+
+/* OPTION B: cards. */
+[data-site="polish"] .v6-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(40px, 6vw, 56px); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) and (max-width: 899.98px) { [data-site="polish"] .v6-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { [data-site="polish"] .v6-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; } }
+@media (min-width: 1200px) { [data-site="polish"] .v6-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; } }
+[data-site="polish"] .v6-card-scene { margin-bottom: 24px; }
+[data-site="polish"] .v6-card h3 { font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.75rem); }
+[data-site="polish"] .v6-card > p { font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.05rem); }
+@media (max-width: 899.98px) { [data-site="polish"] .v6-card-scene { max-width: 480px; } }
+
+/* The ring inside scene 4. */
+[data-site="polish"] .v6s-ring-slot .circular-carousel { height: 100%; }

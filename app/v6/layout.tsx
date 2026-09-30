@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 import "./polish.css";
+import "./circular-carousel.css";
+import "./steps-scenes.css";
 
 // Reuse the real Latin variable fonts from the existing local build. No fetch.
 // RootLayout still loads its four families for the other routes; only these

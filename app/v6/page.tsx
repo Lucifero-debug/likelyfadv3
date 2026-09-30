@@ -7,7 +7,7 @@ import { PricingV4 } from "@/components/polish/PricingV4";
 import { Testimonials } from "@/components/polish/Testimonials";
 import { FaqV4 } from "@/components/polish/FaqV4";
 import { CtaOptions } from "@/components/polish/CtaOptions";
-import { HowItWorks } from "@/components/polish/HowItWorks";
+import { HowStepsSticky, HowStepsCards } from "@/components/polish/steps/HowSteps";
 import { LogoLabel } from "@/components/polish/LogoLabel";
 import { FooterV3 } from "@/components/polish/FooterV3";
 import { FeaturedAd } from "@/components/polish/FeaturedAd";
@@ -41,7 +41,8 @@ export default function Home() {
         <FeaturedAd />
         <Numbers />
         <Work darkChapter />
-        <HowItWorks />
+        <HowStepsSticky />
+        <HowStepsCards />
         <PricingV4 />
         <Testimonials />
         <FaqV4 />

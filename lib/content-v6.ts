@@ -36,7 +36,8 @@ export const content = {
       { title: "A fraction of the cost", body: "No crew, no location, no reshoots. You pay for output, not overhead." },
       { title: "Angles, not one bet", body: "20 to 40 variants a month, so you learn what wins before you spend big." },
       { title: "Built to run", body: "Hook-first, sized for every placement, ready for your ad manager." },
-      { title: "One DM to start", body: "No forms. Send a product link and the angle you want. We handle the rest." },
+      // Round 7 (Aman msg 2767; Alex, alex-steps.md section 5): the DM now lives in How it works step 1.
+      { title: "Your workflow stays yours", body: "We fit into your system, timelines, style and speed. Only the output changes." },
     ],
     claim: "If your best ad is six months old, you have a volume problem.",
     claimCta: CTA,
@@ -106,6 +107,22 @@ export const content = {
       refundReply: "Of course. Don't like it, full refund.",
       monthlyTag: "Monthly retainer, unlimited revisions.",
     },
+    cta: CTA,
+  },
+
+  // Round 7 (Aman msgs 2754-2767; Alex, alex-steps.md FINAL): How it works,
+  // rebuilt from the real client lifecycle. No refund in the steps; the trial
+  // has no revisions (retainer only); no prices, tool names or named product.
+  steps: {
+    heading: "From a DM to winning ads.",
+    sub: "Four steps. No forms, no calls unless you want one. Your workflow stays yours.",
+    items: [
+      { heading: "DM us your product.", sub: "One message. We learn your brand, your goals and what runs today." },
+      { heading: "Trial brief, trial video.", sub: "Send the angle, the format and a script. Your first video is ready in 48 hours." },
+      { heading: "Love it? Go monthly.", sub: "Any number of videos a month, on a customised plan built for your needs." },
+      { heading: "Briefs in, ads out.", sub: "Send briefs, get plenty of ads. Unlimited revisions until they win. You run them." },
+    ],
+    close: "Start with the DM. The rest we do together.",
     cta: CTA,
   },
 
