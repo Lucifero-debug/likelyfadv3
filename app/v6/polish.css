@@ -564,3 +564,109 @@
 @media (prefers-reduced-motion: reduce) {
   [data-site="polish"] .btn-beam { transition: none !important; }
 }
+
+/* ROUND 4: END CTA PHONE + ROTATING LINE (Aman msg 2659; Reed). --------------- */
+[data-site="polish"] .v6-close-card { padding: clamp(40px, 6vw, 88px) clamp(20px, 5vw, 80px) !important; max-width: 72rem; }
+[data-site="polish"] .v6-close-grid { display: grid; gap: clamp(32px, 5vw, 72px); align-items: center; justify-items: center; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 761px) { [data-site="polish"] .v6-close-grid { grid-template-columns: auto minmax(0, 1fr); justify-items: start; } }
+[data-site="polish"] .v6-close-copy { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; text-align: left; max-width: 30rem; }
+@media (max-width: 760.98px) { [data-site="polish"] .v6-close-copy { align-items: center; text-align: center; } }
+[data-site="polish"] .v6-close-sub { font-size: var(--v6-sub); color: rgb(251 249 246 / 0.9); margin: 0; }
+[data-site="polish"] .v6-close-guarantee { font-size: var(--v6-small); color: rgb(251 249 246 / 0.78); margin: 0; }
+
+/* The phone: devices.css draws it at 428 x 868; zoom scales layout and paint together. */
+[data-site="polish"] .v6-phone { zoom: 0.58; filter: drop-shadow(0 40px 60px rgb(0 0 0 / 0.45)); }
+@media (min-width: 761px) { [data-site="polish"] .v6-phone { zoom: 0.66; } }
+
+/* The chat, shared. Sizes are in the phone's own 390px screen units (zoomed with it). */
+[data-site="polish"] .v6-chat { display: flex !important; flex-direction: column; overflow: hidden; font-family: -apple-system, "SF Pro Text", system-ui, sans-serif; }
+[data-site="polish"] .v6-chat-top { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; padding: 64px 20px 14px; }
+[data-site="polish"] .v6-chat-avatar { grid-row: 1 / span 2; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font: 700 20px/1 var(--font-display); color: #fff; background: linear-gradient(135deg, #fe683f, #ec4081 50%, #8d4edc); }
+[data-site="polish"] .v6-chat-name { font-weight: 600; font-size: 19px; }
+[data-site="polish"] .v6-chat-status { font-size: 14px; opacity: 0.6; }
+[data-site="polish"] .v6-chat-thread { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 16px 16px 12px; }
+[data-site="polish"] .v6-bubble { max-width: 78%; margin: 0; padding: 12px 16px; border-radius: 22px; font-size: 19px; line-height: 1.3; animation: v6-bubble-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+[data-site="polish"] .v6-out { align-self: flex-end; }
+[data-site="polish"] .v6-in { align-self: flex-start; }
+[data-site="polish"] .v6-link { text-decoration: underline; text-underline-offset: 3px; }
+[data-site="polish"] .v6-typing { display: flex; flex-direction: column; gap: 4px; align-self: flex-start; }
+[data-site="polish"] .v6-typing-label { font-size: 13px; opacity: 0.6; padding-left: 6px; }
+[data-site="polish"] .v6-dots { display: inline-flex; gap: 5px; padding: 16px 18px; }
+[data-site="polish"] .v6-dots i { width: 9px; height: 9px; border-radius: 50%; background: currentColor; opacity: 0.35; animation: v6-dot 1.2s ease-in-out infinite; }
+[data-site="polish"] .v6-dots i:nth-child(2) { animation-delay: 0.15s; }
+[data-site="polish"] .v6-dots i:nth-child(3) { animation-delay: 0.3s; }
+[data-site="polish"] .v6-chat-input { display: flex; align-items: center; gap: 10px; padding: 10px 14px 34px; }
+[data-site="polish"] .v6-chat-field { flex: 1; min-height: 44px; display: flex; align-items: center; padding: 8px 16px; border-radius: 22px; font-size: 18px; white-space: pre; overflow: hidden; }
+[data-site="polish"] .v6-placeholder { opacity: 0.45; }
+[data-site="polish"] .v6-caret { display: inline-block; width: 2px; height: 22px; margin-left: 2px; background: #0a84ff; animation: v6-caret 1s steps(1) infinite; }
+[data-site="polish"] .v6-chat-send { width: 38px; height: 38px; border-radius: 50%; opacity: 0.35; transition: opacity 200ms; }
+[data-site="polish"] .v6-chat-send[data-active="true"] { opacity: 1; }
+@keyframes v6-bubble-in { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes v6-dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 0.9; transform: translateY(-3px); } }
+@keyframes v6-caret { 50% { opacity: 0; } }
+
+/* Skin: iMessage (light). */
+[data-site="polish"] [data-skin="imessage"] .device .device-screen.v6-chat { background: #fff; color: #000; }
+[data-site="polish"] [data-skin="imessage"] .v6-chat-top { background: #f7f7f8; border-bottom: 1px solid #e5e5ea; }
+[data-site="polish"] [data-skin="imessage"] .v6-out { background: #0a84ff; color: #fff; }
+[data-site="polish"] [data-skin="imessage"] .v6-in { background: #e9e9eb; color: #000; }
+[data-site="polish"] [data-skin="imessage"] .v6-chat-field { border: 1px solid #d1d1d6; }
+[data-site="polish"] [data-skin="imessage"] .v6-chat-send { background: #0a84ff; }
+
+/* Skin: WhatsApp (light). */
+[data-site="polish"] [data-skin="whatsapp"] .device .device-screen.v6-chat { background: #efe7de; color: #111b21; }
+[data-site="polish"] [data-skin="whatsapp"] .v6-chat-top { background: #f6f5f3; border-bottom: 1px solid #e2ddd6; }
+[data-site="polish"] [data-skin="whatsapp"] .v6-bubble { border-radius: 14px; box-shadow: 0 1px 1px rgb(0 0 0 / 0.08); }
+[data-site="polish"] [data-skin="whatsapp"] .v6-out { background: #d9fdd3; color: #111b21; }
+[data-site="polish"] [data-skin="whatsapp"] .v6-in { background: #fff; color: #111b21; }
+[data-site="polish"] [data-skin="whatsapp"] .v6-chat-field { background: #fff; }
+[data-site="polish"] [data-skin="whatsapp"] .v6-caret { background: #25d366; }
+[data-site="polish"] [data-skin="whatsapp"] .v6-chat-send { background: #25d366; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-site="polish"] .v6-bubble, [data-site="polish"] .v6-dots i, [data-site="polish"] .v6-caret { animation: none !important; }
+}
+
+/* Rotating line: n words share one slot; each is up for 1/n of the cycle. */
+[data-site="polish"] .v6-rotate { font-family: var(--font-display); font-weight: 700; }
+[data-site="polish"] .v6-rotate-slot { display: inline-grid; vertical-align: bottom; }
+[data-site="polish"] .v6-rotate-word {
+  grid-area: 1 / 1; white-space: nowrap;
+  background: linear-gradient(100deg, #fe683f, #ec4081 55%, #8d4edc); -webkit-background-clip: text; background-clip: text; color: transparent;
+  padding-block: 0.08em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-rotate-word { opacity: 0; animation: v6-rotate-4 calc(var(--n) * 2.2s) cubic-bezier(0.3, 0.7, 0.2, 1) infinite both; animation-delay: calc(var(--i) * 2.2s); }
+}
+@media (prefers-reduced-motion: reduce) { [data-site="polish"] .v6-rotate-word:not(:first-child) { visibility: hidden; } }
+/* One keyframe set per word count (3-8), so each word is up for exactly 1/n of the cycle. */
+@keyframes v6-rotate-3 { 0% { opacity: 0; translate: 0 0.35em; filter: blur(6px); } 5.33% { opacity: 1; translate: 0 0; filter: blur(0); } 28.00% { opacity: 1; translate: 0 0; filter: blur(0); } 33.33% { opacity: 0; translate: 0 -0.35em; filter: blur(6px); } 100% { opacity: 0; } }
+@keyframes v6-rotate-4 { 0% { opacity: 0; translate: 0 0.35em; filter: blur(6px); } 4.00% { opacity: 1; translate: 0 0; filter: blur(0); } 21.00% { opacity: 1; translate: 0 0; filter: blur(0); } 25.00% { opacity: 0; translate: 0 -0.35em; filter: blur(6px); } 100% { opacity: 0; } }
+@keyframes v6-rotate-5 { 0% { opacity: 0; translate: 0 0.35em; filter: blur(6px); } 3.20% { opacity: 1; translate: 0 0; filter: blur(0); } 16.80% { opacity: 1; translate: 0 0; filter: blur(0); } 20.00% { opacity: 0; translate: 0 -0.35em; filter: blur(6px); } 100% { opacity: 0; } }
+@keyframes v6-rotate-6 { 0% { opacity: 0; translate: 0 0.35em; filter: blur(6px); } 2.67% { opacity: 1; translate: 0 0; filter: blur(0); } 14.00% { opacity: 1; translate: 0 0; filter: blur(0); } 16.67% { opacity: 0; translate: 0 -0.35em; filter: blur(6px); } 100% { opacity: 0; } }
+@keyframes v6-rotate-7 { 0% { opacity: 0; translate: 0 0.35em; filter: blur(6px); } 2.29% { opacity: 1; translate: 0 0; filter: blur(0); } 12.00% { opacity: 1; translate: 0 0; filter: blur(0); } 14.29% { opacity: 0; translate: 0 -0.35em; filter: blur(6px); } 100% { opacity: 0; } }
+@keyframes v6-rotate-8 { 0% { opacity: 0; translate: 0 0.35em; filter: blur(6px); } 2.00% { opacity: 1; translate: 0 0; filter: blur(0); } 10.50% { opacity: 1; translate: 0 0; filter: blur(0); } 12.50% { opacity: 0; translate: 0 -0.35em; filter: blur(6px); } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-rotate[data-n="3"] .v6-rotate-word { animation-name: v6-rotate-3; }
+  [data-site="polish"] .v6-rotate[data-n="4"] .v6-rotate-word { animation-name: v6-rotate-4; }
+  [data-site="polish"] .v6-rotate[data-n="5"] .v6-rotate-word { animation-name: v6-rotate-5; }
+  [data-site="polish"] .v6-rotate[data-n="6"] .v6-rotate-word { animation-name: v6-rotate-6; }
+  [data-site="polish"] .v6-rotate[data-n="7"] .v6-rotate-word { animation-name: v6-rotate-7; }
+  [data-site="polish"] .v6-rotate[data-n="8"] .v6-rotate-word { animation-name: v6-rotate-8; }
+}
+
+/* CTA review stack (Aman msg 2669): small labels so reviewers can name an option. */
+[data-site="polish"] .v6-cta-option { padding-block: clamp(56px, 7vw, 104px) !important; }
+[data-site="polish"] .v6-option-label {
+  display: inline-flex; gap: 8px; align-items: center; margin: 0 0 16px;
+  padding: 6px 12px; border-radius: 999px; background: var(--color-ink); color: var(--color-paper);
+  font: 500 12px/1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase;
+}
+[data-site="polish"] .v6-option-label span { color: #ff9a7a; }
+[data-site="polish"] #close-rotating .v6-option-label { align-self: center; }
+[data-site="polish"] .v6-rotate-card {
+  padding: clamp(56px, 8vw, 112px) clamp(20px, 5vw, 72px); border-radius: 32px;
+  background: #fff; box-shadow: var(--shadow);
+}
+[data-site="polish"] .v6-rotate-heading { margin: 0; font-size: var(--v6-h2); line-height: 1.15; letter-spacing: -0.022em; color: var(--color-ink); max-width: 18em; }
+[data-site="polish"] .v6-close-guarantee-ink { font-size: var(--v6-small); margin: 0; }

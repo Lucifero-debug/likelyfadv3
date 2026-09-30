@@ -1,24 +1,33 @@
-/* T-0088 CLOSE (Alex: alex-faq-cta.md option C; round 2, Aman msg 2621).
-   The page's last ask before the footer: one centred card on paper with a
-   brand-gradient border that sweeps once as it enters, the H2, the large
-   gradient CTA and the guarantee sub, over the bridge band's photograph. /v6 only. */
+/* T-0088 CLOSE (round 4, Aman msg 2659; copy: Alex, alex-cta-copy.md).
+   On the bridge band's video-wall photograph + scrim (round 3): a real iPhone
+   on the LEFT with a DM being sent inside (PhoneChat), and on the RIGHT
+   "Starting takes ten seconds.", the line, the big CTA and the guarantee.
+   Phone: stacked, the chat plays once and holds. /v6 only. */
 import { content } from "@/lib/content-v6";
 import { Button } from "@/components/ui/Button";
 import { SECTION, WRAP } from "@/lib/ui";
 import { CLAIM_BG, CLAIM_SCRIM } from "./claimBg";
+import { PhoneChat } from "./PhoneChat";
+
+/* The chat skin (Aman to choose: "imessage" | "whatsapp"). */
+export const CHAT_SKIN: "imessage" | "whatsapp" = "imessage";
 
 export function Close() {
   const { close } = content;
   return (
     <section id="close" aria-label="Get started" className={`${SECTION} bg-paper text-ink`}>
       <div className={WRAP}>
-        {/* Round 3 (Aman msg 2635): the same video-wall photograph and scrim as the
-            bridge band, so the last ask sells with the work, not with text alone. */}
-        <div data-nav-dark className={`v6-close-card v6-sweep relative isolate mx-auto flex max-w-[64rem] flex-col items-center gap-6 overflow-hidden text-center text-paper ${CLAIM_BG}`}>
+        <div data-nav-dark className={`v6-close-card v6-sweep relative isolate mx-auto overflow-hidden text-paper ${CLAIM_BG}`}>
           <div aria-hidden className={CLAIM_SCRIM} />
-          <h2 className="relative max-w-[16em] text-balance font-display font-bold leading-[1.1] tracking-[-0.022em]">{close.heading}</h2>
-          <p className="relative max-w-[34ch] font-sans text-paper/85">{close.sub}</p>
-          <Button contact variant="grad" withArrow className="v6-cta-lg relative">{close.cta}</Button>
+          <div className="v6-close-grid relative">
+            <PhoneChat skin={CHAT_SKIN} />
+            <div className="v6-close-copy">
+              <h2 className="text-balance font-display font-bold leading-[1.1] tracking-[-0.022em]">{close.heading}</h2>
+              <p className="v6-close-sub font-sans">{close.sub}</p>
+              <Button contact variant="grad" withArrow className="v6-cta-lg">{close.cta}</Button>
+              <p className="v6-close-guarantee font-sans">{close.guarantee}</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

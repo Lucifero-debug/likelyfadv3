@@ -103,11 +103,36 @@ export const content = {
   // Round 3 (Aman msg 2633): the logo band's label (Alex).
   logos: { label: "Brands we make ads for." },
 
+  // Round 4 (Aman msg 2659 + Alex, alex-cta-copy.md; Doom msg 2661): the end
+  // CTA is a phone with a DM being sent, and the line beside it.
+  closeChat: {
+    typed: "Here's my product: ",
+    link: "yourbrand.com/product",
+    typing: "Likelyfad is typing…",
+    reply: "On it. First cut in 48 hours. Don't like it, full refund.",
+    contact: "Likelyfad",
+  },
+  // Round 4: the rotating line (Alex). Placement pending Aman.
+  rotating: {
+    before: "Your next winning ad:",
+    words: ["AI UGC", "AI podcast", "AI drama", "AI song"],
+    after: "One DM away.",
+  },
+
+  // Round 4 review stack (Aman msg 2669): the live close kept as option 4.
+  closeClassic: {
+    heading: "Your best ad is getting older.",
+    sub: "New ones in 48 hours. One paid trial, full refund if you don't like it.",
+    cta: CTA,
+  },
+
   close: {
     ...base.close,
     // Round 2: Alex's option C at both widths (Doom; Aman judges live).
-    heading: "Your best ad is getting older.",
-    sub: "New ones in 48 hours. One paid trial, full refund if you don't like it.",
+    // Round 4 (Aman msg 2659; Alex): the phone-chat close.
+    heading: "Starting takes ten seconds.",
+    sub: "Send the DM, we do the rest.",
+    guarantee: "One paid trial video. Don't like it? Full refund, no questions asked.",
     cta: CTA,
   },
 

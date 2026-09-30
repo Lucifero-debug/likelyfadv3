@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 import "./polish.css";
+import "./devices-iphone14pro.css";
 
 // Reuse the real Latin variable fonts from the existing local build. No fetch.
 // RootLayout still loads its four families for the other routes; only these

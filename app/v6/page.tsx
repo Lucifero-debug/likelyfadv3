@@ -6,7 +6,7 @@ import { Work } from "@/components/polish/Work";
 import { PricingV4 } from "@/components/polish/PricingV4";
 import { Testimonials } from "@/components/polish/Testimonials";
 import { FaqV4 } from "@/components/polish/FaqV4";
-import { Close } from "@/components/polish/Close";
+import { CtaOptions } from "@/components/polish/CtaOptions";
 import { HowItWorks } from "@/components/polish/HowItWorks";
 import { LogoLabel } from "@/components/polish/LogoLabel";
 import { FooterV3 } from "@/components/polish/FooterV3";
@@ -45,7 +45,7 @@ export default function Home() {
         <PricingV4 />
         <Testimonials />
         <FaqV4 />
-        <Close />
+        <CtaOptions />
       </main>
 
       <FooterV3 />
