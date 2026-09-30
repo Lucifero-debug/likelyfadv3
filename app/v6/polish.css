@@ -1,0 +1,120 @@
+/* Round 4 values only. No selector changes the live / or /v4. */
+[data-site="polish"] {
+  /* Logo H/S preserved exactly; text L × .90, CTA L × .70. See motion-contrast.json. */
+  --v6-grad-text: linear-gradient(100deg, hsl(12.879581 98.963731% 55.941176%) 2%, hsl(355.950920 91.061453% 58.411765%) 25%, hsl(337.325581 81.904762% 52.941176%) 50%, hsl(305.689655 46.031746% 45.529412%) 75%, hsl(266.619718 66.981132% 52.588235%) 98%);
+  --v6-grad-cta: linear-gradient(100deg, hsl(12.879581 98.963731% 43.509804%) 2%, hsl(355.950920 91.061453% 45.431373%) 25%, hsl(337.325581 81.904762% 41.176471%) 50%, hsl(305.689655 46.031746% 35.411765%) 75%, hsl(266.619718 66.981132% 40.901961%) 98%);
+  --grad-ink: var(--v6-grad-cta);
+  --v6-heading-accent: var(--color-ink);
+  --font-display: var(--font-montserrat), system-ui, sans-serif; /* Reed: the same Montserrat "/" loads (root next/font), not a local copy */
+  --font-sans: var(--font-roboto), system-ui, sans-serif;
+  --font-mono: var(--font-sans);
+  --color-pink-deep: #c52e67;
+  font-family: var(--font-sans);
+}
+[data-site="polish"] .font-display { font-family: var(--font-display); }
+[data-site="polish"] :is(.font-sans, .font-mono) { font-family: var(--font-sans); }
+[data-site="polish"] h2 .bg-clip-text { background-image: none; color: var(--v6-heading-accent); }
+[data-site="polish"] [data-polish-pitch] .bg-clip-text { background-image: var(--v6-grad-text); }
+[data-site="polish"] .btn-beam[class*="bg-[image:var(--grad)]"] { background-image: var(--v6-grad-cta); }
+[data-site="polish"] .uppercase:not(figcaption *) {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: #c52e67;
+}
+/* Work’s ink heading sits on paper above the existing dark video wall. */
+[data-site="polish"] #work .uppercase { color: #c52e67; }
+[data-site="polish"] .pillar-num {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: #c52e67;
+}
+[data-site="polish"] footer .font-mono { color: rgb(255 255 255 / 0.6); }
+[data-site="polish"] footer a[href="#top"] { min-height: 40px; }
+/* The centered nav's painted surface is paper, including over dark sections.
+   The mark stays untouched. Icon and open-menu text follow that same surface. */
+[data-site="polish"] [data-polish-nav] #phone-menu { background-color: rgb(251 249 246 / 0.94); }
+[data-site="polish"] [data-polish-nav][data-scrolled="false"][data-open="false"] #phone-menu { background-color: transparent; }
+@media (max-width: 760.98px) {
+  [data-site="polish"] { --nav-h: 68px; }
+  [data-site="polish"] [data-polish-nav] { padding-block: 6px; }
+  [data-site="polish"] [data-polish-nav] > div:first-of-type { height: 56px; }
+  [data-site="polish"] [data-polish-nav] img { height: 44px !important; }
+  [data-site="polish"] [data-polish-nav] a[href="#top"] { min-height: 44px; }
+  [data-site="polish"] [data-polish-nav][data-scrolled="false"][data-open="false"] a[href="#top"] {
+    translate: calc((100vw - 2 * clamp(24px, 5vw, 64px)) / 2 - 53.8px) 0;
+  }
+  [data-site="polish"] [data-polish-nav] button { width: 44px; height: 44px; }
+  [data-site="polish"] [data-polish-nav] #phone-menu { margin-top: 6px; }
+  [data-site="polish"] [data-polish-nav][data-open="false"] #phone-menu { height: 56px; border-radius: 28px; }
+  [data-site="polish"] [data-polish-nav] #phone-menu nav { padding-top: 55px; }
+  [data-site="polish"] [data-polish-pitch-wrap] { padding-top: 24px; }
+  [data-site="polish"] [data-polish-pitch] > p:first-of-type { margin-top: 16px; }
+  [data-site="polish"] .why-grid { gap: 12px; }
+  [data-site="polish"] .pillar { padding: 22px; }
+  [data-site="polish"] .pillar p { font-size: 16px; color: #3d3844; }
+  [data-site="polish"] #faq > .wrap { row-gap: 32px; }
+  [data-site="polish"] #faq h3 > button { padding-block: 20px; }
+}
+
+/* Reed: SpotlightLayer sits between the card background and its text */
+[data-site="polish"] .pillar { isolation: isolate; }
+
+/* T-0088 motion: every selector is local to the polish route. */
+[data-site="polish"] [data-scroll-expand] { position: relative; height: 100svh; }
+[data-site="polish"] [data-expand-stage] { position: relative; height: 100svh; display: grid; place-items: center; overflow: hidden; }
+[data-site="polish"] [data-expand-frame] { width: 100%; height: 100%; background: var(--color-ink); overflow: hidden; }
+[data-site="polish"] [data-expand-frame] video { display: block; width: 100%; height: 100%; object-fit: contain; }
+[data-site="polish"] [data-expand-sound] { position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); right: 24px; min-width: 44px; min-height: 44px; padding: 12px 20px; border-radius: 999px; background: #fbf9f6; color: var(--color-ink); font-weight: 500; cursor: pointer; }
+[data-site="polish"] [data-expand-sound]:focus-visible { outline: 3px solid #fbf9f6; outline-offset: 4px; }
+[data-site="polish"] #work { padding-top: 0; }
+[data-site="polish"] .v6-work-heading-wrap { max-width: none; padding-block: clamp(32px, 5vw, 48px); margin-bottom: clamp(32px, 4.5vw, 64px); background: #fbf9f6; color: var(--color-ink); }
+[data-site="polish"] .v6-work-heading-wrap > div { margin-bottom: 0; }
+[data-site="polish"] .v6-work-heading-wrap p { color: var(--color-ink-soft); }
+[data-site="polish"] [data-scroll-word] { display: inline-block; opacity: 1; filter: none; }
+[data-site="polish"] [data-gradual-blur] { position: absolute; inset: auto 0 0; height: 48px; z-index: 2; pointer-events: none; }
+[data-site="polish"] [data-gradual-blur] > div { position: absolute; inset: 0; }
+/* Acceptance A/B: no backdrop layers are painted when off, just as with the
+   SHOW_GRADUAL_BLUR build flag. There is no animation or JS in either case. */
+[data-site="polish"][data-gradual-blur-enabled="false"] [data-gradual-blur] { display: none; }
+@media (min-width: 761px) {
+  [data-site="polish"] [data-gradual-blur="hero"] { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] [data-scroll-expand] { height: 225svh; }
+  [data-site="polish"] [data-expand-stage] { position: sticky; top: 0; }
+  [data-site="polish"] [data-expand-frame] { transform: scale(var(--expand-scale, .58)); border-radius: calc((1 - var(--expand-scale, .58)) * 48px); }
+  [data-site="polish"] [data-expanded="false"] [data-expand-sound] { visibility: hidden; }
+  /* Same word timing/easing/delay as shared RevealText, with blur + opacity. */
+  [data-site="polish"] span[class*="translate-y-[118%]"] { filter: blur(8px); opacity: 0; }
+  [data-site="polish"] span.translate-y-0.will-change-transform { filter: blur(0); opacity: 1; transition-property: transform, opacity, filter; }
+  [data-site="polish"] [data-polish-pitch] .hero-line.bg-clip-text {
+    background-size: 140% 100%;
+    animation: hero-line 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards, v6-gradient-shift 14s ease-in-out infinite;
+  }
+  @supports (animation-timeline: view()) {
+    [data-site="polish"] [data-scroll-word] {
+      animation: v6-word-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry var(--word-start) cover var(--word-end);
+    }
+  }
+}
+@keyframes v6-gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes v6-word-reveal { from { opacity: .15; filter: blur(6px); } to { opacity: 1; filter: blur(0); } }
+@media (prefers-reduced-motion: reduce) {
+  [data-site="polish"] *, [data-site="polish"] *::before, [data-site="polish"] *::after { animation: none !important; transition: none !important; }
+  [data-site="polish"] span[class*="translate-y-"],
+  [data-site="polish"] [class*="translate-y-[26px]"],
+  [data-site="polish"] [data-reveal-root="self"],
+  [data-site="polish"] [data-reveal-item] { transform: none !important; translate: none !important; opacity: 1 !important; filter: none !important; }
+  [data-site="polish"] [data-expand-frame] { transform: none; border-radius: 0; }
+  [data-site="polish"] [data-scroll-word] { opacity: 1; filter: none; }
+  [data-site="polish"] [data-polish-pitch] .hero-line.bg-clip-text { background-position: 0 50%; }
+}
+
+/* Reed: overflow:hidden made the Work section the nearest scroll container, so the heading's view() timeline tracked a
+   section that never scrolls (the words sat at full opacity). overflow:clip clips the same but is not a scroll container. */
+[data-site="polish"] section#work { overflow: clip; }
