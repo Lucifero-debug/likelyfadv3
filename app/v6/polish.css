@@ -153,18 +153,23 @@
 
     /* Reveals, choice 1: scroll-linked, reversing on scroll back. Tagged by
        ScrollLinkedReveals only where the page is the scroll container. */
+    /* ONE-LINE TOGGLE (Doom, msg 2540 pending Aman): 4px = the approved blur, kept;
+       0px = no blur on phone reveals. */
+    [data-site="polish"] { --v6-phone-reveal-blur: 4px; }
     [data-site="polish"] [data-scroll-words] { view-timeline: --v6-words block; }
     [data-site="polish"] [data-scroll-words] > span > span.inline-block {
       transition: none !important;
       animation: v6-word-rise linear both !important;
       animation-timeline: --v6-words !important;
-      animation-range: entry calc(5% + var(--wi, 0) * 3%) cover calc(30% + var(--wi, 0) * 3%) !important;
+      /* Fixed lengths (Aman screenshot msg 2539): done by the time the top is ~22% into
+         the viewport whatever the element's height; the last word by 16vh + 12 x 0.5vh. */
+      animation-range: cover calc(var(--wi, 0) * 0.5vh) cover calc(16vh + var(--wi, 0) * 0.5vh) !important;
     }
     [data-site="polish"] [data-scroll-block] {
       transition: none !important;
       animation: v6-block-rise linear both !important;
       animation-timeline: view() !important;
-      animation-range: entry 0% cover 30% !important;
+      animation-range: cover 0vh cover 20vh !important;
     }
   }
 }
@@ -172,5 +177,5 @@
 @keyframes v6-beat-1 { 0%, 27% { opacity: 1; } 33%, 100% { opacity: 0; } }
 @keyframes v6-beat-2 { 0%, 27% { opacity: 0; } 33%, 62% { opacity: 1; } 68%, 100% { opacity: 0; } }
 @keyframes v6-beat-3 { 0%, 62% { opacity: 0; } 68%, 96% { opacity: 1; } 100% { opacity: 0; } }
-@keyframes v6-word-rise { from { translate: 0 118%; opacity: 0; filter: blur(4px); } to { translate: 0 0; opacity: 1; filter: blur(0); } }
+@keyframes v6-word-rise { from { translate: 0 118%; opacity: 0; filter: blur(var(--v6-phone-reveal-blur, 4px)); } to { translate: 0 0; opacity: 1; filter: blur(0); } }
 @keyframes v6-block-rise { from { translate: 0 26px; transform: none; opacity: 0; } to { translate: 0 0; transform: none; opacity: 1; } }
