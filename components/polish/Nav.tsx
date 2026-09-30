@@ -387,7 +387,12 @@ export function Nav({
   }, []);
 
   useEffect(() => {
-    const onScroll = () => {
+    /* T-0088 (Aman msg 2531): at most one read per frame, not one per scroll
+       event, so the bar does no extra main-thread work during iOS momentum.
+       React already skips the render when a value is unchanged. */
+    let frame = 0;
+    const read = () => {
+      frame = 0;
       const y = window.scrollY;
       setScrolled(y > 20);
       // Only retracts well past the hero, so the bar does not flicker on the
@@ -395,8 +400,9 @@ export function Nav({
       setHidden(y > lastY.current && y > 400);
       lastY.current = y;
     };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(read); };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", onScroll); };
   }, []);
 
   /* WHICH GROUND THE BAR IS OVER.
@@ -438,11 +444,15 @@ export function Nav({
       setOnDark(!!under?.closest("[data-nav-dark]"));
     };
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    // T-0088: one hit test per frame at most (was one per scroll event).
+    let frame = 0;
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; update(); }); };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
     };
   }, []);
 

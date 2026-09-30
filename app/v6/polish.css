@@ -127,3 +127,50 @@
 /* Reed: overflow:hidden made the Work section the nearest scroll container, so the heading's view() timeline tracked a
    section that never scrolls (the words sat at full opacity). overflow:clip clips the same but is not a scroll container. */
 [data-site="polish"] section#work { overflow: clip; }
+
+/* T-0088 PHONE SCROLL (Aman msgs 2531-2536). Touch devices only; desktop keeps
+   everything above. Scroll-driven CSS runs on the compositor in Safari 26.4+,
+   so these move with the thumb instead of trailing it. Browsers without
+   scroll timelines keep the JS / triggered versions above. */
+@media (hover: none) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* ScrollExpand: the runway is 225svh; progress 0..1 (top at 0 .. -100svh)
+       is cover 100/325 .. 200/325. ease-in-out stands in for the smoothstep. */
+    [data-site="polish"] [data-scroll-expand] { view-timeline: --v6-expand block; }
+    [data-site="polish"] [data-expand-frame] {
+      animation: v6-expand ease-in-out both;
+      animation-timeline: --v6-expand;
+      animation-range: cover 30.77% cover 61.54%;
+    }
+    [data-site="polish"] [data-beat-line] {
+      transition: none;
+      animation: v6-beat-1 linear both;
+      animation-timeline: --v6-expand;
+      animation-range: cover 30.77% cover 61.54%;
+    }
+    [data-site="polish"] [data-beat-line="2"] { animation-name: v6-beat-2; }
+    [data-site="polish"] [data-beat-line="3"] { animation-name: v6-beat-3; }
+
+    /* Reveals, choice 1: scroll-linked, reversing on scroll back. Tagged by
+       ScrollLinkedReveals only where the page is the scroll container. */
+    [data-site="polish"] [data-scroll-words] { view-timeline: --v6-words block; }
+    [data-site="polish"] [data-scroll-words] > span > span.inline-block {
+      transition: none !important;
+      animation: v6-word-rise linear both !important;
+      animation-timeline: --v6-words !important;
+      animation-range: entry calc(5% + var(--wi, 0) * 3%) cover calc(30% + var(--wi, 0) * 3%) !important;
+    }
+    [data-site="polish"] [data-scroll-block] {
+      transition: none !important;
+      animation: v6-block-rise linear both !important;
+      animation-timeline: view() !important;
+      animation-range: entry 0% cover 30% !important;
+    }
+  }
+}
+@keyframes v6-expand { from { transform: scale(.58); } to { transform: scale(1); } }
+@keyframes v6-beat-1 { 0%, 27% { opacity: 1; } 33%, 100% { opacity: 0; } }
+@keyframes v6-beat-2 { 0%, 27% { opacity: 0; } 33%, 62% { opacity: 1; } 68%, 100% { opacity: 0; } }
+@keyframes v6-beat-3 { 0%, 62% { opacity: 0; } 68%, 96% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes v6-word-rise { from { translate: 0 118%; opacity: 0; filter: blur(4px); } to { translate: 0 0; opacity: 1; filter: blur(0); } }
+@keyframes v6-block-rise { from { translate: 0 26px; transform: none; opacity: 0; } to { translate: 0 0; transform: none; opacity: 1; } }

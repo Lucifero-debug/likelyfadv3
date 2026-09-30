@@ -22,6 +22,9 @@ export function ScrollExpand({ src, poster, mediaType, useWindowScroll }: {
     const frameEl = el?.querySelector<HTMLElement>("[data-expand-frame]");
     if (!el || !media || !frameEl) return;
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
+    // Phone (Aman msgs 2531-2534): scale and beats come from a CSS scroll
+    // timeline on the compositor (polish.css), so JS writes neither there.
+    const cssDriven = matchMedia("(hover: none) and (pointer: coarse)").matches && CSS.supports("animation-timeline: view()");
     let frame = 0, visible = false, disposed = false;
     const playback = () => {
       if (!visible || preference.matches || document.hidden) { media.pause(); return; }
@@ -38,11 +41,11 @@ export function ScrollExpand({ src, poster, mediaType, useWindowScroll }: {
       const eased = p * p * (3 - 2 * p);
       // Reed: the scale lives on the frame only, so each scroll frame restyles one
       // composited layer (transform), never the section or a paint property.
-      frameEl.style.setProperty("--expand-scale", String(0.58 + 0.42 * eased));
+      if (!cssDriven) frameEl.style.setProperty("--expand-scale", String(0.58 + 0.42 * eased));
       // Beats (Alex, option A): three proof lines while the ad grows, then the
       // sound control alone at full width. Only an attribute flips; CSS fades.
       const beat = p === 1 ? "4" : p < 0.3 ? "1" : p < 0.65 ? "2" : "3";
-      if (el.dataset.beat !== beat) el.dataset.beat = beat;
+      if (!cssDriven && el.dataset.beat !== beat) el.dataset.beat = beat;
       el.dataset.progress = String(p);
       el.dataset.expanded = String(p === 1);
       if (p === 1 && el.dataset.expandComplete !== "true") {

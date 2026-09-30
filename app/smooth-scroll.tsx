@@ -29,25 +29,29 @@ export default function SmoothScroll() {
        its current name (`syncTouch`) either. Touch scrolling is momentum the OS
        already owns and the finger is already tracking; intercepting it is how a
        page starts feeling detached from the thumb. */
-    /* T-0088 TOUCH TEST (Aman msg 2514): /v6 ONLY, and only with ?smoothtouch=1
-       in the URL, so Aman can compare it with native iOS scrolling on his phone.
-       Every other page and every normal /v6 visit gets the options below
-       unchanged. Default off; do not turn it on for touch without his verdict. */
-    const touchTest =
-      window.location.pathname.startsWith("/v6") &&
-      new URLSearchParams(window.location.search).get("smoothtouch") === "1";
-    const lenis = new Lenis(
-      touchTest
-        ? { duration: 1.1, smoothWheel: true, syncTouch: true, syncTouchLerp: 0.075 }
-        : { duration: 1.1, smoothWheel: true },
-    );
+    /* T-0088 PHONE SCROLL (Aman msgs 2531-2534), /v6 ONLY. On a touch device
+       /v6 runs NO Lenis: native iOS momentum, which Aman found better than
+       syncTouch ("rigid"). /v6?scroll=lenis is the comparison link: a gently
+       tuned syncTouch. Every other page, and desktop /v6, gets the options
+       below unchanged. */
+    const onV6 = window.location.pathname.startsWith("/v6");
+    const touch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const lenisTest = onV6 && new URLSearchParams(window.location.search).get("scroll") === "lenis";
+    const lenis =
+      onV6 && touch && !lenisTest
+        ? null
+        : new Lenis(
+            lenisTest
+              ? { duration: 1.1, smoothWheel: true, syncTouch: true, syncTouchLerp: 0.1, touchInertiaExponent: 1.5 }
+              : { duration: 1.1, smoothWheel: true },
+          );
 
     let frame = 0;
     const raf = (time: number) => {
-      lenis.raf(time);
+      lenis?.raf(time);
       frame = requestAnimationFrame(raf);
     };
-    frame = requestAnimationFrame(raf);
+    if (lenis) frame = requestAnimationFrame(raf);
 
     /* ONE DELEGATED LISTENER, NOT ONE PER LINK. The nav, the footer and the
        skip link all point at hashes, and the set is not fixed — reading the
@@ -91,7 +95,9 @@ export default function SmoothScroll() {
          added it came to three helpings of the same clearance and put every
          anchor 187px low. If a jump ever lands wrong, change --nav-h — do not
          add an offset back. */
-      lenis.scrollTo(el, { duration: 1.1 });
+      /* Without Lenis (touch on /v6) the browser scrolls; scroll-padding-top still clears the bar. */
+      if (lenis) lenis.scrollTo(el, { duration: 1.1 });
+      else el.scrollIntoView({ behavior: "smooth" });
 
       window.history.pushState(null, "", href);
     };
@@ -101,7 +107,7 @@ export default function SmoothScroll() {
     return () => {
       document.removeEventListener("click", onClick);
       cancelAnimationFrame(frame);
-      lenis.destroy();
+      lenis?.destroy();
     };
   }, []);
 

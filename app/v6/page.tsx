@@ -10,6 +10,7 @@ import { FooterV3 } from "@/components/polish/FooterV3";
 import { FeaturedAd } from "@/components/polish/FeaturedAd";
 import { GradualBlur } from "@/components/polish/reactbits/GradualBlur";
 import { Numbers } from "@/components/polish/Numbers";
+import { ScrollLinkedReveals } from "@/components/polish/ScrollLinkedReveals";
 
 /* The home page — the /v5 layout: centred nav, HeroStacked (three lanes of
    clips over the pitch on phones, /v4's twin walls from `tab:` up), then the
@@ -43,6 +44,7 @@ export default function Home() {
 
       <FooterV3 />
       <GradualBlur />
+      <ScrollLinkedReveals />
     </>
   );
 }
