@@ -36,16 +36,26 @@ function PhoneClose({ id, n, skin }: { id: string; n: number; skin: "imessage" |
   );
 }
 
+/* Option 3 background (Aman msg 2680). Doom: have a light variant ready as a
+   one-line switch; Aman leans white. "dark" = the aurora on ink, "light" = a
+   pastel aurora on white. */
+const OPT3_THEME: "dark" | "light" = "dark";
+
 function RotatingClose({ n }: { n: number }) {
   const { close } = content;
   return (
     <section id="close-rotating" aria-label={`CTA option ${n}`} className={`${SECTION} v6-cta-option bg-paper text-ink`}>
       <div className={`${WRAP} flex flex-col items-center text-center`}>
         <Label n={n} name="Rotating line" />
-        <div className="v6-rotate-card v6-sweep flex w-full max-w-[64rem] flex-col items-center gap-6">
-          <RotatingLine className="v6-rotate-heading" />
-          <Button contact variant="grad" withArrow className="v6-cta-lg">{close.cta}</Button>
-          <p className="v6-close-guarantee-ink font-sans text-ink-soft">{close.guarantee}</p>
+        {/* Aman msg 2680: full content width like the other sections, and a
+            richer background: our own CSS aurora in the brand colours (three
+            soft gradient fields drifting, grain, a faint grid). Compositor-only
+            transforms, no WebGL, no JS; reduced motion holds it still. */}
+        <div data-nav-dark={OPT3_THEME === "dark" ? "" : undefined} data-theme-v6={OPT3_THEME} className="v6-rotate-card v6-rotate-aurora v6-sweep relative isolate flex w-full flex-col items-center gap-6 overflow-hidden">
+          <div aria-hidden className="v6-aurora"><i /><i /><i /></div>
+          <RotatingLine className="v6-rotate-heading relative z-[1]" />
+          <Button contact variant="grad" withArrow className="v6-cta-lg relative z-[1]">{close.cta}</Button>
+          <p className="v6-close-guarantee relative z-[1] font-sans">{close.guarantee}</p>
         </div>
       </div>
     </section>

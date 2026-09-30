@@ -670,3 +670,135 @@
 }
 [data-site="polish"] .v6-rotate-heading { margin: 0; font-size: var(--v6-h2); line-height: 1.15; letter-spacing: -0.022em; color: var(--color-ink); max-width: 18em; }
 [data-site="polish"] .v6-close-guarantee-ink { font-size: var(--v6-small); margin: 0; }
+
+/* ROUND 5 (Aman msg 2680): option 3 at full content width on a dark aurora.
+   Our own CSS take on the React Bits aurora look (theirs is WebGL via ogl, HIGH
+   iPhone risk): three large radial-gradient fields in the brand colours drift
+   on transform only (no filter, no JS), under a grain + faint grid layer. */
+[data-site="polish"] .v6-rotate-aurora { padding-block: clamp(80px, 11vw, 160px); }
+[data-site="polish"] .v6-rotate-aurora.v6-sweep::before { z-index: 2; }
+[data-site="polish"] .v6-rotate-aurora .v6-rotate-heading { max-width: 20em; }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="dark"] { background: #0c0a12; color: var(--color-paper); }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="dark"] .v6-rotate-heading { color: var(--color-paper); }
+/* On ink the brand gradient is too dark to read; the same hues, lifted. */
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="dark"] .v6-rotate-word { background-image: linear-gradient(100deg, #ffae8f, #ff8cbc 55%, #c9a6ff); }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] { background: #fff; }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] .v6-close-guarantee { color: var(--color-ink-soft, #5b5560); }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] .v6-aurora i { opacity: 0.32; }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] .v6-aurora::before { background-image: linear-gradient(rgb(20 16 28 / 0.05) 1px, transparent 1px), linear-gradient(90deg, rgb(20 16 28 / 0.05) 1px, transparent 1px); }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] .v6-aurora::after { opacity: 0.12; mix-blend-mode: multiply; }
+[data-site="polish"] .v6-aurora { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+[data-site="polish"] .v6-aurora i {
+  position: absolute; width: 70%; aspect-ratio: 1; border-radius: 50%;
+  will-change: transform; opacity: 0.75;
+}
+[data-site="polish"] .v6-aurora i:nth-child(1) { left: -18%; top: -45%; background: radial-gradient(closest-side, rgb(254 104 63 / 0.85), rgb(254 104 63 / 0) 72%); }
+[data-site="polish"] .v6-aurora i:nth-child(2) { left: 18%; top: 10%; width: 80%; background: radial-gradient(closest-side, rgb(236 64 129 / 0.7), rgb(236 64 129 / 0) 72%); }
+[data-site="polish"] .v6-aurora i:nth-child(3) { right: -22%; top: -30%; background: radial-gradient(closest-side, rgb(141 78 220 / 0.9), rgb(141 78 220 / 0) 72%); }
+[data-site="polish"] .v6-aurora::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background-image: linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 78%); mask-image: radial-gradient(ellipse at center, #000 30%, transparent 78%);
+}
+[data-site="polish"] .v6-aurora::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; opacity: 0.22; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* A soft dark centre keeps the heading readable over the colour. */
+[data-site="polish"] .v6-rotate-aurora::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse 60% 55% at 50% 52%, rgb(12 10 18 / 0.55), rgb(12 10 18 / 0) 100%);
+}
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"]::after { background: radial-gradient(ellipse 60% 55% at 50% 52%, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0) 100%); }
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-aurora i:nth-child(1) { animation: v6-aur-1 18s ease-in-out infinite alternate; }
+  [data-site="polish"] .v6-aurora i:nth-child(2) { animation: v6-aur-2 22s ease-in-out infinite alternate; }
+  [data-site="polish"] .v6-aurora i:nth-child(3) { animation: v6-aur-3 20s ease-in-out infinite alternate; }
+}
+@keyframes v6-aur-1 { to { transform: translate(22%, 30%) scale(1.15); } }
+@keyframes v6-aur-2 { to { transform: translate(-18%, -24%) scale(0.9); } }
+@keyframes v6-aur-3 { to { transform: translate(-20%, 34%) scale(1.1); } }
+
+/* ROUND 5 (Aman msg 2682): How it works, steps variant B. White section,
+   light frameless card, one step's text at a time in the same place. */
+[data-site="polish"] .v6-how-stage {
+  display: grid; gap: clamp(32px, 4vw, 64px); align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 761px) {
+  [data-site="polish"] .v6-how-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+}
+@media (max-width: 760px) { [data-site="polish"] .v6-how-card { order: -1; } }
+[data-site="polish"] .v6-how-copy { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+@media (max-width: 760px) { [data-site="polish"] .v6-how-copy { align-items: center; text-align: center; } }
+[data-site="polish"] .v6-how-count { margin: 0 0 18px; font: 500 13px/1 var(--font-sans); letter-spacing: 0.14em; color: #c52e67; font-variant-numeric: tabular-nums; }
+[data-site="polish"] .v6-how-lines { display: grid; width: 100%; }
+[data-site="polish"] .v6-how-line {
+  grid-area: 1 / 1; margin: 0; max-width: 16em;
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
+  line-height: 1.15; letter-spacing: -0.02em; color: var(--color-ink);
+  opacity: 0; transform: translateY(10px);
+}
+@media (max-width: 760px) { [data-site="polish"] .v6-how-line { margin-inline: auto; } }
+[data-site="polish"] .v6-how-line.is-on { opacity: 1; transform: none; }
+[data-site="polish"] .v6-how-dashes { display: flex; gap: 8px; width: min(100%, 320px); margin: clamp(18px, 2vw, 30px) 0; }
+[data-site="polish"] .v6-how-dash {
+  flex: 1; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; position: relative;
+}
+[data-site="polish"] .v6-how-dash::before, [data-site="polish"] .v6-how-dash i {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 3px;
+}
+[data-site="polish"] .v6-how-dash::before { background: rgb(20 16 28 / 0.12); }
+[data-site="polish"] .v6-how-dash i { background: linear-gradient(90deg, #fe683f, #ec4081 55%, #8d4edc); transform-origin: left; transform: scaleX(0); }
+[data-site="polish"] .v6-how-dash.is-done i, [data-site="polish"] .v6-how-dash.is-on i { transform: scaleX(1); }
+[data-site="polish"] .v6-how-dash:focus-visible { outline: 2px solid #8d4edc; outline-offset: 2px; border-radius: 4px; }
+
+[data-site="polish"] .v6-how-card {
+  position: relative; display: grid; width: 100%; aspect-ratio: 4 / 5; max-height: 640px; justify-self: center;
+  max-width: 520px; border-radius: 28px; overflow: hidden; background: #fff;
+  border: 1px solid var(--color-line, #e7e2dc); box-shadow: var(--shadow);
+}
+[data-site="polish"] .v6-how-screen { grid-area: 1 / 1; position: relative; min-height: 0; opacity: 0; transform: scale(0.985); display: flex; flex-direction: column; }
+[data-site="polish"] .v6-how-screen.is-on { opacity: 1; transform: none; z-index: 1; }
+/* Chat screens, light. */
+[data-site="polish"] .v6-how-top { display: flex; align-items: center; gap: 10px; padding: 18px 22px; border-bottom: 1px solid #efebe6; font: 600 15px/1 var(--font-sans); color: var(--color-ink); background: #fbf9f6; }
+[data-site="polish"] .v6-how-av { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 13px; background: linear-gradient(135deg, #fe683f, #ec4081 55%, #8d4edc); }
+[data-site="polish"] .v6-how-thread { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; padding: 24px 22px 28px; }
+[data-site="polish"] .v6-how-b { margin: 0; max-width: 82%; padding: 12px 16px; border-radius: 20px; font: 400 clamp(0.95rem, 0.9rem + 0.25vw, 1.0625rem)/1.35 var(--font-sans); }
+[data-site="polish"] .v6-how-out { align-self: flex-end; color: #fff; background: linear-gradient(135deg, #f0603f, #d83b7a 60%, #8d4edc); border-bottom-right-radius: 6px; }
+[data-site="polish"] .v6-how-in { align-self: flex-start; color: var(--color-ink); background: #f1eef2; border-bottom-left-radius: 6px; }
+[data-site="polish"] .v6-how-link { text-decoration: underline; text-underline-offset: 2px; }
+[data-site="polish"] .v6-how-typing { margin: 0; align-self: flex-start; font: 500 13px/1 var(--font-sans); color: var(--color-ink-soft); }
+/* Video screen. */
+[data-site="polish"] .v6-how-video { background: #0c0a12; }
+[data-site="polish"] .v6-how-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+[data-site="polish"] .v6-how-tag {
+  position: absolute; left: 16px; top: 16px; z-index: 1; padding: 8px 13px; border-radius: 999px;
+  font: 600 13px/1 var(--font-sans); color: var(--color-ink); background: rgb(255 255 255 / 0.9);
+  box-shadow: 0 4px 16px -6px rgb(0 0 0 / 0.3);
+}
+[data-site="polish"] .v6-how-tag-low { top: auto; bottom: 16px; }
+[data-site="polish"] .v6-how-bar { position: absolute; left: 16px; right: 16px; bottom: 16px; height: 3px; border-radius: 3px; background: rgb(255 255 255 / 0.35); overflow: hidden; }
+[data-site="polish"] .v6-how-bar i { position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(0.35); }
+/* Monthly grid. */
+[data-site="polish"] .v6-how-grid { background: #fbf9f6; }
+[data-site="polish"] .v6-how-tiles { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; padding: 12px 12px 64px; }
+[data-site="polish"] .v6-how-tiles span { border-radius: 14px; background-size: cover; background-position: center; background-color: #e9e4de; }
+
+/* Motion, only when allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-how-line { transition: opacity 600ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  [data-site="polish"] .v6-how-screen { transition: opacity 600ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  [data-site="polish"] .v6-how-screen.is-on .v6-how-b,
+  [data-site="polish"] .v6-how-screen.is-on .v6-how-typing { animation: v6-how-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0ms) both; }
+  [data-site="polish"] .v6-how-screen.is-on .v6-how-typing { animation-name: v6-how-blink; animation-duration: 1000ms; }
+  [data-site="polish"] .v6-how-screen.is-on .v6-how-tiles span { animation: v6-how-tile 460ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0ms) both; }
+  [data-site="polish"] [data-running] .v6-how-dash.is-on i { animation: v6-how-fill var(--dur) linear both; }
+  [data-site="polish"] [data-running] .v6-how-screen.is-on .v6-how-bar i { animation: v6-how-fill var(--dur) linear both; }
+}
+@keyframes v6-how-in { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes v6-how-blink { 0% { opacity: 0; } 20%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes v6-how-tile { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
+@keyframes v6-how-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (prefers-reduced-motion: reduce) { [data-site="polish"] .v6-how-typing { display: none; } }

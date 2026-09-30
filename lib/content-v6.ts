@@ -97,6 +97,15 @@ export const content = {
       "Don't like it? Full refund, no questions asked",
       "Like it? We go monthly, unlimited revisions",
     ],
+    // Round 5 (Aman msg 2682, steps variant B): what each state of the card
+    // shows. Alex's lines (alex-cta-copy.md). "Done today" is HELD until Aman
+    // OKs a same-day refund promise (Doom), so the reply ends at "full refund."
+    screens: {
+      trialTag: "First cut in 48 hours",
+      refundAsk: "Not feeling this one. Can I get a refund?",
+      refundReply: "Of course. Don't like it, full refund.",
+      monthlyTag: "Monthly retainer, unlimited revisions.",
+    },
     cta: CTA,
   },
 
