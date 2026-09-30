@@ -28,11 +28,15 @@ export const content = {
   why: {
     ...base.why,
     heading: "Why brands keep us.",
-    lead: "Three reasons, each with a number you can check.",
+    // Round 2: Alex's alex-faq-cta.md section 3 (six cards, titles unchanged, bodies trimmed).
+    lead: "Six reasons brands stay, each one you can check on this page.",
     pillars: [
-      { title: "It looks real, or it doesn't ship", body: "A person checks every frame. If it reads AI, it never leaves us." },
-      { title: "Days, not weeks", body: "First concepts in 48 hours, then 20 to 40 variants a month." },
-      { title: "Pay for output, not overhead", body: "No crew, no location, no reshoots. A fixed quote before we start." },
+      { title: "It looks real, or it doesn't ship", body: "A person checks every frame. If it reads AI, we cut it before you see it." },
+      { title: "Days, not weeks", body: "Send a brief today, see first concepts in about 48 hours." },
+      { title: "A fraction of the cost", body: "No crew, no location, no reshoots. You pay for output, not overhead." },
+      { title: "Angles, not one bet", body: "20 to 40 variants a month, so you learn what wins before you spend big." },
+      { title: "Built to run", body: "Hook-first, sized for every placement, ready for your ad manager." },
+      { title: "One DM to start", body: "No forms. Send a product link and the angle you want. We handle the rest." },
     ],
     claim: "If your best ad is six months old, you have a volume problem.",
     claimCta: CTA,
@@ -61,29 +65,32 @@ export const content = {
   testimonials: {
     ...base.testimonials,
     heading: "Real reactions, as sent.",
-    items: [
-      { quote: "Looks great. Let's do the next one in German.", who: "Founder, EU fashion brand", reel: "boyfriend-angle-ai", label: "Fashion · UGC", proof: "" },
-      { quote: "You cooked on this edit. Very convincing.", who: "DTC brand owner", reel: "ai-podcast", label: "Podcast-style", proof: "" },
-      { quote: "Insane realism and all tha ads looks human made.", who: "Creative lead, health brand", reel: "doctor-in-office-ai-ugc-health-product", label: "Health · UGC", proof: "June 2026, 507 purchases from one ad" },
-    ],
+    // Round 2 (Aman msg 2626): all eight restored as they were. Aman has been
+    // told five are not client-written (content.ts note); his call.
+    items: base.testimonials.items.map(t => ({
+      ...t,
+      proof: t.reel === "doctor-in-office-ai-ugc-health-product" ? "June 2026, 507 purchases from one ad" : "",
+    })),
   },
 
   faq: {
     ...base.faq,
     heading: "Before you reach out.",
+    // Round 2: Alex's alex-faq-cta.md section 1 (five; the optional sixth needs Aman).
     items: [
-      { q: "Will people be able to tell it's AI?", a: "Judge the work yourself. A person checks every frame; if it reads fake, it doesn't ship." },
-      { q: "How fast is the first video?", a: "First concepts in about 48 hours, then we iterate until you'd run it." },
-      { q: "What do you need from us?", a: "A product link and a rough idea of the angle. Footage helps, not required." },
-      { q: "What if I don't like it?", a: "Full refund on the trial, no questions asked. Like it? We go monthly, unlimited revisions." },
-      { q: "Who owns the work?", a: "You do. Full commercial rights, no watermarks, yours to run anywhere." },
+      { q: "Will Meta or TikTok flag AI ads?", a: "We mark what needs the AI label. Disclosed ads run on Meta and TikTok every day." },
+      { q: "Do I own the work, paid ads included?", a: "Yes. Full commercial rights for paid and organic, no watermarks, yours forever." },
+      { q: "Will people be able to tell it's AI?", a: "Judge the work above. A person checks every frame; if it reads fake, it never ships." },
+      { q: "What does it cost, and what if I don't like it?", a: "Priced to your brief. One paid trial video, full refund if you don't like it." },
+      { q: "Who writes the script, and how fast?", a: "You send a product link and the angle. We write, you approve. First cut in 48 hours." },
     ],
   },
 
   close: {
     ...base.close,
-    heading: "Your next winning ad is a DM away.",
-    sub: "Most brands get a number the same day.",
+    // Round 2: Alex's option C at both widths (Doom; Aman judges live).
+    heading: "Your best ad is getting older.",
+    sub: "New ones in 48 hours. One paid trial, full refund if you don't like it.",
     cta: CTA,
   },
 

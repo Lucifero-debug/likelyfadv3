@@ -382,3 +382,115 @@
 
 /* The pricing foot is now the guarantee (Alex): a key line, so soft ink (not faint), >= 4.5:1. */
 [data-site="polish"] #pricing p[class*="text-ink-faint"] { color: var(--color-ink-soft); }
+
+/* ROUND 2 (Aman msgs 2613-2626; Reed). ---------------------------------------- */
+/* Logos: one set is 1,728-1,944px wide, so any window narrower than that can
+   never show the same brand twice. The strip is capped and centred; its own
+   edge fades move with it. */
+[data-site="polish"] #clients > div.relative:has(> .animate-lane-x) {
+  max-width: min(100% - 32px, 1100px);
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+/* Sound control: two copies of one control, exactly one displayed. Touch and
+   narrow screens use the stage-level one (unscaled, as before); desktop uses
+   the one ON the video (Aman msg 2615), visible whenever it plays. */
+[data-site="polish"] [data-expand-frame] { position: relative; }
+[data-site="polish"] [data-sound-at="frame"] { display: none; }
+@media (min-width: 761px) and (pointer: fine) {
+  [data-site="polish"] [data-sound-at="stage"] { display: none !important; }
+  [data-site="polish"] [data-sound-at="frame"] { display: inline-flex; align-items: center; justify-content: center; }
+}
+
+/* Desktop split, balanced: one centred container (max 1240px), text column
+   left, a large 9:16 video right (the stage height less the nav and a margin),
+   the zoom starting at 82% instead of 58% so the video is big from the first
+   beat. Tap for sound is on the video, visible whenever it plays. */
+@media (min-width: 761px) and (pointer: fine) {
+  [data-site="polish"] [data-expand-stage] {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    column-gap: clamp(48px, 6vw, 112px) !important;
+    padding: max(88px, calc(var(--nav-h, 80px) + 16px)) max(32px, calc((100vw - 1240px) / 2)) 40px !important;
+  }
+  [data-site="polish"] [data-expand-frame] {
+    height: calc(100svh - max(88px, calc(var(--nav-h, 80px) + 16px)) - 40px) !important;
+    justify-self: end !important;
+    transform: scale(calc(0.82 + (var(--expand-scale, 0.58) - 0.58) / 0.42 * 0.18)) !important;
+    transform-origin: 50% 50%;
+  }
+  [data-site="polish"] [data-expand-beats] { justify-self: start; }
+  [data-site="polish"] [data-beat-line] { max-width: 11em; }
+  [data-site="polish"] [data-expand-frame] > [data-expand-sound] {
+    position: absolute !important;
+    inset: auto auto 24px 50% !important;
+    translate: -50% 0 !important;
+    min-height: 54px;
+    padding: 14px 26px;
+    visibility: visible !important;
+    box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.6);
+  }
+}
+
+/* ROUND 2 picks (research/r2-stats-cta.md + r2-component-kits.md). ------------ */
+/* THE SWEEP: React Bits BorderGlow's idea (a brand-gradient edge light that
+   travels around a card) rebuilt in CSS. BorderGlow re-renders React every
+   frame and paints 13 shadows, too heavy for iPhone. Here it is a 1.5px
+   conic-gradient ring (mask-cut) whose angle animates ONCE as the card
+   reveals, and again on hover on desktop. No JS; reduced motion shows the
+   ring static. */
+@property --v6-sweep-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+[data-site="polish"] .v6-sweep { position: relative; isolation: isolate; }
+[data-site="polish"] .v6-sweep::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.5px;
+  background: conic-gradient(from var(--v6-sweep-a), rgb(255 255 255 / 0.10) 0deg, #fe683f 40deg, #ec4081 80deg, #8d4edc 120deg, rgb(255 255 255 / 0.10) 170deg, rgb(255 255 255 / 0.10) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] .v6-sweep[data-v6-shown]::before,
+  [data-site="polish"] .v6-sweep:not([data-v6-unit])::before { animation: v6-sweep 2.4s cubic-bezier(0.45, 0, 0.2, 1) 0.3s 1 both; }
+  @media (hover: hover) { [data-site="polish"] .v6-sweep:hover::before { animation: v6-sweep 1.6s cubic-bezier(0.45, 0, 0.2, 1) 1 both; } }
+}
+@keyframes v6-sweep { from { --v6-sweep-a: -60deg; } to { --v6-sweep-a: 300deg; } }
+
+/* NUMBERS, richer and with room (Aman msg 2617): centred heading like every
+   other section, three dark cards with the sweep, figures in the logo
+   gradient, readable labels. */
+[data-site="polish"] #numbers { padding-block: clamp(96px, 12vw, 176px) !important; }
+[data-site="polish"] #numbers h2 { text-align: center; margin-inline: auto; }
+[data-site="polish"] #numbers [data-v6-reveal-group]:has(> h2) { margin-bottom: clamp(40px, 5vw, 72px); }
+[data-site="polish"] .v6-number-tile {
+  border-top: 0 !important; padding: clamp(28px, 3vw, 40px) !important; border-radius: 24px;
+  background: rgb(255 255 255 / 0.035); text-align: center;
+}
+[data-site="polish"] .v6-number-value {
+  background: linear-gradient(100deg, #fe683f 0%, #f7545f 25%, #ec4081 50%, #bb47b0 75%, #8d4edc 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent !important;
+  font-size: clamp(2.75rem, 1.9rem + 3.2vw, 4.75rem) !important; line-height: 1.1 !important;
+  padding-block: 0.08em; /* room for the gradient paint box */
+}
+[data-site="polish"] .v6-number-label { font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem) !important; color: #e4e0e8 !important; }
+
+/* CTAs (Aman msg 2621): one primary style, large, lifted, with feedback.
+   research: >= 48px target, single primary action, visible hover/press. */
+[data-site="polish"] .v6-cta-lg {
+  min-height: 60px; padding-inline: 34px !important; font-size: 1.0625rem !important;
+  box-shadow: 0 14px 36px -12px rgb(236 64 129 / 0.55), 0 2px 0 rgb(255 255 255 / 0.25) inset;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 220ms ease;
+}
+@media (hover: hover) {
+  [data-site="polish"] .v6-cta-lg:hover { transform: translateY(-2px); box-shadow: 0 20px 44px -12px rgb(236 64 129 / 0.7), 0 2px 0 rgb(255 255 255 / 0.25) inset; }
+  [data-site="polish"] .v6-cta-lg:hover svg { translate: 3px 0; transition: translate 220ms ease; }
+}
+[data-site="polish"] .v6-cta-lg:active { transform: translateY(0) scale(0.98); }
+[data-site="polish"] .v6-cta-note { font-size: var(--v6-small); max-width: 34ch; }
+
+/* CLOSE card. */
+[data-site="polish"] .v6-close-card {
+  padding: clamp(48px, 7vw, 96px) clamp(24px, 6vw, 88px); border-radius: 32px;
+  background: radial-gradient(120% 90% at 50% 0%, rgb(236 64 129 / 0.07), transparent 60%), #fff;
+  box-shadow: var(--shadow);
+}
+[data-site="polish"] #close h2 { font-size: var(--v6-h2) !important; }

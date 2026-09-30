@@ -200,10 +200,13 @@ export function FaqV4() {
               column heads the list, so the way out is the first thing a
               reader sees before working down it, and it fills what was an empty
               column beside a long one. */}
-          <Reveal delay={100} className="flex pt-8 max-tab:justify-center">
-            <Button contact variant="light" withArrow>
+          {/* Round 2 (Aman msg 2621): the FAQ CTA is the primary gradient button,
+              larger, with the approved guarantee line under it (risk reversal). */}
+          <Reveal delay={100} className="flex flex-col items-start gap-3 pt-8 max-tab:items-center">
+            <Button contact variant="grad" withArrow className="v6-cta-lg">
               {faq.cta}
             </Button>
+            <p className="v6-cta-note font-sans text-ink-soft">One paid trial video. Don&apos;t like it? Full refund, no questions asked.</p>
           </Reveal>
         </div>
 

@@ -70,32 +70,40 @@ export function ScrollExpand({ src, poster, mediaType, useWindowScroll }: {
     };
   }, [src, useWindowScroll]);
 
+  const toggleSound = () => {
+    const media = video.current;
+    if (!media) return;
+    const next = !media.muted;
+    media.muted = next; // Must happen synchronously inside the user gesture.
+    setMuted(next);
+    // The reduced-motion default is a static poster. A deliberate tap
+    // may play it with sound; muting restores that static default.
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced && next) media.pause();
+    else {
+      if (!media.hasAttribute("src")) media.src = src;
+      void media.play().catch(() => {});
+    }
+  };
+
   return (
     <section ref={root} id="featured-ad" aria-label="Featured ad" data-nav-dark data-scroll-expand data-media-type={mediaType} data-progress="1" data-expanded="true" data-beat="4">
       <div data-expand-stage>
         <div data-expand-frame>
           <video ref={video} poster={poster} preload="none" muted={muted} loop playsInline aria-label="Featured AI ad" />
+          {/* Round 2 (Aman msg 2615): the sound control lives ON the video, so it
+              moves and scales with the frame (never in the desktop text column). */}
+          <button type="button" data-expand-sound data-sound-at="frame" aria-pressed={!muted} onClick={toggleSound}>{muted ? "Tap for sound" : "Mute"}</button>
         </div>
         <p data-expand-beats>
           <span data-beat-line="1">Watch this ad.</span>
           <span data-beat-line="2">Every frame is AI.</span>
           <span data-beat-line="3">Not one was filmed.</span>
         </p>
-        <button type="button" data-expand-sound aria-pressed={!muted} onClick={() => {
-          const media = video.current;
-          if (!media) return;
-          const next = !media.muted;
-          media.muted = next; // Must happen synchronously inside the user gesture.
-          setMuted(next);
-          // The reduced-motion default is a static poster. A deliberate tap
-          // may play it with sound; muting restores that static default.
-          const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-          if (reduced && next) media.pause();
-          else {
-            if (!media.hasAttribute("src")) media.src = src;
-            void media.play().catch(() => {});
-          }
-        }}>{muted ? "Tap for sound" : "Mute"}</button>
+        {/* Phone/touch: the stage-level control (unscaled, full size). Desktop uses
+            the one on the video. CSS displays exactly one, so the a11y tree has one. */}
+        <button type="button" data-expand-sound data-sound-at="stage" aria-pressed={!muted} onClick={toggleSound}>{muted ? "Tap for sound" : "Mute"}</button>
+
       </div>
     </section>
   );

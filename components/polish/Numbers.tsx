@@ -17,7 +17,7 @@ export function Numbers() {
         <div data-v6-reveal-group className={HEAD_GAP}><h2 className={`${TEXT_H2} font-display text-(length:--title) font-bold leading-[1.1] tracking-[-0.022em]`}>In numbers.</h2></div>
         <dl className="v6-numbers-grid" data-count={FIGURES.length} style={{ "--figure-count": FIGURES.length } as CSSProperties}>
           {FIGURES.map((f) => (
-            <div data-v6-reveal-group key={f.label} className="v6-number-tile">
+            <div data-v6-reveal-group key={f.label} className="v6-number-tile v6-sweep">
               <dt className="sr-only">{f.label}</dt>
               <dd className="v6-number-value font-display font-bold tracking-[-0.03em]">{f.value}</dd>
               <dd className="v6-number-label font-sans">{f.label}</dd>
