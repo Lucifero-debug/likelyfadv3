@@ -7,6 +7,8 @@ import { PricingV4 } from "@/components/polish/PricingV4";
 import { Testimonials } from "@/components/polish/Testimonials";
 import { FaqV4 } from "@/components/polish/FaqV4";
 import { Close } from "@/components/polish/Close";
+import { HowItWorks } from "@/components/polish/HowItWorks";
+import { LogoLabel } from "@/components/polish/LogoLabel";
 import { FooterV3 } from "@/components/polish/FooterV3";
 import { FeaturedAd } from "@/components/polish/FeaturedAd";
 import { GradualBlur } from "@/components/polish/reactbits/GradualBlur";
@@ -33,11 +35,13 @@ export default function Home() {
 
       <main id="main">
         <HeroStacked />
+        <LogoLabel />
         <LogoWall />
         <WhyUs />
         <FeaturedAd />
         <Numbers />
         <Work darkChapter />
+        <HowItWorks />
         <PricingV4 />
         <Testimonials />
         <FaqV4 />

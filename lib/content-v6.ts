@@ -86,6 +86,23 @@ export const content = {
     ],
   },
 
+  // Round 3: Alex's alex-round3.md addendum (Aman msg 2634): a "How it works"
+  // block between the Work wall and Pricing, so the page does not rush to price.
+  how: {
+    heading: "Try us before you commit.",
+    sub: "Four steps from a DM to your first ad.",
+    steps: [
+      "DM us your product and the angle you want",
+      "One paid trial video. First cut in 48 hours",
+      "Don't like it? Full refund, no questions asked",
+      "Like it? We go monthly, unlimited revisions",
+    ],
+    cta: CTA,
+  },
+
+  // Round 3 (Aman msg 2633): the logo band's label (Alex).
+  logos: { label: "Brands we make ads for." },
+
   close: {
     ...base.close,
     // Round 2: Alex's option C at both widths (Doom; Aman judges live).

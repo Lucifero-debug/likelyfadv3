@@ -3,6 +3,7 @@ import { SpotlightLayer } from "./reactbits/Spotlight";
 
 import { content } from "@/lib/content-v6";
 import { HEAD_GAP, SIZE_24, SIZE_32, SIZE_64, TEXT_STATEMENT } from "@/lib/ui";
+import { CLAIM_BG, CLAIM_SCRIM } from "./claimBg";
 import { Reveal } from "@/components/anim/Reveal";
 import { Reveal as UiReveal } from "@/components/ui/Reveal";
 import { RevealText as UiRevealText } from "@/components/ui/RevealText";
@@ -17,15 +18,6 @@ import { Button } from "@/components/ui/Button";
 
 /* The claim card's ground: /bg.png (stored pre-mirrored), cover/center. noir
    underneath keeps the paper-coloured claim legible while the image loads. */
-const CLAIM_BG = "bg-noir bg-cover bg-center bg-no-repeat bg-[url('/bg.png')]";
-
-/* The scrim carries the contrast on its own — 7.46:1 worst case against
-   text-paper over the untoned photograph. Written as one literal: Tailwind
-   scans source text, so a class assembled from a variable never generates. */
-const CLAIM_SCRIM =
-  "pointer-events-none absolute inset-0 " +
-  "bg-[image:radial-gradient(85%_115%_at_50%_50%,rgba(14,12,17,0.82)_0%,rgba(14,12,17,0.7)_42%,rgba(14,12,17,0.4)_100%)]";
-
 export function WhyUs() {
   const { why } = content;
   return (
@@ -86,7 +78,8 @@ export function WhyUs() {
             <UiReveal delay={100}>
               {/* `grad`, not `dark` — an ink pill would vanish on this ground,
                   and it matches the hero's identical DM CTA. */}
-              <Button contact variant="grad" withArrow>
+              {/* Round 3 (Aman msg 2632): one CTA style everywhere, the big one. */}
+              <Button contact variant="grad" withArrow className="v6-cta-lg">
                 {why.claimCta}
               </Button>
             </UiReveal>

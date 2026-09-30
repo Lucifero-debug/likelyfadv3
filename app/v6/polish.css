@@ -480,17 +480,87 @@
   box-shadow: 0 14px 36px -12px rgb(236 64 129 / 0.55), 0 2px 0 rgb(255 255 255 / 0.25) inset;
   transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 220ms ease;
 }
-@media (hover: hover) {
-  [data-site="polish"] .v6-cta-lg:hover { transform: translateY(-2px); box-shadow: 0 20px 44px -12px rgb(236 64 129 / 0.7), 0 2px 0 rgb(255 255 255 / 0.25) inset; }
-  [data-site="polish"] .v6-cta-lg:hover svg { translate: 3px 0; transition: translate 220ms ease; }
-}
-[data-site="polish"] .v6-cta-lg:active { transform: translateY(0) scale(0.98); }
+/* (hover: see HOVER, round 3, option C below) */
 [data-site="polish"] .v6-cta-note { font-size: var(--v6-small); max-width: 34ch; }
 
 /* CLOSE card. */
 [data-site="polish"] .v6-close-card {
-  padding: clamp(48px, 7vw, 96px) clamp(24px, 6vw, 88px); border-radius: 32px;
-  background: radial-gradient(120% 90% at 50% 0%, rgb(236 64 129 / 0.07), transparent 60%), #fff;
+  padding: clamp(64px, 9vw, 128px) clamp(24px, 6vw, 88px); border-radius: 32px;
   box-shadow: var(--shadow);
 }
+[data-site="polish"] .v6-close-card p { color: rgb(251 249 246 / 0.88); }
 [data-site="polish"] #close h2 { font-size: var(--v6-h2) !important; }
+
+
+/* ROUND 3 (Aman msgs 2632-2637; Reed). ---------------------------------------- */
+/* Hover: the cursor-following effects are OFF on /v6: the border beam that
+   runs around the button and the JS magnetic pull (an inline translate on
+   the shared Button). The replacement waits for Aman's pick (hover-options/). */
+[data-site="polish"] .btn-beam::after { display: none !important; }
+[data-site="polish"] .btn-beam { translate: none !important; }
+
+/* Breathing room, site-wide (Aman msg 2632), why us first. */
+[data-site="polish"] .why-grid { gap: clamp(20px, 2.4vw, 32px) !important; }
+[data-site="polish"] .pillar { padding: clamp(28px, 2.8vw, 40px) !important; }
+[data-site="polish"] #why [data-nav-dark] { margin-top: clamp(48px, 6vw, 88px) !important; }
+[data-site="polish"] :is(#why, #how, #pricing, #testimonials, #faq, #close) { padding-block: clamp(88px, 10vw, 160px) !important; }
+/* The logo band leads straight into Why us: a normal seam there, not a double gap. */
+[data-site="polish"] #why { padding-top: clamp(56px, 6vw, 96px) !important; }
+[data-site="polish"] :is(#why, #pricing, #testimonials, #faq) [data-v6-reveal-group]:first-child,
+[data-site="polish"] #why .wrap > div:first-child { margin-bottom: clamp(40px, 5vw, 72px); }
+
+/* Logo label (Aman msg 2633; Alex: "Brands we make ads for."). */
+[data-site="polish"] .v6-logo-label { padding-top: clamp(40px, 5vw, 64px); }
+[data-site="polish"] #clients { padding-top: 12px !important; }
+
+/* How it works (Alex's addendum): four steps, one row on desktop. */
+[data-site="polish"] #how h2 { font-size: var(--v6-h2) !important; }
+[data-site="polish"] .v6-how-sub { font-size: var(--v6-sub); }
+[data-site="polish"] .v6-how-steps {
+  list-style: none; margin: clamp(40px, 5vw, 64px) 0; padding: 0; width: 100%;
+  display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: minmax(0, 1fr); counter-reset: none;
+}
+@media (min-width: 761px) { [data-site="polish"] .v6-how-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+[data-site="polish"] .v6-how-step {
+  position: relative; text-align: left; background: #fff; border: 1px solid var(--color-line, #e7e2dc);
+  border-radius: 24px; padding: clamp(24px, 2.4vw, 32px); box-shadow: var(--shadow-sm);
+}
+[data-site="polish"] .v6-how-num { display: block; margin-bottom: 14px; font: 500 13px/1 var(--font-sans); letter-spacing: 0.14em; color: #c52e67; }
+[data-site="polish"] .v6-how-step p { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: var(--v6-card-title); line-height: 1.3; color: var(--color-ink); }
+/* The close card carries a scrim layer; keep its edge ring above it (edge-only, no pointer events). */
+[data-site="polish"] .v6-close-card.v6-sweep::before { z-index: 2; }
+
+/* HOVER (Aman msg 2648: option C, gradient flow, + a visible grow (4.5%, msg 2653) and a
+   deeper glow). Every CTA on /v6. The gradient CTAs flow their brand colours
+   across on hover; the nav's solid pill grows and glows. One timing for all.
+   Touch: a press state instead (hover never sticks on a phone). */
+[data-site="polish"] {
+  --v6-cta-ease: cubic-bezier(0.3, 0.7, 0.2, 1);
+  --v6-cta-dur: 700ms;
+  --v6-cta-flow: linear-gradient(100deg, hsl(12.88 98.96% 43.51%) 0%, hsl(355.95 91.06% 45.43%) 20%, hsl(337.33 81.9% 41.18%) 40%, hsl(266.62 66.98% 40.9%) 60%, hsl(337.33 81.9% 41.18%) 80%, hsl(12.88 98.96% 43.51%) 100%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-site="polish"] a.btn-beam,
+  [data-site="polish"] button.btn-beam {
+    transition: scale var(--v6-cta-dur) var(--v6-cta-ease), box-shadow var(--v6-cta-dur) var(--v6-cta-ease), background-position var(--v6-cta-dur) var(--v6-cta-ease), color 280ms ease, border-color 280ms ease !important;
+  }
+}
+[data-site="polish"] .btn-beam[class*="bg-[image:var(--grad)]"] {
+  background-image: var(--v6-cta-flow) !important;
+  background-size: 220% 100% !important;
+  background-position: 0% 50%;
+}
+[data-site="polish"] .btn-beam svg { transition: translate var(--v6-cta-dur) var(--v6-cta-ease); }
+@media (hover: hover) and (pointer: fine) {
+  [data-site="polish"] .btn-beam:hover { scale: 1.045; } /* Aman msg 2653: 4-5%, so it does not crowd nearby buttons */
+  [data-site="polish"] .btn-beam[class*="bg-[image:var(--grad)]"]:hover {
+    background-position: 100% 50%;
+    box-shadow: 0 26px 56px -14px rgb(236 64 129 / 0.8), 0 10px 24px -10px rgb(141 78 220 / 0.55), 0 2px 0 rgb(255 255 255 / 0.25) inset !important;
+  }
+  [data-site="polish"] .btn-beam:not([class*="bg-[image:var(--grad)]"]):hover { box-shadow: 0 18px 40px -14px rgb(20 18 23 / 0.55); }
+  [data-site="polish"] .btn-beam:hover svg { translate: 5px 0; }
+}
+@media (prefers-reduced-motion: no-preference) { [data-site="polish"] .btn-beam:active { scale: 0.97; transition-duration: 120ms !important; } }
+@media (prefers-reduced-motion: reduce) {
+  [data-site="polish"] .btn-beam { transition: none !important; }
+}
