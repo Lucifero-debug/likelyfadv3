@@ -1,4 +1,4 @@
-import { content } from "@/lib/content";
+import { content } from "@/lib/content-v6";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { RevealText } from "@/components/ui/RevealText";

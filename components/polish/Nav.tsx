@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { content } from "@/lib/content";
+import { content } from "@/lib/content-v6";
 import { Button } from "@/components/ui/Button";
 import { WRAP } from "@/lib/ui";
 

@@ -445,7 +445,7 @@ function useNearViewport<T extends Element>() {
   return [ref, near] as const;
 }
 
-export function Work() {
+export function Work({ darkChapter = false }: { darkChapter?: boolean }) {
   const [active, setActive] = useState<Reel | null>(null);
   const [sectionRef, near] = useNearViewport<HTMLElement>();
 
@@ -520,10 +520,10 @@ export function Work() {
     >
       <div className={`${WRAP} v6-work-heading-wrap`}>
         <div data-v6-reveal-group className={HEAD_GAP}>
-          <WorkHeading kicker={work.kicker} heading={work.heading} />
+          <WorkHeading kicker={work.kicker} heading={darkChapter ? "Every one of these is AI." : work.heading} />
           <Reveal delay={100}>
             <p className={`mt-3 text-center font-mono ${TEXT_META} leading-1.2 tracking-[0.04em] text-ink-dim`}>
-              {work.sub}
+              {darkChapter ? "Different products, different sectors. Not one filmed." : work.sub}
             </p>
           </Reveal>
         </div>
@@ -563,7 +563,7 @@ export function Work() {
           under the CTA rather than beside it. It used to sit alone at the right
           edge, which is the right place for a utility control and the wrong
           place for the section's ask. */}
-      <div
+      {!darkChapter && <div
         className={`${WRAP} mt-[clamp(32px,4.5vw,64px)] flex flex-col items-center gap-4`}
       >
         <Reveal>
@@ -580,7 +580,7 @@ export function Work() {
             {work.cta}
           </Button>
         </Reveal>
-      </div>
+      </div>}
 
       {/* Dozens of near-identical tile labels would be noise to a screen
           reader, so one sentence stands in for the lot. */}

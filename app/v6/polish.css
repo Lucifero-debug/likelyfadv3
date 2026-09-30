@@ -1,7 +1,7 @@
 /* Round 4 values only. No selector changes the live / or /v4. */
 [data-site="polish"] {
   /* Logo H/S preserved exactly; text L × .90, CTA L × .70. See motion-contrast.json. */
-  --v6-grad-text: linear-gradient(100deg, hsl(12.879581 98.963731% 55.941176%) 2%, hsl(355.950920 91.061453% 58.411765%) 25%, hsl(337.325581 81.904762% 52.941176%) 50%, hsl(305.689655 46.031746% 45.529412%) 75%, hsl(266.619718 66.981132% 52.588235%) 98%);
+  --v6-grad-text: linear-gradient(100deg, hsl(12.879581 98.963731% 52.5%) 2%, hsl(355.950920 91.061453% 56%) 25%, hsl(337.325581 81.904762% 52.941176%) 50%, hsl(305.689655 46.031746% 45.529412%) 75%, hsl(266.619718 66.981132% 52.588235%) 98%);
   --v6-grad-cta: linear-gradient(100deg, hsl(12.879581 98.963731% 43.509804%) 2%, hsl(355.950920 91.061453% 45.431373%) 25%, hsl(337.325581 81.904762% 41.176471%) 50%, hsl(305.689655 46.031746% 35.411765%) 75%, hsl(266.619718 66.981132% 40.901961%) 98%);
   --grad-ink: var(--v6-grad-cta);
   --v6-heading-accent: var(--color-ink);
@@ -232,3 +232,153 @@
   from { opacity: 0; filter: blur(var(--v6-rv-blur)); translate: 0 var(--v6-rv-rise); }
   to { opacity: 1; filter: blur(0); translate: 0 0; }
 }
+
+/* PART 1 (Aman msgs 2593, 2597-2600; Reed). ------------------------------- */
+/* Background: one paper everywhere. The desktop hero was bg-white (#fff) on
+   the paper (#fbf9f6) page: its bottom padding showed as a white line, and
+   the column behind the pitch as a white glow. The shared TopFrost wash is
+   re-tinted to paper here (the component is shared with "/"). */
+[data-site="polish"] .bg-white\/45 { background-color: rgb(251 249 246 / 0.45); }
+
+/* Clipped glyphs: the reveal no longer slides, so RevealText's word masks and
+   the hero's line masks have nothing to hide. Unmasked, descenders (y, g, p)
+   are whole. The hero gradient line paints only inside its own box
+   (background-clip: text), so that box is grown by 0.25em each way with equal
+   negative margins: the layout does not move. */
+[data-site="polish"] span.inline-flex.overflow-hidden,
+[data-site="polish"] [data-polish-pitch] span.block.overflow-hidden { overflow: visible; }
+[data-site="polish"] [data-polish-pitch] .hero-line.bg-clip-text { padding-block: 0.25em; margin-block: -0.25em; }
+
+/* Type scale: one size per role, 390 -> 1440 (px): H2 32 -> 52, sub 16 -> 19,
+   card title 18 -> 20, body 15 -> 16, small 13 -> 14. */
+[data-site="polish"] {
+  --v6-h2: clamp(2rem, 1.536rem + 1.905vw, 3.25rem);
+  --v6-sub: clamp(1rem, 0.93rem + 0.286vw, 1.1875rem);
+  --v6-card-title: clamp(1.125rem, 1.08rem + 0.19vw, 1.25rem);
+  --v6-body: clamp(0.9375rem, 0.914rem + 0.095vw, 1rem);
+  --v6-small: clamp(0.8125rem, 0.79rem + 0.095vw, 0.875rem);
+}
+[data-site="polish"] main section h2 { font-size: var(--v6-h2) !important; line-height: 1.1; }
+[data-site="polish"] :is(
+  [data-polish-pitch] > p.hero-rise:not(:last-child),
+  #why .wrap > div:first-child p,
+  #pricing p.mt-6.text-pretty,
+  #work .v6-work-heading-wrap p,
+  #close p
+) { font-size: var(--v6-sub) !important; line-height: 1.45; }
+[data-site="polish"] :is(.pillar h3, #faq h3) { font-size: var(--v6-card-title) !important; }
+[data-site="polish"] :is(.pillar p, #faq .overflow-hidden p) { font-size: var(--v6-body) !important; }
+[data-site="polish"] :is(
+  [data-polish-pitch] p.hero-rise:last-child,
+  [data-polish-pitch] div.hero-rise p,
+  #pricing p[class*="text-ink-faint"],
+  footer p
+) { font-size: var(--v6-small) !important; }
+
+/* PART 3 (Alex's final copy). The logo band has no heading on /v6 (Alex, section 2):
+   hide the shared LogoWall's heading block; the section keeps its aria-label. */
+[data-site="polish"] #clients > div:first-child { display: none; }
+[data-site="polish"] #clients { padding-top: clamp(24px, 4vw, 40px); }
+
+/* DARK CHAPTER + DESKTOP SPLIT (Astra) */
+/* One ground from the start of the zoom through the wall. No outer gaps or
+   borders can expose the paper; Pricing retains its existing paper ground. */
+[data-site="polish"] :is(#featured-ad, #numbers, #work) {
+  background: var(--color-ink, #141217);
+  color: #fbf9f6;
+  --v6-heading-accent: #fbf9f6;
+  margin-block: 0;
+  border-block: 0;
+}
+[data-site="polish"] [data-expand-stage] { background: var(--color-ink, #141217); }
+[data-site="polish"] .v6-work-heading-wrap { background: transparent; color: #fbf9f6; }
+[data-site="polish"] .v6-work-heading-wrap p { color: #d5d0da; }
+[data-site="polish"] #work .uppercase { color: #d5d0da; }
+[data-site="polish"] #numbers h2 { color: #fbf9f6; }
+[data-site="polish"] .v6-numbers-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px 32px;
+}
+[data-site="polish"] .v6-number-tile {
+  min-width: 0;
+  border-top: 1px solid rgb(251 249 246 / .22);
+  padding-top: 24px;
+}
+[data-site="polish"] .v6-number-value {
+  margin: 0;
+  font-size: clamp(2rem, 1.25rem + 2.5vw, 3.5rem);
+  line-height: 1.2;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: #fbf9f6;
+}
+[data-site="polish"] .v6-number-label {
+  margin: 12px 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #d5d0da;
+}
+@media (max-width: 760.98px) {
+  [data-site="polish"] .v6-numbers-grid[data-count="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
+  [data-site="polish"] .v6-numbers-grid[data-count="4"] .v6-number-value { font-size: clamp(1.375rem, 5.6vw, 2rem); }
+}
+@media (min-width: 761px) {
+  [data-site="polish"] .v6-numbers-grid { grid-template-columns: repeat(var(--figure-count), minmax(0, 1fr)); }
+  [data-site="polish"] .v6-numbers-grid[data-count="4"] .v6-number-value { font-size: clamp(1.5rem, 3vw, 2.75rem); }
+}
+/* Only fine-pointer desktops split. Phone overlay markup, scroll math and the
+   touch compositor timeline above remain intact, including reduced motion. */
+@media (min-width: 761px) and (pointer: fine) {
+  [data-site="polish"] [data-expand-stage] {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    column-gap: clamp(24px, 5vw, 80px);
+    padding: max(80px, var(--nav-h, 80px)) clamp(32px, 6vw, 96px) 32px;
+  }
+  [data-site="polish"] [data-expand-frame] {
+    grid-area: 1 / 2;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 9 / 16;
+    justify-self: center;
+    border-radius: 24px;
+  }
+  [data-site="polish"] [data-expand-beats] {
+    position: relative;
+    inset: auto;
+    grid-area: 1 / 1;
+    width: 100%;
+    place-items: center start;
+  }
+  [data-site="polish"] [data-beat-line] {
+    max-width: 100%;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    font-size: clamp(2.25rem, 5vw, 5.5rem);
+    line-height: 1.15;
+    text-align: left;
+    text-wrap: balance;
+  }
+  [data-site="polish"] [data-expand-sound] {
+    position: relative;
+    inset: auto;
+    translate: none;
+    grid-area: 1 / 1;
+    justify-self: start;
+    align-self: center;
+    background: var(--v6-grad-cta);
+    color: #fff;
+    min-height: 48px;
+    padding: 14px 24px;
+  }
+}
+
+/* Pricing sits in a half-width column on desktop: at the shared 52px its two
+   forced lines would wrap to three (Alex's 2-line rule). Sized to its column. */
+[data-site="polish"] #pricing h2 { font-size: min(var(--v6-h2), 7.6cqw) !important; }
+
+/* The pricing foot is now the guarantee (Alex): a key line, so soft ink (not faint), >= 4.5:1. */
+[data-site="polish"] #pricing p[class*="text-ink-faint"] { color: var(--color-ink-soft); }

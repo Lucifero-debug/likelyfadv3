@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { content } from "@/lib/content";
+import { content } from "@/lib/content-v6";
 import { reelVideos, type Reel } from "@/lib/reels.generated";
 import { LazyVideo } from "@/components/ui/LazyVideo";
 import { Lightbox } from "@/components/ui/Lightbox";
@@ -617,8 +617,10 @@ function Card({
               a smaller size, never clamped. From `tab:` the full line at the
               same 11px, clamped as before. */}
           <span className="min-w-0 break-words text-[length:var(--caption-px,12px)] tab:hidden">{item.who.split(" · ")[0]}</span>
-          <span className={`hidden min-w-0 break-words text-[0.6875rem] ${WHO_CLAMP} tab:[display:-webkit-box]`}>{item.who}</span>
+          <span className={`hidden min-w-0 break-words text-[0.75rem] ${WHO_CLAMP} tab:[display:-webkit-box]`}>{item.who}</span>
         </p>
+        {/* Alex addendum (Aman msg 145): a real result under the role, no dollar sign. */}
+        {"proof" in item && item.proof ? <p className="mt-1.5 font-sans text-[0.75rem] font-medium leading-[1.3] text-ink">{item.proof}</p> : null}
       </figcaption>
     </figure>
   );

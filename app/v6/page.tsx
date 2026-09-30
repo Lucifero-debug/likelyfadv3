@@ -5,7 +5,8 @@ import { WhyUs } from "@/components/polish/WhyUs";
 import { Work } from "@/components/polish/Work";
 import { PricingV4 } from "@/components/polish/PricingV4";
 import { Testimonials } from "@/components/polish/Testimonials";
-import { FaqV4 } from "@/components/sections/FaqV4";
+import { FaqV4 } from "@/components/polish/FaqV4";
+import { Close } from "@/components/polish/Close";
 import { FooterV3 } from "@/components/polish/FooterV3";
 import { FeaturedAd } from "@/components/polish/FeaturedAd";
 import { GradualBlur } from "@/components/polish/reactbits/GradualBlur";
@@ -36,10 +37,11 @@ export default function Home() {
         <WhyUs />
         <FeaturedAd />
         <Numbers />
-        <Work />
+        <Work darkChapter />
         <PricingV4 />
         <Testimonials />
         <FaqV4 />
+        <Close />
       </main>
 
       <FooterV3 />

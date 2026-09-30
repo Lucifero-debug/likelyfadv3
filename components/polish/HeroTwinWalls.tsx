@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { content } from "@/lib/content";
+import { content } from "@/lib/content-v6";
 import { TopFrost } from "@/components/sections/TopFrost";
 import { Button } from "@/components/ui/Button";
 import { TEXT_LEAD, TEXT_META } from "@/lib/ui";
@@ -74,7 +74,7 @@ export function HeroTwinWalls({
          h-svh as the walls' height and adds the 48 below it rather than
          taking it out of them, so with the logo wall's own 48 on top the seam
          is the page's 96 like every other. */
-      className="relative box-content h-svh overflow-hidden bg-white pb-[clamp(32px,5vw,48px)] text-ink"
+      className="relative box-content h-svh overflow-hidden bg-paper pb-[clamp(32px,5vw,48px)] text-ink"
     >
       <TwinWalls running={inView && !paused} play={play && inView} edgeBlur={edgeBlur} edgeFade={edgeFade} onOpen={onOpen}>
         <HeroCopy />
@@ -150,7 +150,7 @@ export function HeroCopy({ phone = false }: { phone?: boolean }) {
         <Button
           href={hero.secondaryHref}
           variant="ghost"
-          className="max-tab:w-full"
+          className="max-tab:hidden" /* Alex: desktop only; the phone hero drops its secondary button */
         >
           {hero.secondaryCta}
         </Button>
@@ -163,12 +163,14 @@ export function HeroCopy({ phone = false }: { phone?: boolean }) {
       >
         One paid trial video. Don&apos;t like it? Full refund, no questions asked.
       </p>
+      {hero.reassurance ? (
       <p
         style={{ animationDelay: "1100ms" }}
         className={`hero-rise mt-2 font-mono ${TEXT_META} tracking-[0.03em] text-ink-faint tab:whitespace-nowrap`}
       >
         {hero.reassurance}
       </p>
+      ) : null}
     </div>
   );
 }

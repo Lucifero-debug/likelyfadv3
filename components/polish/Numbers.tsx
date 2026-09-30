@@ -1,34 +1,29 @@
-/* In numbers (Aman msg 2451): the approved EXAMPLE figures, each visibly marked, with one footnote. Placed after the featured ad and
-   before Work in /v6 only. Styled with the page's own tokens (SECTION, WRAP, SectionHeading); the only motion is the
-   React Bits CountUp, once, after expansion (first-view fallback) (the server HTML carries the final numbers). */
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { SECTION, WRAP, HEAD_GAP, TEXT_META } from "@/lib/ui";
+/* Final figures remain in server HTML; CountUp animates once on arrival.
+   The data length alone selects three/four desktop columns and the phone grid. */
+import type { CSSProperties } from "react";
+import { SECTION, WRAP, HEAD_GAP, TEXT_H2 } from "@/lib/ui";
 import { CountUp } from "./reactbits/CountUp";
 
 const FIGURES: { value: React.ReactNode; label: string }[] = [
-  { value: <CountUp to={48} />, label: "hours to first concepts" },
-  { value: <><CountUp to={20} />–<CountUp to={40} /></>, label: "ads a month per brand" },
-  { value: <><CountUp to={300} />+</>, label: "ads shipped" },
+  { value: <><CountUp to={48} /> hours</>, label: "to the first cut" },
+  { value: <><CountUp to={1000} group />+</>, label: "ads shipped since 2024" },
+  { value: "$1M+", label: "in ad spend behind our creatives, 2024 to 2026" },
 ];
 
 export function Numbers() {
   return (
-    <section id="numbers" className={SECTION} aria-label="In numbers">
+    <section id="numbers" data-nav-dark className={SECTION} aria-label="In numbers">
       <div className={WRAP}>
-        <div data-v6-reveal-group className={HEAD_GAP}><SectionHeading kicker="In numbers" heading="What the work does." /></div>
-        <dl className="grid grid-cols-1 gap-y-10 tab:grid-cols-3 tab:gap-x-8">
+        <div data-v6-reveal-group className={HEAD_GAP}><h2 className={`${TEXT_H2} font-display text-(length:--title) font-bold leading-[1.1] tracking-[-0.022em]`}>In numbers.</h2></div>
+        <dl className="v6-numbers-grid" data-count={FIGURES.length} style={{ "--figure-count": FIGURES.length } as CSSProperties}>
           {FIGURES.map((f) => (
-            <div data-v6-reveal-group key={f.label} className="border-t border-line pt-6" data-placeholder="true">
+            <div data-v6-reveal-group key={f.label} className="v6-number-tile">
               <dt className="sr-only">{f.label}</dt>
-              <dd className="font-display text-[clamp(2.75rem,2rem+3vw,4.5rem)] font-bold leading-none tracking-[-0.03em] text-ink">{f.value}</dd>
-              <dd className="mt-3 flex items-baseline gap-2 font-sans text-[1rem] text-ink-soft">
-                <span>{f.label}</span>
-                <span className="text-[0.75rem] font-medium uppercase tracking-[0.08em] text-ink-faint">Example</span>
-              </dd>
+              <dd className="v6-number-value font-display font-bold tracking-[-0.03em]">{f.value}</dd>
+              <dd className="v6-number-label font-sans">{f.label}</dd>
             </div>
           ))}
         </dl>
-        <p className={`mt-8 font-sans ${TEXT_META} text-ink-faint`}>Example figures, replaced with real numbers before launch.</p>
       </div>
     </section>
   );

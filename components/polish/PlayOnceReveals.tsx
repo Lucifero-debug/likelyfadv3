@@ -20,7 +20,7 @@
 import { useEffect } from "react";
 
 const STEP = 110, MAX_QUEUE = 330;
-const CARD = 'article, figure, li, [data-reveal-item], [data-placeholder="true"]';
+const CARD = 'article, figure, li, [data-reveal-item], [data-placeholder="true"], .v6-number-tile';
 const TEXT = 'h1, h2, h3, h4, h5, h6, [role="heading"], p, blockquote, figcaption, dt, dd, [class*="uppercase"][class*="tracking-"], a, button';
 const SKIP = 'nav, header, [data-polish-pitch], [data-video-wall], [data-polish-lanes], [data-polish-reel], [data-scroll-expand], [data-gradual-blur], [role="dialog"], .sr-only, [aria-hidden="true"]';
 const WORD = "span.inline-flex.overflow-hidden";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { content } from "@/lib/content";
+import { content } from "@/lib/content-v6";
 import { takeReels } from "@/lib/reelOrder";
 import { HOT } from "@/lib/useInViewPlay";
 import type { Reel } from "@/lib/reels.generated";
@@ -178,9 +178,9 @@ export function TwinWalls({
              through the panel's padding, and fades over 64px top and bottom. */
           <div
             key="middle"
-            className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 px-[clamp(24px,5vw,64px)] tab:static tab:w-auto tab:flex-none tab:bg-transparent tab:px-[clamp(20px,2.5vw,48px)]"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-paper/60 px-[clamp(24px,5vw,64px)] tab:static tab:w-auto tab:flex-none tab:bg-transparent tab:px-[clamp(20px,2.5vw,48px)]"
           >
-            <div className="relative isolate w-full before:absolute before:-inset-x-[clamp(24px,5vw,64px)] before:-inset-y-16 before:-z-10 before:bg-[linear-gradient(to_bottom,rgb(255_255_255/0)_0%,rgb(255_255_255/1)_64px,rgb(255_255_255/1)_calc(100%-64px),rgb(255_255_255/0)_100%)] before:content-[''] tab:w-auto tab:before:hidden">
+            <div className="relative isolate w-full before:absolute before:-inset-x-[clamp(24px,5vw,64px)] before:-inset-y-16 before:-z-10 before:bg-[linear-gradient(to_bottom,rgb(251_249_246/0)_0%,rgb(251_249_246/1)_64px,rgb(251_249_246/1)_calc(100%-64px),rgb(251_249_246/0)_100%)] before:content-[''] tab:w-auto tab:before:hidden">
               {children}
             </div>
           </div>

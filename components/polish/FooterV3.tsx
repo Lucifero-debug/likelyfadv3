@@ -1,5 +1,5 @@
-import { content } from "@/lib/content";
-import { PARENT_COMPANY, X_HANDLE, contactUrl } from "@/lib/site";
+import { content } from "@/lib/content-v6";
+import { X_HANDLE, contactUrl } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
 import { TEXT_META } from "@/lib/ui";
 
@@ -165,10 +165,7 @@ export function FooterV3() {
               a copyright line entirely is a decision about the site rather than
               about its layout. */}
           <div className="flex flex-col items-start gap-1">
-            <p className="font-sans text-sm leading-5 text-ink-dim">
-              An AI production studio by{" "}
-              <span className="font-medium text-white/80">{PARENT_COMPANY}</span>
-            </p>
+            {/* T-0088 (Alex): the tagline above now names Bright Life Creations; the old credit line would repeat it. */}
             <p className={`font-mono ${TEXT_META} text-white/40`}>
               © {year} {brand}. All rights reserved.
             </p>

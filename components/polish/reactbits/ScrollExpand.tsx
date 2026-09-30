@@ -71,7 +71,7 @@ export function ScrollExpand({ src, poster, mediaType, useWindowScroll }: {
   }, [src, useWindowScroll]);
 
   return (
-    <section ref={root} id="featured-ad" aria-label="Featured ad" data-scroll-expand data-media-type={mediaType} data-progress="1" data-expanded="true" data-beat="4">
+    <section ref={root} id="featured-ad" aria-label="Featured ad" data-nav-dark data-scroll-expand data-media-type={mediaType} data-progress="1" data-expanded="true" data-beat="4">
       <div data-expand-stage>
         <div data-expand-frame>
           <video ref={video} poster={poster} preload="none" muted={muted} loop playsInline aria-label="Featured AI ad" />

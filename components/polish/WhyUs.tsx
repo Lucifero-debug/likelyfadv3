@@ -1,7 +1,7 @@
 "use client";
 import { SpotlightLayer } from "./reactbits/Spotlight";
 
-import { content } from "@/lib/content";
+import { content } from "@/lib/content-v6";
 import { HEAD_GAP, SIZE_24, SIZE_32, SIZE_64, TEXT_STATEMENT } from "@/lib/ui";
 import { Reveal } from "@/components/anim/Reveal";
 import { Reveal as UiReveal } from "@/components/ui/Reveal";

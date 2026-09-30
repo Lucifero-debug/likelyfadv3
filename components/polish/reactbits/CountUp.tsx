@@ -7,23 +7,25 @@
 import { useEffect, useRef } from "react";
 import { EXPAND_COMPLETE_EVENT } from "../motion";
 
-export function CountUp({ to, from = 0, ms = 1600 }: { to: number; from?: number; ms?: number }) {
+/* Reed (T-0088): `group` formats with thousands separators, e.g. 1,000 (Numbers tile). */
+const fmt = (n: number, group: boolean) => (group ? n.toLocaleString("en-US") : String(n));
+export function CountUp({ to, from = 0, ms = 1600, group = false }: { to: number; from?: number; ms?: number; group?: boolean }) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0, started = false;
-    const finish = () => { cancelAnimationFrame(frame); el.textContent = String(to); };
+    const finish = () => { cancelAnimationFrame(frame); el.textContent = fmt(to, group); };
     const start = () => {
       if (started) return;
       started = true;
       if (preference.matches) { finish(); return; }
       const t0 = performance.now();
-      el.textContent = String(from);
+      el.textContent = fmt(from, group);
       const tick = (t: number) => {
         const p = Math.min(1, (t - t0) / ms);
-        el.textContent = String(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))));
+        el.textContent = fmt(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))), group);
         if (p < 1) frame = requestAnimationFrame(tick);
       };
       frame = requestAnimationFrame(tick);
@@ -37,6 +39,6 @@ export function CountUp({ to, from = 0, ms = 1600 }: { to: number; from?: number
     window.addEventListener(EXPAND_COMPLETE_EVENT, start);
     preference.addEventListener("change", change);
     return () => { cancelAnimationFrame(frame); io.disconnect(); window.removeEventListener(EXPAND_COMPLETE_EVENT, start); preference.removeEventListener("change", change); finish(); };
-  }, [to, from, ms]);
-  return <span ref={ref} data-count-to={to} className="tabular-nums">{to}</span>;
+  }, [to, from, ms, group]);
+  return <span ref={ref} data-count-to={fmt(to, group)} className="tabular-nums">{fmt(to, group)}</span>;
 }
