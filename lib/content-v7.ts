@@ -1,39 +1,63 @@
-// Alex's final plan 2b copy, with Aman's selected headline, story and small line.
+// Alex's approved copy. The switch changes media and the approved sub only.
+export type ReelSegment = { start: number; end: number };
+
+export const HERO: {
+  variant: "three" | "chip";
+  reel: string;
+  chipReel: string;
+  chipAtSeconds: number;
+  segment?: ReelSegment;
+} = {
+  variant: "chip",
+  reel: "boyfriend-angle-ai",
+  chipReel: "boyfriend-angle-ai",
+  chipAtSeconds: 26,
+  segment: { start: 21.5, end: 26.5 },
+};
+
 export const contentV7 = {
   hero: {
-    label: "Likelyfad. AI ad studio.",
+    name: "Likelyfad",
     lines: ["AI ads.", "Real."],
     sub: "Video, UGC and static ads that look shot, delivered in 48 hours.",
+    threeSub: "Video, UGC and static ads for your product, delivered in 48 hours.",
+    product: "Your product.",
+    ad: "Your ad.",
   },
-  numbers: [
-    { value: "48 hours", line: "to the first cut.", source: "measured on the first trial video." },
-    { value: "1,000+", line: "ads shipped.", source: "since 2024, across every client." },
-    { value: "$1M+", line: "in ad spend behind our creatives.", source: "client ad accounts, 2024 to 2026." },
-    { value: "507", line: "purchases from one ad.", source: "health brand, June 2026." },
-  ],
-  story: {
-    reel: "doctor-in-office-ai-ugc-health-product",
-    label: "Health brand.",
-    caption: "One ad, 507 purchases, still running three months later.",
-    shortCaption: "507 purchases from one ad.",
-  },
-  how: {
-    heading: "From DM to ads.",
-    sub: "Four steps. No forms. A call if you want one.",
-    steps: [
-      { icon: "chat", title: "DM us your product.", line: "One message. We learn your brand and what runs now." },
-      { icon: "clapperboard", title: "Trial brief, trial video.", line: "Angle, format, script. First cut in 48 hours." },
-      { icon: "calendar", title: "Love it? Go monthly.", line: "Any volume, on a plan built for your needs." },
-      { icon: "frames", title: "Briefs in, ads out.", line: "Unlimited revisions until they win. You run them." },
+  highlights: {
+    heading: "Get the highlights.",
+    lines: [
+      "48 hours to the first cut. Brief today, review the day after tomorrow.",
+      "Every frame checked by a person. If it reads AI, it never ships.",
+      "1,000+ ads shipped since 2024. Not one of them filmed.",
+      "$1M+ in ad spend behind our creatives. Made to win, not just to look real.",
     ],
   },
-  pricing: {
-    heading: "Priced to your brief.",
-    sub: "No packages. A plan shaped around how much you test.",
-    title: "Start with one.",
-    lines: [
-      "One paid trial video, first cut in 48 hours.",
-      "Then a monthly plan, any volume, unlimited revisions.",
+  work: { heading: "Work.", line: "Every one of these is AI.", pause: "Pause" },
+  results: {
+    heading: "Results.",
+    number: "507",
+    label: "purchases from one ad.",
+    reel: "doctor-in-office-ai-ugc-health-product",
+    caption: "Health brand, June 2026. Still running in September.",
+  },
+  closer: {
+    heading: "Take a closer look.",
+    reel: "hoodie-ad-podcast-style",
+    meta: "Running on Meta",
+    steps: [
+      { title: "DM us your product.", line: "One message. We learn your brand and what runs now." },
+      { title: "Trial brief, trial video.", line: "Angle, format, script. First cut in 48 hours." },
+      { title: "Love it? Go monthly.", line: "Any volume, on a plan built for your needs." },
+      { title: "Briefs in, ads out.", line: "Unlimited revisions until they win. You run them." },
+    ],
+  },
+  plan: {
+    heading: "Plan.",
+    question: "Which is right for you?",
+    columns: [
+      { title: "Trial video.", lines: ["One paid video.", "First cut in 48 hours.", "Made to win."] },
+      { title: "Monthly plan.", lines: ["Any volume.", "Unlimited revisions.", "A plan built for your needs."] },
     ],
     small: "A number back the same day.",
   },
@@ -51,5 +75,4 @@ export const contentV7 = {
     lines: ["Your next ad.", "Today."],
     sub: "Send the product. First cut in 48 hours. Made to win.",
   },
-  footer: "© 2026 Likelyfad",
 } as const;

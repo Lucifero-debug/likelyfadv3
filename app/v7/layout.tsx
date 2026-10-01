@@ -14,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function V7Layout({ children }: { children: React.ReactNode }) {
-  return <div data-site="v7" className={inter.variable}>{children}</div>;
+  return <div data-site="v7" className={`${inter.variable} ${inter.className}`}>{children}</div>;
 }
