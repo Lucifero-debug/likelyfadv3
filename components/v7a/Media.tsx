@@ -266,7 +266,9 @@ export function ReelVideo({ reel, enabled = true, priority = 2, soundControl = f
   function toggleSound() {
     const entry = entryRef.current!;
     const next = !sound;
-    const hq = reel.hq ? segmentSource(reel.hq, segment) : null;
+    // WebKit can apply a fragment's start AFTER the metadata resume seek.
+    // HQ uses our guarded window loop so the saved position is the only seek.
+    const hq = reel.hq ? (segment ? reel.hq.split("#")[0] : reel.hq) : null;
     entry.video.muted = !next;
     entry.manual = true;
     entry.stopped = false;
