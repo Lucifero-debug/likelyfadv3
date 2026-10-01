@@ -1,9 +1,13 @@
 /* Round 4 values only. No selector changes the live / or /v4. */
 [data-site="polish"] {
-  --v6-paper: #f8f6fd; /* Round 8 (Aman msg 2799): lavender near-white from the logo gradient (was #fbf9f6) */
-  --v6-paper-rgb: 248 246 253;
+  --v6-paper: #fdfcff; /* Round 9 (Aman msg 2831): W1, white with ~1% cool lavender */
+  --v6-paper-rgb: 253 252 255;
+  --v6-surface: #ffffff;
+  --v6-border: rgb(20 16 28 / 0.07);
+  --color-line: var(--v6-border);
   --color-paper: var(--v6-paper);
   background-color: var(--color-paper);
+  overflow-x: clip; /* Clip stray paint without making a sticky scroll container. */
   /* Logo H/S preserved exactly; text L × .90, CTA L × .70. See motion-contrast.json. */
   --v6-grad-text: linear-gradient(100deg, hsl(12.879581 98.963731% 52.5%) 2%, hsl(355.950920 91.061453% 56%) 25%, hsl(337.325581 81.904762% 52.941176%) 50%, hsl(305.689655 46.031746% 45.529412%) 75%, hsl(266.619718 66.981132% 52.588235%) 98%);
   --v6-grad-cta: linear-gradient(100deg, hsl(12.879581 98.963731% 43.509804%) 2%, hsl(355.950920 91.061453% 45.431373%) 25%, hsl(337.325581 81.904762% 41.176471%) 50%, hsl(305.689655 46.031746% 35.411765%) 75%, hsl(266.619718 66.981132% 40.901961%) 98%);
@@ -65,6 +69,11 @@
 
 /* Reed: SpotlightLayer sits between the card background and its text */
 [data-site="polish"] .pillar { isolation: isolate; }
+/* A single raised white across the shared components and the /v6 cards. */
+[data-site="polish"] :is(.bg-white, .pillar, #pricing ul, #pricing li, #faq div:has(> h3 > button), .v6-card) {
+  background-color: var(--v6-surface);
+  border-color: var(--v6-border);
+}
 
 /* T-0088 motion: every selector is local to the polish route. */
 [data-site="polish"] [data-scroll-expand] { position: relative; height: 100svh; }
@@ -275,6 +284,7 @@
   #work .v6-work-heading-wrap p,
   #close p
 ) { font-size: var(--v6-sub) !important; line-height: 1.45; }
+/* Round 9 review (Reed): kept to the round-8 scope; Aman msg 2822 "the rest of the site is fine", so the steps and pricing type sizes stay as they were. */
 [data-site="polish"] :is(.pillar h3, #faq h3) { font-size: var(--v6-card-title) !important; }
 [data-site="polish"] :is(.pillar p, #faq .overflow-hidden p) { font-size: var(--v6-body) !important; }
 [data-site="polish"] :is(
@@ -423,7 +433,7 @@
   [data-site="polish"] [data-expand-stage] {
     grid-template-columns: minmax(0, 1fr) auto !important;
     column-gap: clamp(48px, 6vw, 112px) !important;
-    padding: max(88px, calc(var(--nav-h, 80px) + 16px)) max(32px, calc((100vw - 1240px) / 2)) 40px !important;
+    padding: max(88px, calc(var(--nav-h, 80px) + 16px)) max(32px, calc((100% - 1240px) / 2)) 40px !important;
   }
   [data-site="polish"] [data-expand-frame] {
     height: calc(100svh - max(88px, calc(var(--nav-h, 80px) + 16px)) - 40px) !important;
@@ -534,7 +544,7 @@
 }
 @media (min-width: 761px) { [data-site="polish"] .v6-how-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 [data-site="polish"] .v6-how-step {
-  position: relative; text-align: left; background: #fff; border: 1px solid var(--color-line, #e7e2dc);
+  position: relative; text-align: left; background: var(--v6-surface); border: 1px solid var(--v6-border);
   border-radius: 24px; padding: clamp(24px, 2.4vw, 32px); box-shadow: var(--shadow-sm);
 }
 [data-site="polish"] .v6-how-num { display: block; margin-bottom: 14px; font: 500 13px/1 var(--font-sans); letter-spacing: 0.14em; color: #c52e67; }
@@ -622,7 +632,7 @@
 [data-site="polish"] #close-rotating .v6-option-label { align-self: center; }
 [data-site="polish"] .v6-rotate-card {
   padding: clamp(56px, 8vw, 112px) clamp(20px, 5vw, 72px); border-radius: 32px;
-  background: #fff; box-shadow: var(--shadow);
+  background: var(--v6-surface); box-shadow: var(--shadow);
 }
 [data-site="polish"] .v6-rotate-heading { margin: 0; font-size: var(--v6-h2); line-height: 1.15; letter-spacing: -0.022em; color: var(--color-ink); max-width: 18em; }
 [data-site="polish"] .v6-close-guarantee-ink { font-size: var(--v6-small); margin: 0; }
@@ -638,7 +648,7 @@
 [data-site="polish"] .v6-rotate-aurora[data-theme-v6="dark"] .v6-rotate-heading { color: var(--color-paper); }
 /* On ink the brand gradient is too dark to read; the same hues, lifted. */
 [data-site="polish"] .v6-rotate-aurora[data-theme-v6="dark"] .v6-rotate-word { background-image: linear-gradient(100deg, #ffae8f, #ff8cbc 55%, #c9a6ff); }
-[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] { background: #fff; }
+[data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] { background: var(--v6-surface); }
 [data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] .v6-close-guarantee { color: var(--color-ink-soft, #5b5560); }
 [data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] .v6-aurora i { opacity: 0.32; }
 [data-site="polish"] .v6-rotate-aurora[data-theme-v6="light"] .v6-aurora::before { background-image: linear-gradient(rgb(20 16 28 / 0.05) 1px, transparent 1px), linear-gradient(90deg, rgb(20 16 28 / 0.05) 1px, transparent 1px); }
@@ -712,18 +722,18 @@
 
 [data-site="polish"] .v6-how-card {
   position: relative; display: grid; width: 100%; aspect-ratio: 4 / 5; max-height: 640px; justify-self: center;
-  max-width: 520px; border-radius: 28px; overflow: hidden; background: #fff;
-  border: 1px solid var(--color-line, #e7e2dc); box-shadow: var(--shadow);
+  max-width: 520px; border-radius: 28px; overflow: hidden; background: var(--v6-surface);
+  border: 1px solid var(--v6-border); box-shadow: var(--shadow);
 }
 [data-site="polish"] .v6-how-screen { grid-area: 1 / 1; position: relative; min-height: 0; opacity: 0; transform: scale(0.985); display: flex; flex-direction: column; }
 [data-site="polish"] .v6-how-screen.is-on { opacity: 1; transform: none; z-index: 1; }
 /* Chat screens, light. */
-[data-site="polish"] .v6-how-top { display: flex; align-items: center; gap: 10px; padding: 18px 22px; border-bottom: 1px solid #efebe6; font: 600 15px/1 var(--font-sans); color: var(--color-ink); background: var(--v6-paper); }
+[data-site="polish"] .v6-how-top { display: flex; align-items: center; gap: 10px; padding: 18px 22px; border-bottom: 1px solid var(--v6-border); font: 600 15px/1 var(--font-sans); color: var(--color-ink); background: var(--v6-paper); }
 [data-site="polish"] .v6-how-av { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 13px; background: linear-gradient(135deg, #fe683f, #ec4081 55%, #8d4edc); }
 [data-site="polish"] .v6-how-thread { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; padding: 24px 22px 28px; }
 [data-site="polish"] .v6-how-b { margin: 0; max-width: 82%; padding: 12px 16px; border-radius: 20px; font: 400 clamp(0.95rem, 0.9rem + 0.25vw, 1.0625rem)/1.35 var(--font-sans); }
 [data-site="polish"] .v6-how-out { align-self: flex-end; color: #fff; background: linear-gradient(135deg, #f0603f, #d83b7a 60%, #8d4edc); border-bottom-right-radius: 6px; }
-[data-site="polish"] .v6-how-in { align-self: flex-start; color: var(--color-ink); background: #f1eef2; border-bottom-left-radius: 6px; }
+[data-site="polish"] .v6-how-in { align-self: flex-start; color: var(--color-ink); background: var(--v6-paper); border-bottom-left-radius: 6px; }
 [data-site="polish"] .v6-how-link { text-decoration: underline; text-underline-offset: 2px; }
 [data-site="polish"] .v6-how-typing { margin: 0; align-self: flex-start; font: 500 13px/1 var(--font-sans); color: var(--color-ink-soft); }
 /* Video screen. */
@@ -740,7 +750,7 @@
 /* Monthly grid. */
 [data-site="polish"] .v6-how-grid { background: var(--v6-paper); }
 [data-site="polish"] .v6-how-tiles { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; padding: 12px 12px 64px; }
-[data-site="polish"] .v6-how-tiles span { border-radius: 14px; background-size: cover; background-position: center; background-color: #e9e4de; }
+[data-site="polish"] .v6-how-tiles span { border-radius: 14px; background-size: cover; background-position: center; background-color: var(--v6-paper); }
 
 /* Motion, only when allowed. */
 @media (prefers-reduced-motion: no-preference) {
@@ -766,7 +776,7 @@
 [data-site="polish"] .v6-hand-card {
   display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: clamp(8px, 2vw, 24px);
   padding: clamp(44px, 6vw, 80px) 12px 0; border-radius: 32px;
-  background: var(--v6-paper); border: 1px solid var(--color-line, #ece7e1); box-shadow: var(--shadow); color: var(--color-ink);
+  background: var(--v6-surface); border: 1px solid var(--v6-border); box-shadow: var(--shadow); color: var(--color-ink);
 }
 @media (min-width: 1024px) { [data-site="polish"] .v6-hand-card { grid-template-columns: minmax(0, 1fr) auto; padding: 0 clamp(32px, 5vw, 96px) 0 clamp(20px, 5vw, 80px); } }
 [data-site="polish"] .v6-hand-card.v6-sweep::before { z-index: 2; }
@@ -794,59 +804,65 @@
 [data-site="polish"] .v6-hs-sb { display: flex; justify-content: space-between; align-items: center; height: 54px; padding: 19px 30px 0 44px; font-weight: 600; font-size: 17px; line-height: 1; }
 [data-site="polish"] .v6-hs-sbi { display: flex; gap: 6px; align-items: center; } [data-site="polish"] .v6-hs-sbi svg { fill: currentColor; }
 [data-site="polish"] .v6-hs-av { display: grid; place-items: center; border-radius: 50%; color: #fff; font-weight: 600; background: linear-gradient(135deg, #fe683f, #ec4081 55%, #8d4edc); }
-[data-site="polish"] .v6-hs-thread { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 14px 12px; }
+[data-site="polish"] .v6-hs-thread { --v6-thread-bg: var(--v6-surface); flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 14px 12px; background: var(--v6-thread-bg); }
 [data-site="polish"] .v6-hs-home { position: absolute; left: 50%; bottom: 8px; width: 136px; height: 5px; margin-left: -68px; border-radius: 3px; background: #000; opacity: 0.85; }
 [data-site="polish"] .v6-hs-typed { white-space: pre; color: #000; }
 [data-site="polish"] .v6-hs-caret { display: inline-block; width: 2px; height: 20px; margin-left: 1px; vertical-align: -4px; background: #0a84ff; }
 [data-site="polish"] .v6-hs-ph { color: #b3b3b8; }
 
 /* iMessage. */
-[data-site="polish"] .v6-hs-imessage { background: #fff; }
-[data-site="polish"] .v6-im-head { display: grid; grid-template-columns: 24px 1fr 30px; align-items: center; padding: 4px 14px 10px; background: rgb(249 249 249 / 0.94); border-bottom: 0.5px solid #d8d8dc; }
+[data-site="polish"] .v6-hs-imessage { background: var(--v6-surface); }
+[data-site="polish"] .v6-im-head { display: grid; grid-template-columns: 24px 1fr 30px; align-items: center; padding: 4px 14px 10px; background: var(--v6-surface); border-bottom: 0.5px solid var(--v6-border); }
 [data-site="polish"] .v6-im-who { display: grid; justify-items: center; gap: 3px; }
 [data-site="polish"] .v6-hs-imessage .v6-hs-av { width: 54px; height: 54px; font-size: 22px; }
 [data-site="polish"] .v6-im-name { font-size: 12px; } [data-site="polish"] .v6-im-name b { color: #8e8e93; font-weight: 400; }
 [data-site="polish"] .v6-im-stamp { margin: 0 0 10px; text-align: center; font-size: 11.5px; line-height: 1.35; color: #8e8e93; } [data-site="polish"] .v6-im-stamp b { font-weight: 600; }
 [data-site="polish"] .v6-im-b { position: relative; margin: 0 0 2px; max-width: 72%; padding: 8px 13px; border-radius: 19px; font-size: 17px; line-height: 1.28; letter-spacing: -0.2px; }
-[data-site="polish"] .v6-im-out { align-self: flex-end; background: #0b84fe; color: #fff; }
-[data-site="polish"] .v6-im-in { align-self: flex-start; background: #e9e9eb; margin-top: 6px; }
+[data-site="polish"] .v6-im-out { --v6-bubble-bg: #0b84fe; align-self: flex-end; background: var(--v6-bubble-bg); color: #fff; }
+/* Round 9 review (Reed): the app skins keep their real colours (iMessage grey, WhatsApp beige wall); only card surfaces harmonise with the page. */
+[data-site="polish"] .v6-im-in { --v6-bubble-bg: #e9e9eb; align-self: flex-start; background: var(--v6-bubble-bg); margin-top: 6px; }
 [data-site="polish"] .v6-im-b u { text-decoration-thickness: 1px; }
-[data-site="polish"] .v6-im-out::before, [data-site="polish"] .v6-im-in::before { content: ""; position: absolute; bottom: 0; width: 20px; height: 20px; }
-[data-site="polish"] .v6-im-out::after, [data-site="polish"] .v6-im-in::after { content: ""; position: absolute; bottom: 0; width: 26px; height: 20px; background: #fff; }
-[data-site="polish"] .v6-im-out::before { right: -7px; background: #0b84fe; border-bottom-left-radius: 16px 14px; }
-[data-site="polish"] .v6-im-out::after { right: -26px; border-bottom-left-radius: 10px; }
-[data-site="polish"] .v6-im-in::before { left: -7px; background: #e9e9eb; border-bottom-right-radius: 16px 14px; }
-[data-site="polish"] .v6-im-in::after { left: -26px; border-bottom-right-radius: 10px; }
+/* A curved mask paints only the tail: no background eraser can cover an avatar
+   or show up as a detached square when the thread surface changes. */
+[data-site="polish"] :is(.v6-im-out, .v6-im-in)::before {
+  content: ""; position: absolute; bottom: 0; width: 20px; height: 20px; background: var(--v6-bubble-bg);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M0 0H13C13 10 14 17 20 20C9 20 0 15 0 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M0 0H13C13 10 14 17 20 20C9 20 0 15 0 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+[data-site="polish"] :is(.v6-im-out, .v6-im-in)::after { content: none; }
+[data-site="polish"] .v6-im-out::before { right: -7px; }
+[data-site="polish"] .v6-im-in::before { left: -7px; transform: scaleX(-1); }
 [data-site="polish"] .v6-im-dlv { margin: 2px 4px 0 0; align-self: flex-end; font-size: 11px; font-weight: 500; color: #8e8e93; }
 [data-site="polish"] .v6-im-typing { position: relative; align-self: flex-start; display: flex; gap: 4px; margin-top: 10px; padding: 11px 13px; border-radius: 18px; background: #e9e9eb; }
 [data-site="polish"] .v6-im-typing i { width: 8px; height: 8px; border-radius: 50%; background: #8e8e93; opacity: 0.5; }
 [data-site="polish"] .v6-im-typing::before { content: ""; position: absolute; left: -2px; bottom: -2px; width: 11px; height: 11px; border-radius: 50%; background: #e9e9eb; }
 [data-site="polish"] .v6-im-typing::after { content: ""; position: absolute; left: -8px; bottom: -8px; width: 5px; height: 5px; border-radius: 50%; background: #e9e9eb; }
 [data-site="polish"] .v6-im-bar { display: flex; align-items: center; gap: 8px; padding: 6px 12px 30px; }
-[data-site="polish"] .v6-im-plus { width: 33px; height: 33px; border-radius: 50%; display: grid; place-items: center; background: #e9e9eb; color: #8e8e93; font-size: 26px; font-weight: 300; line-height: 1; }
+[data-site="polish"] .v6-im-plus { width: 33px; height: 33px; border-radius: 50%; display: grid; place-items: center; background: var(--v6-paper); color: #8e8e93; font-size: 26px; font-weight: 300; line-height: 1; }
 [data-site="polish"] .v6-im-field { flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 8px; height: 35px; padding: 0 5px 0 13px; border: 1px solid #c6c6c8; border-radius: 18px; font-size: 17px; overflow: hidden; }
 [data-site="polish"] .v6-im-send { flex: none; width: 27px; height: 27px; border-radius: 50%; background: #0b84fe url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 18V6M6.5 11.5 12 6l5.5 5.5' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat; }
 
 /* WhatsApp. */
-[data-site="polish"] .v6-hs-whatsapp { background: #efeae2; color: #111b21; }
-[data-site="polish"] .v6-wa-head { display: flex; align-items: center; gap: 9px; padding: 4px 14px 9px; background: #f6f5f3; border-bottom: 0.5px solid #d6d3cf; }
+[data-site="polish"] .v6-hs-whatsapp { background: var(--v6-surface); color: #111b21; }
+[data-site="polish"] .v6-wa-head { display: flex; align-items: center; gap: 9px; padding: 4px 14px 9px; background: var(--v6-surface); border-bottom: 0.5px solid var(--v6-border); }
 [data-site="polish"] .v6-hs-whatsapp .v6-hs-av { width: 36px; height: 36px; font-size: 15px; }
 [data-site="polish"] .v6-wa-who { flex: 1; display: grid; line-height: 1.15; } [data-site="polish"] .v6-wa-who b { font-size: 16.5px; font-weight: 600; } [data-site="polish"] .v6-wa-who small { font-size: 12.5px; color: #667781; }
 [data-site="polish"] .v6-wa-wall {
-  background-color: #efeae2;
+  --v6-thread-bg: #efeae2;
+  background-color: var(--v6-thread-bg);
   background-image: radial-gradient(circle at 20% 30%, rgb(0 0 0 / 0.035) 2px, transparent 2.5px), radial-gradient(circle at 70% 60%, rgb(0 0 0 / 0.03) 3px, transparent 3.5px), radial-gradient(circle at 45% 85%, rgb(0 0 0 / 0.03) 1.6px, transparent 2px);
   background-size: 46px 46px, 58px 58px, 38px 38px;
 }
-[data-site="polish"] .v6-wa-chip { align-self: center; margin: 0 0 12px; padding: 5px 11px; border-radius: 8px; background: #fff; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); font-size: 12px; font-weight: 500; color: #54656f; }
+[data-site="polish"] .v6-wa-chip { align-self: center; margin: 0 0 12px; padding: 5px 11px; border-radius: 8px; background: var(--v6-surface); box-shadow: 0 1px 0.5px var(--v6-border); font-size: 12px; font-weight: 500; color: #54656f; }
 [data-site="polish"] .v6-wa-b { position: relative; margin: 0 0 4px; max-width: 78%; padding: 6px 9px 7px; border-radius: 8px; font-size: 16px; line-height: 1.3; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); }
 [data-site="polish"] .v6-wa-meta { float: right; display: inline-flex; align-items: center; gap: 3px; margin: 8px 0 -4px 10px; font-size: 11px; color: #667781; }
-[data-site="polish"] .v6-wa-out { align-self: flex-end; background: #d9fdd3; border-top-right-radius: 0; }
-[data-site="polish"] .v6-wa-in { align-self: flex-start; background: #fff; border-top-left-radius: 0; margin-top: 4px; }
-[data-site="polish"] .v6-wa-out::before { content: ""; position: absolute; top: 0; right: -8px; border-style: solid; border-width: 0 0 10px 9px; border-color: transparent transparent transparent #d9fdd3; }
-[data-site="polish"] .v6-wa-in::before { content: ""; position: absolute; top: 0; left: -8px; border-style: solid; border-width: 0 9px 10px 0; border-color: transparent #fff transparent transparent; }
-[data-site="polish"] .v6-wa-bar { display: flex; align-items: center; gap: 12px; padding: 7px 14px 30px; background: #f6f5f3; }
+[data-site="polish"] .v6-wa-out { --v6-bubble-bg: #d9fdd3; align-self: flex-end; background: var(--v6-bubble-bg); border-top-right-radius: 0; }
+[data-site="polish"] .v6-wa-in { --v6-bubble-bg: var(--v6-surface); align-self: flex-start; background: var(--v6-bubble-bg); border-top-left-radius: 0; margin-top: 4px; }
+[data-site="polish"] .v6-wa-out::before { content: ""; position: absolute; top: 0; right: -8px; border-style: solid; border-width: 0 0 10px 9px; border-color: transparent transparent transparent var(--v6-bubble-bg); }
+[data-site="polish"] .v6-wa-in::before { content: ""; position: absolute; top: 0; left: -8px; border-style: solid; border-width: 0 9px 10px 0; border-color: transparent var(--v6-bubble-bg) transparent transparent; }
+[data-site="polish"] .v6-wa-bar { display: flex; align-items: center; gap: 12px; padding: 7px 14px 30px; background: var(--v6-surface); }
 [data-site="polish"] .v6-wa-plus { font-size: 30px; font-weight: 300; line-height: 1; }
-[data-site="polish"] .v6-wa-field { flex: 1; display: flex; align-items: center; height: 34px; padding: 0 12px; border-radius: 17px; background: #fff; border: 1px solid #e3e1dd; font-size: 16px; overflow: hidden; }
+[data-site="polish"] .v6-wa-field { flex: 1; display: flex; align-items: center; height: 34px; padding: 0 12px; border-radius: 17px; background: var(--v6-surface); border: 1px solid var(--v6-border); font-size: 16px; overflow: hidden; }
 [data-site="polish"] .v6-hs-whatsapp .v6-hs-caret { background: #25d366; }
 [data-site="polish"] .v6-wa-send { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #25d366 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12 20 4l-4 16-4-7Z' fill='%23fff'/%3E%3C/svg%3E") center / 18px no-repeat; }
 
@@ -932,9 +948,11 @@
   [data-site="polish"] .v6-st-texts { gap: 0; }
   [data-site="polish"] .v6-st-step { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; }
   [data-site="polish"] .v6-st-inline { display: none; }
-  [data-site="polish"] .v6-st-visual { display: block; }
-  [data-site="polish"] .v6-st-pin { position: sticky; top: calc(50vh - min(300px, 39vh)); display: grid; }
-  [data-site="polish"] .v6-st-layer { grid-area: 1 / 1; width: min(480px, calc(78vh * 0.8)); opacity: 0; transform: translateY(12px) scale(0.985); }
+  [data-site="polish"] .v6-st-visual { display: block; min-width: 0; }
+  [data-site="polish"] .v6-st-pin { position: sticky; top: calc(50vh - min(300px, 39vh)); display: grid; grid-template-columns: minmax(0, 1fr); }
+  /* At 1024px with a classic scrollbar the grid track shrinks below 480px.
+     Bound the scene to that track, not only to the viewport height. */
+  [data-site="polish"] .v6-st-layer { grid-area: 1 / 1; width: min(480px, calc(78vh * 0.8)); max-width: 100%; min-width: 0; opacity: 0; transform: translateY(12px) scale(0.985); }
   [data-site="polish"] .v6-st-layer.is-on { opacity: 1; transform: none; z-index: 1; }
   [data-site="polish"] .v6-st-rail { grid-area: 1 / 1; align-self: end; justify-self: center; display: flex; gap: 8px; margin-bottom: -28px; }
   [data-site="polish"] .v6-st-rail i { width: 28px; height: 3px; border-radius: 3px; background: rgb(20 16 28 / 0.12); }
@@ -987,7 +1005,7 @@
 
 /* ROUND 8: CTA chat cards (Aman msg 2801) */
 [data-site="polish"] .v6-hand-art:has(> .v6-chat-card) {
-  display: grid; place-items: center; align-self: center; width: min(100%, 460px); min-width: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; align-self: center; width: min(100%, 460px); max-width: 100%; min-width: 0;
   padding-block: 28px 36px; line-height: 1.4;
 }
 @media (min-width: 1024px) {
@@ -999,7 +1017,7 @@
   box-sizing: border-box; display: flex; flex-direction: column; width: 100%; max-width: 460px; min-width: 0;
   /* All three rows contribute to height, including a wrapped typing field. */
   height: auto; overflow: visible; isolation: isolate;
-  border: 1px solid var(--color-line, #ece7e1); border-radius: 28px; background: var(--color-paper);
+  border: 1px solid var(--v6-border); border-radius: 28px; background: var(--v6-surface);
   box-shadow: 0 12px 36px rgb(44 29 35 / 0.07), 0 2px 6px rgb(44 29 35 / 0.025);
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", var(--font-sans), system-ui, sans-serif;
   font-size: var(--v6-chat-text); line-height: 1.4; text-align: left; color: #111b21;
@@ -1016,7 +1034,7 @@
 }
 [data-site="polish"] .v6-chat-card .v6-hs-caret { height: 1.1em; vertical-align: -0.15em; }
 [data-site="polish"] .v6-chat-card :is(.v6-im-b, .v6-wa-b) {
-  box-sizing: border-box; flex-shrink: 0; min-width: 0; max-width: 88%; padding: 11px 15px;
+  box-sizing: border-box; flex-shrink: 1; min-width: 0; max-width: calc(100% - 36px); padding: 11px 15px;
   font-size: var(--v6-chat-text); line-height: 1.4; letter-spacing: -0.15px; overflow-wrap: anywhere;
 }
 [data-site="polish"] .v6-chat-card u { text-decoration-thickness: 1px; text-underline-offset: 2px; }
@@ -1024,51 +1042,64 @@
 [data-site="polish"] .v6-chat-card :is(.v6-im-b, .v6-wa-b, .v6-im-dlv, .v6-im-typing) { animation: none; transform: none; }
 [data-site="polish"] .v6-chat-card .v6-im-head {
   flex: none; grid-template-columns: 28px minmax(0, 1fr) 28px; padding: 16px 20px 12px;
-  background: var(--color-paper); border-bottom: 1px solid var(--color-line, #ece7e1);
+  background: var(--v6-surface); border-bottom: 1px solid var(--v6-border);
 }
 [data-site="polish"] .v6-chat-card-imessage .v6-hs-av { width: 44px; height: 44px; font-size: 19px; }
 [data-site="polish"] .v6-chat-card .v6-im-who { gap: 5px; }
 [data-site="polish"] .v6-chat-card .v6-im-name { font-size: 13px; line-height: 1.3; }
 [data-site="polish"] .v6-chat-card .v6-im-stamp { margin: 0 0 20px; font-size: 12px; line-height: 1.4; }
 [data-site="polish"] .v6-chat-card .v6-im-b { margin-bottom: 0; border-radius: 22px; }
-[data-site="polish"] .v6-chat-card .v6-im-in { margin-top: 18px; }
-[data-site="polish"] .v6-chat-card :is(.v6-im-out, .v6-im-in)::after { background: var(--color-paper); }
-[data-site="polish"] .v6-chat-card .v6-im-dlv { margin: 8px 5px 0 0; font-size: 12px; line-height: 1.3; }
-[data-site="polish"] .v6-chat-card .v6-im-typing { margin-top: 18px; }
+[data-site="polish"] .v6-chat-card .v6-im-in { margin-top: 0; }
+[data-site="polish"] .v6-chat-card .v6-im-dlv { margin: 8px 36px 0 0; font-size: 12px; line-height: 1.3; }
+[data-site="polish"] .v6-chat-card .v6-im-typing { margin-top: 0; }
 [data-site="polish"] .v6-chat-card :is(.v6-im-bar, .v6-wa-bar) {
-  flex: none; align-items: flex-end; gap: 8px; padding: 12px 14px 16px; background: var(--color-paper);
+  flex: none; min-width: 0; align-items: flex-end; gap: 8px; padding: 12px 14px 16px; background: var(--v6-surface);
 }
 [data-site="polish"] .v6-chat-card :is(.v6-im-plus, .v6-wa-plus) { flex: none; align-self: center; }
 [data-site="polish"] .v6-chat-card :is(.v6-im-field, .v6-wa-field) {
   box-sizing: border-box; min-width: 0; height: auto; min-height: 40px; border-radius: 22px;
-  font-size: var(--v6-chat-text); line-height: 1.4; overflow: visible;
+  font-size: var(--v6-chat-text); line-height: 1.4; overflow: visible; background: var(--v6-surface); border-color: var(--v6-border);
 }
 [data-site="polish"] .v6-chat-card .v6-im-field { align-items: flex-end; padding: 6px 6px 6px 12px; }
 [data-site="polish"] .v6-chat-card .v6-im-field > svg { align-self: center; margin-right: 4px; }
 [data-site="polish"] .v6-chat-card .v6-wa-head {
   flex: none; gap: 9px; min-width: 0; min-height: 76px; padding: 16px 14px;
-  background: var(--color-paper); border-bottom: 1px solid var(--color-line, #ece7e1);
+  background: var(--v6-surface); border-bottom: 1px solid var(--v6-border);
 }
 [data-site="polish"] .v6-chat-card-whatsapp .v6-hs-av { width: 36px; height: 36px; font-size: 16px; }
 [data-site="polish"] .v6-chat-card .v6-wa-who { min-width: 0; gap: 3px; }
 [data-site="polish"] .v6-chat-card .v6-wa-who b { font-size: 16px; }
 [data-site="polish"] .v6-chat-card .v6-wa-who small { font-size: 12px; }
 [data-site="polish"] .v6-chat-card .v6-wa-chip { margin-bottom: 22px; }
-[data-site="polish"] .v6-chat-card .v6-wa-in { margin-top: 18px; }
+[data-site="polish"] .v6-chat-card .v6-wa-in { margin-top: 0; }
 [data-site="polish"] .v6-chat-card .v6-wa-meta { margin: 7px 0 -3px 10px; font-size: 11px; line-height: 1.2; }
 [data-site="polish"] .v6-chat-card .v6-wa-field { padding: 8px 12px; }
 [data-site="polish"] .v6-chat-card .v6-wa-bar > svg { align-self: center; }
 [data-site="polish"] .v6-chat-card-whatsapp .v6-hs-caret { background: #25d366; }
 [data-site="polish"] .v6-chat-card .v6-chat-typing { display: flex; gap: 4px; padding: 14px; }
 [data-site="polish"] .v6-chat-card .v6-chat-typing i { width: 8px; height: 8px; border-radius: 50%; background: #8696a0; opacity: 0.5; }
+/* Each group reserves 28px + 8px for the sender, even while typing. */
+[data-site="polish"] .v6-chat-group { display: flex; align-items: flex-end; gap: 8px; min-width: 0; width: 100%; }
+[data-site="polish"] .v6-chat-group-out { justify-content: flex-end; }
+[data-site="polish"] .v6-chat-group-in { margin-top: 18px; }
+[data-site="polish"] .v6-chat-card .v6-chat-avatar {
+  position: relative; flex: 0 0 28px; width: 28px; height: 28px; display: grid; place-items: center;
+  border-radius: 50%; font: 600 13px/1 var(--font-sans);
+}
+[data-site="polish"] .v6-chat-avatar-you { background: var(--v6-paper); border: 1px solid var(--v6-border); color: var(--color-ink-soft); }
+/* WhatsApp's triangles point toward the bottom-aligned sender as well. */
+[data-site="polish"] .v6-chat-card .v6-wa-b { margin-bottom: 0; }
+[data-site="polish"] .v6-chat-card .v6-wa-out { border-top-right-radius: 8px; border-bottom-right-radius: 0; }
+[data-site="polish"] .v6-chat-card .v6-wa-in { border-top-left-radius: 8px; border-bottom-left-radius: 0; }
+[data-site="polish"] .v6-chat-card :is(.v6-wa-out, .v6-wa-in)::before { top: auto; bottom: 0; transform: scaleY(-1); }
 @media (max-width: 760px) {
   [data-site="polish"] .v6-chat-card { --v6-chat-text: 16px; }
   [data-site="polish"] .v6-chat-card .v6-hs-thread { padding-inline: 16px; }
-  [data-site="polish"] .v6-chat-card :is(.v6-im-b, .v6-wa-b) { max-width: 92%; padding: 10px 12px; }
+  [data-site="polish"] .v6-chat-card :is(.v6-im-b, .v6-wa-b) { padding: 10px 12px; }
   [data-site="polish"] .v6-chat-card .v6-wa-head { gap: 7px; padding-inline: 12px; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  [data-site="polish"] .v6-chat-card[data-animated="true"] :is(.v6-im-b, .v6-wa-b, .v6-im-dlv, .v6-im-typing) { animation: v6-chat-appear 320ms ease-out both; }
+  [data-site="polish"] .v6-chat-card[data-animated="true"] :is(.v6-chat-group, .v6-im-dlv) { animation: v6-chat-appear 320ms ease-out both; }
   [data-site="polish"] .v6-chat-card .v6-chat-typing i { animation: v6-msg-dot 1.2s ease-in-out infinite; }
   [data-site="polish"] .v6-chat-card .v6-chat-typing i:nth-child(2) { animation-delay: 0.15s; }
   [data-site="polish"] .v6-chat-card .v6-chat-typing i:nth-child(3) { animation-delay: 0.3s; }

@@ -127,10 +127,21 @@ export function ChatCard({ skin }: { skin: "imessage" | "whatsapp" }) {
           </div>
           <div className="v6-hs-thread">
             <p className="v6-im-stamp"><b>iMessage</b><br />Today 9:41</p>
-            {sent && <p className="v6-im-b v6-im-out">{c.typed}<u>{c.link}</u></p>}
+            {sent && (
+              <div className="v6-chat-group v6-chat-group-out">
+                <p className="v6-im-b v6-im-out">{c.typed}<u>{c.link}</u></p>
+                <span className="v6-chat-avatar v6-chat-avatar-you">Y</span>
+              </div>
+            )}
             {sent && <p className="v6-im-dlv">Delivered</p>}
-            {replying && <div className="v6-im-typing" aria-label={c.typing}><i /><i /><i /></div>}
-            {replied && <p className="v6-im-b v6-im-in">{c.reply}</p>}
+            {(replying || replied) && (
+              <div className="v6-chat-group v6-chat-group-in">
+                <span className="v6-hs-av v6-chat-avatar">L</span>
+                {replying
+                  ? <div className="v6-im-typing" aria-label={c.typing}><i /><i /><i /></div>
+                  : <p className="v6-im-b v6-im-in">{c.reply}</p>}
+              </div>
+            )}
           </div>
           <div className="v6-im-bar">
             <span className="v6-im-plus">+</span>
@@ -149,12 +160,21 @@ export function ChatCard({ skin }: { skin: "imessage" | "whatsapp" }) {
           <div className="v6-hs-thread v6-wa-wall">
             <p className="v6-wa-chip">Today</p>
             {sent && (
-              <p className="v6-wa-b v6-wa-out">{c.typed}<u>{c.link}</u>
-                <span className="v6-wa-meta">9:41 <svg width="17" height="11" viewBox="0 0 17 11"><path d={replied || replying ? "m1 6 3 3 6-7M7 8.5l.8.7 6-7" : "m3 6 3 3 6-7"} fill="none" stroke={replied || replying ? "#53bdeb" : "#8696a0"} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
-              </p>
+              <div className="v6-chat-group v6-chat-group-out">
+                <p className="v6-wa-b v6-wa-out">{c.typed}<u>{c.link}</u>
+                  <span className="v6-wa-meta">9:41 <svg width="17" height="11" viewBox="0 0 17 11"><path d={replied || replying ? "m1 6 3 3 6-7M7 8.5l.8.7 6-7" : "m3 6 3 3 6-7"} fill="none" stroke={replied || replying ? "#53bdeb" : "#8696a0"} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+                </p>
+                <span className="v6-chat-avatar v6-chat-avatar-you">Y</span>
+              </div>
             )}
-            {replying && <div className="v6-wa-b v6-wa-in v6-chat-typing" aria-label={c.typing}><i /><i /><i /></div>}
-            {replied && <p className="v6-wa-b v6-wa-in">{c.reply}<span className="v6-wa-meta">9:42</span></p>}
+            {(replying || replied) && (
+              <div className="v6-chat-group v6-chat-group-in">
+                <span className="v6-hs-av v6-chat-avatar">L</span>
+                {replying
+                  ? <div className="v6-wa-b v6-wa-in v6-chat-typing" aria-label={c.typing}><i /><i /><i /></div>
+                  : <p className="v6-wa-b v6-wa-in">{c.reply}<span className="v6-wa-meta">9:42</span></p>}
+              </div>
+            )}
           </div>
           <div className="v6-wa-bar">
             <span className="v6-wa-plus">+</span>

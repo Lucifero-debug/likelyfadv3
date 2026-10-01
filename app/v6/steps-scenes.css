@@ -7,8 +7,8 @@
   container-type: inline-size;
   overflow: hidden;
   border-radius: 24px;
-  border: 1px solid #ece7e1;
-  background: var(--v6-paper);
+  border: 1px solid var(--v6-border);
+  background: var(--v6-surface);
   color: #302b37;
   font-family: var(--font-sans, system-ui, sans-serif);
   isolation: isolate;
@@ -17,17 +17,17 @@
 [data-site="polish"] .v6s-scene :is(p, figure) { margin: 0; }
 [data-site="polish"] .v6s-scene svg { display: block; flex: none; width: 5cqw; height: 5cqw; }
 [data-site="polish"] .v6s-scene img { display: block; width: 100%; height: 100%; object-fit: cover; }
-[data-site="polish"] .v6s-scene .v6s-chip { display: flex; align-items: center; gap: 2cqw; width: fit-content; padding: 2.5cqw 3.5cqw; border: .3cqw solid #e7e1df; border-radius: 4cqw; background: #fff; font-size: 3.8cqw; line-height: 1.35; }
-[data-site="polish"] .v6s-scene .v6s-chat-card { position: absolute; inset: 16cqw 6cqw auto; overflow: hidden; background: #fff; border: .3cqw solid #e9e5e0; border-radius: 7cqw; box-shadow: 0 4cqw 10cqw #51402b0a; }
-[data-site="polish"] .v6s-scene .v6s-chat-header { height: 18cqw; padding: 0 5cqw; display: flex; align-items: center; justify-content: space-between; border-bottom: .3cqw solid #f1efed; color: #0b84fe; }
+[data-site="polish"] .v6s-scene .v6s-chip { display: flex; align-items: center; gap: 2cqw; width: fit-content; padding: 2.5cqw 3.5cqw; border: .3cqw solid var(--v6-border); border-radius: 4cqw; background: var(--v6-surface); font-size: 3.8cqw; line-height: 1.35; }
+[data-site="polish"] .v6s-scene .v6s-chat-card { position: absolute; inset: 16cqw 6cqw auto; overflow: hidden; background: var(--v6-surface); border: .3cqw solid var(--v6-border); border-radius: 7cqw; box-shadow: 0 4cqw 10cqw #51402b0a; }
+[data-site="polish"] .v6s-scene .v6s-chat-header { height: 18cqw; padding: 0 5cqw; display: flex; align-items: center; justify-content: space-between; border-bottom: .3cqw solid var(--v6-border); color: #0b84fe; }
 [data-site="polish"] .v6s-scene .v6s-back { font-size: 10cqw; line-height: 1; }
-[data-site="polish"] .v6s-scene .v6s-avatar { display: grid; place-items: center; width: 11cqw; height: 11cqw; background: #e9e9eb; color: #b2b2b7; border-radius: 50%; overflow: hidden; }
+[data-site="polish"] .v6s-scene .v6s-avatar { display: grid; place-items: center; width: 11cqw; height: 11cqw; background: var(--v6-paper); color: #b2b2b7; border-radius: 50%; overflow: hidden; }
 [data-site="polish"] .v6s-scene .v6s-avatar svg { width: 9cqw; height: 9cqw; }
 [data-site="polish"] .v6s-scene .v6s-thread { padding: 7cqw 5cqw 8cqw; display: flex; flex-direction: column; gap: 5cqw; }
 [data-site="polish"] .v6s-scene .v6s-bubble { width: fit-content; max-width: 90%; padding: 3.5cqw 4.3cqw; border-radius: 5.5cqw; font-size: 5.3cqw; line-height: 1.3; letter-spacing: -.08cqw; transform-origin: bottom left; }
 [data-site="polish"] .v6s-scene .v6s-out { align-self: flex-end; background: #0b84fe; color: #fff; border-bottom-right-radius: 1.6cqw; transform-origin: bottom right; }
-[data-site="polish"] .v6s-scene .v6s-in { align-self: flex-start; background: #e9e9eb; color: #242127; border-bottom-left-radius: 1.6cqw; }
-[data-site="polish"] .v6s-scene .v6s-call { color: #743d80; background: #fcf6fa; border-color: #ecdce7; margin-top: .5cqw; }
+[data-site="polish"] .v6s-scene .v6s-in { align-self: flex-start; background: var(--v6-paper); color: #242127; border-bottom-left-radius: 1.6cqw; }
+[data-site="polish"] .v6s-scene .v6s-call { color: #743d80; background: var(--v6-surface); border-color: var(--v6-border); margin-top: .5cqw; }
 /* Brief → editor → finished video. */
 [data-site="polish"] .v6s-scene .v6s-brief { position: absolute; inset: 7cqw 7cqw auto; display: flex; flex-direction: column; align-items: flex-start; gap: 2cqw; }
 [data-site="polish"] .v6s-scene .v6s-brief .v6s-chip { padding: 2cqw 3cqw; border-radius: 3cqw; }
@@ -35,8 +35,8 @@
 [data-site="polish"] .v6s-scene .v6s-brief-script svg { width: 4.4cqw; height: 4.4cqw; }
 [data-site="polish"] .v6s-scene .v6s-formats-window { position: absolute; left: 7cqw; right: 7cqw; top: 41cqw; overflow: hidden; border-radius: 3cqw; }
 [data-site="polish"] .v6s-scene .v6s-formats { display: flex; flex-wrap: wrap; gap: 2cqw; }
-[data-site="polish"] .v6s-scene .v6s-formats span { white-space: nowrap; padding: 2cqw 3cqw; font-size: 3.5cqw; line-height: 1.3; color: #6c526a; border-radius: 3cqw; background: #f2eaf0; }
-[data-site="polish"] .v6s-scene .v6s-editor { position: absolute; top: 63cqw; left: 7cqw; right: 7cqw; height: 55cqw; border: .3cqw solid #e7e1df; background: #fff; border-radius: 5cqw; box-shadow: 0 3cqw 7cqw #51402b08; }
+[data-site="polish"] .v6s-scene .v6s-formats span { white-space: nowrap; padding: 2cqw 3cqw; font-size: 3.5cqw; line-height: 1.3; color: #6c526a; border-radius: 3cqw; background: var(--v6-paper); }
+[data-site="polish"] .v6s-scene .v6s-editor { position: absolute; top: 63cqw; left: 7cqw; right: 7cqw; height: 55cqw; border: .3cqw solid var(--v6-border); background: var(--v6-surface); border-radius: 5cqw; box-shadow: 0 3cqw 7cqw #51402b08; }
 [data-site="polish"] .v6s-scene .v6s-editor-top { display: flex; align-items: center; justify-content: space-between; width: 47cqw; height: 14cqw; padding: 0 4cqw; }
 [data-site="polish"] .v6s-scene .v6s-editor-dots { display: flex; gap: 1.3cqw; }
 [data-site="polish"] .v6s-scene .v6s-editor-dots i { width: 1.6cqw; height: 1.6cqw; border-radius: 50%; background: #ddd7d1; }
@@ -44,11 +44,11 @@
 [data-site="polish"] .v6s-scene .v6s-countdown > span { position: absolute; right: 0; top: 0; }
 [data-site="polish"] .v6s-scene :is(.v6s-count-48, .v6s-count-24) { opacity: 0; }
 [data-site="polish"] .v6s-scene .v6s-timeline { position: absolute; top: 18cqw; left: 4cqw; width: 43cqw; }
-[data-site="polish"] .v6s-scene .v6s-ruler { margin-left: 14cqw; display: flex; justify-content: space-between; height: 3cqw; border-top: .3cqw solid #e8e3e0; }
+[data-site="polish"] .v6s-scene .v6s-ruler { margin-left: 14cqw; display: flex; justify-content: space-between; height: 3cqw; border-top: .3cqw solid var(--v6-border); }
 [data-site="polish"] .v6s-scene .v6s-ruler i { height: 1.5cqw; width: .3cqw; background: #d9d3cf; }
 [data-site="polish"] .v6s-scene .v6s-track { display: flex; align-items: center; height: 9cqw; font-size: 3.5cqw; line-height: 1.3; }
 [data-site="polish"] .v6s-scene .v6s-track > span { width: 14cqw; flex: none; color: #69616c; }
-[data-site="polish"] .v6s-scene .v6s-track-well { width: 29cqw; height: 5.5cqw; border-radius: 1cqw; background: #f5f2f5; overflow: hidden; }
+[data-site="polish"] .v6s-scene .v6s-track-well { width: 29cqw; height: 5.5cqw; border-radius: 1cqw; background: var(--v6-paper); overflow: hidden; }
 [data-site="polish"] .v6s-scene .v6s-track-fill { display: flex; gap: 1cqw; height: 100%; transform-origin: left center; }
 [data-site="polish"] .v6s-scene .v6s-track-fill i { flex: 1; background: #c0b0e2; border-radius: .8cqw; }
 [data-site="polish"] .v6s-scene .v6s-track-2 .v6s-track-fill i { background: #dfadc5; }
@@ -56,16 +56,16 @@
 [data-site="polish"] .v6s-scene .v6s-playhead { position: absolute; left: 42.5cqw; top: 0; width: .5cqw; height: 30cqw; background: #8d4edc; }
 [data-site="polish"] .v6s-scene .v6s-playhead::before { content: ""; position: absolute; top: 0; left: -.8cqw; width: 2cqw; height: 2cqw; background: #8d4edc; border-radius: .4cqw; }
 [data-site="polish"] .v6s-scene .v6s-result { position: absolute; right: 3cqw; top: -2cqw; width: 29cqw; transform-origin: 20% 80%; }
-[data-site="polish"] .v6s-scene .v6s-result-poster { position: relative; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; border-radius: 3cqw; background: #e9e3df; box-shadow: 0 2cqw 5cqw #302b3720; }
+[data-site="polish"] .v6s-scene .v6s-result-poster { position: relative; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; border-radius: 3cqw; background: var(--v6-paper); box-shadow: 0 2cqw 5cqw #302b3720; }
 [data-site="polish"] .v6s-scene .v6s-play-icon { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; }
 [data-site="polish"] .v6s-scene .v6s-play-icon svg { width: 9cqw; height: 9cqw; background: #24212755; border: .3cqw solid #ffffff88; border-radius: 50%; padding: 1.5cqw; }
-[data-site="polish"] .v6s-scene .v6s-first-video { display: block; width: fit-content; margin: -3cqw auto 0; position: relative; padding: 1.4cqw 2.8cqw; border-radius: 3cqw; border: .3cqw solid #eadfe9; background: #fff9fd; color: #704676; font-size: 3.5cqw; line-height: 1.3; }
+[data-site="polish"] .v6s-scene .v6s-first-video { display: block; width: fit-content; margin: -3cqw auto 0; position: relative; padding: 1.4cqw 2.8cqw; border-radius: 3cqw; border: .3cqw solid var(--v6-border); background: var(--v6-surface); color: #704676; font-size: 3.5cqw; line-height: 1.3; }
 /* The retainer remains a conversation, followed by a small agreement card. */
 [data-site="polish"] .v6s-scene .v6s-retainer-thread { position: absolute; top: 10cqw; left: 7cqw; right: 7cqw; display: flex; flex-direction: column; gap: 4cqw; }
-[data-site="polish"] .v6s-scene .v6s-agreement { position: absolute; top: 66cqw; left: 7cqw; right: 7cqw; padding: 4cqw; display: flex; gap: 4cqw; align-items: center; background: #fff; border: .3cqw solid #e7e1df; border-radius: 5cqw; box-shadow: 0 3cqw 7cqw #51402b08; }
+[data-site="polish"] .v6s-scene .v6s-agreement { position: absolute; top: 66cqw; left: 7cqw; right: 7cqw; padding: 4cqw; display: flex; gap: 4cqw; align-items: center; background: var(--v6-surface); border: .3cqw solid var(--v6-border); border-radius: 5cqw; box-shadow: 0 3cqw 7cqw #51402b08; }
 [data-site="polish"] .v6s-scene .v6s-flow { display: flex; flex-direction: column; gap: 3cqw; width: 49cqw; flex: none; }
-[data-site="polish"] .v6s-scene .v6s-flow-chip { display: flex; align-items: center; gap: 2cqw; position: relative; padding: 2.8cqw 2cqw; border-radius: 2.6cqw; background: #f5f3f5; font-size: 3.5cqw; line-height: 1.3; }
-[data-site="polish"] .v6s-scene .v6s-flow-lit { position: absolute; inset: 0; border: .3cqw solid #ebdbe7; border-radius: inherit; background: linear-gradient(110deg, #fe683f0b, #ec40810b, #8d4edc0d); }
+[data-site="polish"] .v6s-scene .v6s-flow-chip { display: flex; align-items: center; gap: 2cqw; position: relative; padding: 2.8cqw 2cqw; border-radius: 2.6cqw; background: var(--v6-paper); font-size: 3.5cqw; line-height: 1.3; }
+[data-site="polish"] .v6s-scene .v6s-flow-lit { position: absolute; inset: 0; border: .3cqw solid var(--v6-border); border-radius: inherit; background: var(--v6-surface); }
 [data-site="polish"] .v6s-scene .v6s-flow-check { position: relative; color: #8d4edc; }
 [data-site="polish"] .v6s-scene .v6s-flow-check svg { width: 4.4cqw; height: 4.4cqw; }
 [data-site="polish"] .v6s-scene .v6s-flow-label { position: relative; }
@@ -76,9 +76,9 @@
 [data-site="polish"] .v6s-scene .v6s-volume-any { font-size: 5.6cqw; line-height: 1.15; font-weight: 600; }
 /* Brief stack and ring handoff. The slot does not style an injected ring's children. */
 [data-site="polish"] .v6s-scene .v6s-brief-stack { position: absolute; left: 9cqw; top: 10cqw; width: 36cqw; height: 28cqw; }
-[data-site="polish"] .v6s-scene .v6s-paper { position: absolute; inset: 0; border: .3cqw solid #e7e0da; background: #fff; border-radius: 3cqw; }
-[data-site="polish"] .v6s-scene .v6s-paper-back { transform: rotate(-9deg) translate(-2cqw, -1cqw); background: #f1ece7; }
-[data-site="polish"] .v6s-scene .v6s-paper-middle { transform: rotate(5deg) translate(1cqw, -.5cqw); background: #f8f4ef; }
+[data-site="polish"] .v6s-scene .v6s-paper { position: absolute; inset: 0; border: .3cqw solid var(--v6-border); background: var(--v6-surface); border-radius: 3cqw; }
+[data-site="polish"] .v6s-scene .v6s-paper-back { transform: rotate(-9deg) translate(-2cqw, -1cqw); background: var(--v6-paper); }
+[data-site="polish"] .v6s-scene .v6s-paper-middle { transform: rotate(5deg) translate(1cqw, -.5cqw); background: var(--v6-paper); }
 [data-site="polish"] .v6s-scene .v6s-paper-front { padding: 3cqw; box-shadow: 0 1cqw 3cqw #302b3708; }
 [data-site="polish"] .v6s-scene .v6s-paper-front svg { width: 5.5cqw; height: 5.5cqw; color: #a581ad; margin-bottom: 2cqw; }
 [data-site="polish"] .v6s-scene .v6s-paper-front span { display: block; font-size: 3.5cqw; line-height: 1.3; white-space: nowrap; }
@@ -90,7 +90,7 @@
 [data-site="polish"] .v6s-scene .v6s-ring-reveal { position: absolute; left: 7cqw; right: 7cqw; top: 43cqw; height: 60cqw; transform-origin: 75% -25%; }
 [data-site="polish"] .v6s-scene .v6s-ring-slot { width: 100%; height: 100%; position: relative; }
 [data-site="polish"] .v6s-scene .v6s-placeholder-ring { position: relative; width: 100%; height: 100%; }
-[data-site="polish"] .v6s-scene .v6s-ring-tile { position: absolute; width: 15cqw; aspect-ratio: 9 / 16; border-radius: 2cqw; overflow: hidden; background: #e9e3df; border: .5cqw solid #fff; box-shadow: 0 1.5cqw 3cqw #302b3718; }
+[data-site="polish"] .v6s-scene .v6s-ring-tile { position: absolute; width: 15cqw; aspect-ratio: 9 / 16; border-radius: 2cqw; overflow: hidden; background: var(--v6-paper); border: .5cqw solid var(--v6-surface); box-shadow: 0 1.5cqw 3cqw #302b3718; }
 [data-site="polish"] .v6s-scene .v6s-ring-tile-1 { left: 35cqw; top: 0; transform: rotate(-4deg); }
 [data-site="polish"] .v6s-scene .v6s-ring-tile-2 { left: 55cqw; top: 5cqw; transform: rotate(12deg); }
 [data-site="polish"] .v6s-scene .v6s-ring-tile-3 { left: 68cqw; top: 18cqw; transform: rotate(16deg); }
@@ -99,7 +99,7 @@
 [data-site="polish"] .v6s-scene .v6s-ring-tile-6 { left: 15cqw; top: 31cqw; transform: rotate(-12deg); }
 [data-site="polish"] .v6s-scene .v6s-ring-tile-7 { left: 2cqw; top: 18cqw; transform: rotate(-16deg); }
 [data-site="polish"] .v6s-scene .v6s-ring-tile-8 { left: 15cqw; top: 5cqw; transform: rotate(-8deg); }
-[data-site="polish"] .v6s-scene .v6s-approved { position: absolute; top: 108cqw; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 2cqw 3cqw; font-size: 3.5cqw; color: #64456e; border-color: #e7dbe8; background: #fdf8fc; }
+[data-site="polish"] .v6s-scene .v6s-approved { position: absolute; top: 108cqw; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 2cqw 3cqw; font-size: 3.5cqw; color: #64456e; border-color: var(--v6-border); background: var(--v6-surface); }
 [data-site="polish"] .v6s-scene .v6s-approved svg { width: 4cqw; height: 4cqw; }
 [data-site="polish"] .v6s-scene .v6s-ai-caption { position: absolute; top: 119cqw; width: 100%; text-align: center; font-size: 3.5cqw; line-height: 1.3; color: #6b626e; }
 /* Name only: no scene owns duration, timeline, range, fill, delay or play state. */
